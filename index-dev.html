@@ -1,1 +1,79 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>מחשבון חדלות פירעון – דף עבודה</title>
+  <style>
+    body {
+      font-family: Heebo, Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      color: #0B1D2A;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 32px;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .group {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      width: 280px;
+    }
+    .group h2 {
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+    a {
+      display: block;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 6px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .stable { background: #28a745; }  /* יציב */
+    .work { background: #007bff; }    /* עבודה */
+    a:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <h1>מחשבון חדלות פירעון – דף עבודה</h1>
 
+  <div class="container">
+    <!-- מחשבון צו תשלומים -->
+    <div class="group">
+      <h2>צו תשלומים</h2>
+      <a href="payments.html" class="stable">גרסה יציבה</a>
+      <a href="payments-v1.html" class="work">גרסת עבודה v1</a>
+      <a href="payments-v2.html" class="work">גרסת עבודה v2</a>
+    </div>
+
+    <!-- מחשבון צו שיקום -->
+    <div class="group">
+      <h2>צו שיקום</h2>
+      <a href="rehab.html" class="stable">גרסה יציבה</a>
+      <a href="rehab-v1.html" class="work">גרסת עבודה v1</a>
+      <a href="rehab-v2.html" class="work">גרסת עבודה v2</a>
+    </div>
+
+    <!-- מחשבון שכר טרחה -->
+    <div class="group">
+      <h2>שכר טרחה</h2>
+      <a href="fees.html" class="stable">גרסה יציבה</a>
+      <a href="fees-v1.html" class="work">גרסת עבודה v1</a>
+      <a href="fees-v2.html" class="work">גרסת עבודה v2</a>
+    </div>
+  </div>
+</body>
+</html>
