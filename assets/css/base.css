@@ -1,6 +1,5 @@
 body {
-    font-family: Heebo, Arial, sans-serif;
-    margin: 0;
+font-family: 'Rubik', system-ui, Arial, sans-serif;    margin: 0;
     padding: 40px;
     color: #0B1D2A;
     background: #f9f9f9;
@@ -31,4 +30,4 @@ a:hover {
 
 /* צבעים */
 .stable { background: #28a745; } /* ירוק */
-.work   { background: #007bff; } /* כחול */
+.work   { background: #0BA5A6; } /* כחול */
