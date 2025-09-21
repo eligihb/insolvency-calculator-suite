@@ -31,3 +31,30 @@ a:hover {
 /* צבעים */
 .stable { background: #28a745; } /* ירוק */
 .work   { background: #0BA5A6; } /* כחול */
+/* בלוקים חודשיים – קבועים ונקיים */
+.m{
+  border:1px solid #E6EBF2;
+  border-radius:12px;
+  padding:8px 10px;
+  background:#FFF;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-height:170px;         /* גובה נוח לכל חמש השורות */
+}
+
+.months{
+  display:grid;
+  grid-template-columns:repeat(12, minmax(110px, 1fr));  /* 12 תמיד */
+  gap:6px;
+}
+
+/* טיפוגרפיה קומפקטית כך שהכול ייכנס גם במסכים צרים */
+.m .line{font-size:clamp(11px, 1.4vw, 12px); display:flex; justify-content:space-between; align-items:center}
+.m .amt{font-weight:800}
+.paid-row input[type="number"]{background:#FFF; max-width:120px}
+.paid-row input[type="date"]{background:#FFF; max-width:160px}
+
+/* תגית השנה בצד ימין – מובטח */
+.year-head{display:flex; align-items:center; justify-content:space-between; direction:rtl}
+.year-head strong{font-size:18px; font-weight:900}
