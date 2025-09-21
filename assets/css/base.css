@@ -52,7 +52,7 @@ a:hover {
 /* טיפוגרפיה קומפקטית כך שהכול ייכנס גם במסכים צרים */
 .m .line{font-size:clamp(11px, 1.4vw, 12px); display:flex; justify-content:space-between; align-items:center}
 .m .amt{font-weight:800}
-.paid-row input[type="number"]{background:#FFF; max-width:120px}
+.paid-row background:#fff; border:1px solid #D9E0E7;
 .paid-row input[type="date"]{background:#FFF; max-width:160px}
 
 /* תגית השנה בצד ימין – מובטח */
