@@ -1,6 +1,28 @@
 <!doctype html>
-<meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./rehab-stable.html">
-<title>Redirecting…</title>
-<a href="./rehab-stable.html">מעבר למחשבון צו שיקום (גרסה יציבה)</a>
-<div style="position:fixed;inset-inline:0;top:0;background:#0b1d2a;color:#fff;padding:10px 14px;text-align:center;font:600 13px/1.5 'Rubik',system-ui;letter-spacing:.2px;z-index:9999;box-shadow:0 -8px 24px rgba(2,6,23,.25)">⚠️ גרסת ניסיון – לא לשימוש מול לקוחות</div>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>מחשבון צו שיקום – גרסת ניסיון</title>
+  <style>
+    html,body{height:100%;margin:0}
+    /* מרימים פס דביק למעלה */
+    .banner{
+      position:fixed; inset-inline:0; top:0;
+      background:#0b1d2a; color:#fff; text-align:center;
+      padding:10px 14px; font:600 13px/1.5 Rubik,system-ui;
+      z-index:9999; box-shadow:0 2px 16px rgba(0,0,0,.2)
+    }
+    /* מרחיקים את התוכן מלמטה הפס */
+    body{ padding-top:44px; }
+    /* מציגים את הדף היציב בתוך מסגרת שתופסת את כל המסך */
+    .frame{
+      position:fixed; inset:0; border:0; width:100%; height:100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">⚠️ גרסת ניסיון – לא לשימוש מול לקוחות</div>
+  <iframe class="frame" src="./rehab-stable.html" title="גרסת יציב"></iframe>
+</body>
+</html>
