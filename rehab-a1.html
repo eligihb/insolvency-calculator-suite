@@ -30,6 +30,28 @@
   .m{ background:#fff; border:1px solid #E6EBF2; border-radius:12px; padding:8px 10px; min-height:170px }
   .m .line{ font-size:12px; display:flex; justify-content:space-between; align-items:center }
 </style>
+<style id="a1-overrides">
+  /* תג קטן שמאשר שטוענים את A1 */
+  body::after{
+    content:" A1 ";
+    position:fixed; bottom:8px; left:8px;
+    background:#0BA5A6; color:#fff; padding:4px 8px;
+    font:700 12px/1 system-ui; border-radius:8px; z-index:99999; opacity:.8;
+  }
+
+  /* דוגמת שינוי שתראה מיד */
+  input[type="number"], input[type="date"], input[type="text"], select{
+    height:36px; padding:8px 10px; font-size:14px;
+  }
+
+  /* החבילה הקטנה שלנו (אפשר להוסיף בהמשך) */
+  #modeSeg .pill[data-v="flat"]{ display:none !important; }    /* הסתרת "קבוע" */
+  #modeSeg, #startSeg, #termQuick{ max-width:180px; width:100% }
+  .seg .pill{ white-space:normal; line-height:1.2; min-height:36px; text-align:center }
+  @media (min-width:1024px){
+    .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
+  }
+</style>
 
 <head>
   <meta charset="utf-8" />
