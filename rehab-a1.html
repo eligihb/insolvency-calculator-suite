@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
- </style>
-<style id="a1-overrides">
-  /* תג קטן שמאשר שטוענים את A1 */
-  body::after{
-    content:" A1 ";
-    position:fixed; bottom:8px; left:8px;
-    background:#0BA5A6; color:#fff; padding:4px 8px;
-    font:700 12px/1 system-ui; border-radius:8px; z-index:99999; opacity:.8;
-  }
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>צו שיקום כלכלי – A1</title>
 
-  /* דוגמת שינוי שתראה מיד */
-  input[type="number"], input[type="date"], input[type="text"], select{
-    height:36px; padding:8px 10px; font-size:14px;
-  }
+  <!-- ה-CSS המקורי שלך (אם יש) -->
+  <style>
+    /* ... ה-CSS המקורי ... */
+  </style>
 
-  /* החבילה הקטנה שלנו (אפשר להוסיף בהמשך) */
-  #modeSeg .pill[data-v="flat"]{ display:none !important; }    /* הסתרת "קבוע" */
-  #modeSeg, #startSeg, #termQuick{ max-width:180px; width:100% }
-  .seg .pill{ white-space:normal; line-height:1.2; min-height:36px; text-align:center }
-  @media (min-width:1024px){
-    .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
-  }
-</style>
-<!-- A1 overrides – חייב להופיע בתוך <head> ואחרי ה-CSS הראשי -->
-<style id="a1-overrides">
-  /* תג סימון קטן כדי לוודא שטוענים את A1 */
+  <!-- ה-Overrides של A1 (אלה שהדבקת) -->
+  <style id="a1-overrides">
+    /* ... התג A1, הקטנת שדות, הסתרת “קבוע”, וכו' ... */
+  </style>
+</head>
+<body>
+  <!-- התוכן הרגיל שלך -->
+
   body::after{
     content:" A1 ";
     position:fixed; bottom:8px; left:8px;
