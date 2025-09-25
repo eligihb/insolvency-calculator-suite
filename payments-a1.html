@@ -9,8 +9,40 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style id="a1-overrides">
+  /* שדות קומפקטיים – גובה קטן ורוחב נשלט */
+  input[type="number"],
+  input[type="date"],
+  input[type="text"],
+  select{
+    height:36px;
+    padding:8px 10px;
+    font-size:14px;
+  }
 
-<style>
+  /* ריווח שורות קומפקטי */
+  .row{ gap:6px; margin:4px 0 }
+
+  /* “בחר תשלומים” – באותו רוחב של השדות העליונים (180px) */
+  #modeSeg{ width:100%; max-width:180px }
+
+  /* הסתרת כפתור “קבוע” (ברירת מחדל) */
+  #modeSeg .pill[data-v="flat"]{ display:none !important; }
+
+  /* גלישת טקסט בכפתורי מצבים לשתי שורות */
+  .seg .pill{
+    white-space:normal;
+    line-height:1.2;
+    min-height:36px;
+    text-align:center;
+  }
+
+  /* הפאנל הימני (שדות) ≈ רבע מסך, התוכן משמאל */
+  @media (min-width:1024px){
+    .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
+  }
+</style>
+ 
 :root{
   --primary:#005f73; --secondary:#0a9396; --bg:#f4f7f9; --panel:#fff;
   --text:#1f2937; --label:#4b5563; --border:#dbe3ea; --accent:#ee9b00;
