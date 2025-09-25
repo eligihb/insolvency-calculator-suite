@@ -1,76 +1,27 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>צו שיקום כלכלי – A1</title>
-
-  <!-- ה-CSS המקורי שלך (אם יש) -->
-  <style>
-    /* ... ה-CSS המקורי ... */
-  </style>
-
-  <!-- ה-Overrides של A1 (אלה שהדבקת) -->
-  <style id="a1-overrides">
-    /* ... התג A1, הקטנת שדות, הסתרת “קבוע”, וכו' ... */
-  </style>
-</head>
-<body>
-  <!-- התוכן הרגיל שלך -->
-
-  body::after{
-    content:" A1 ";
-    position:fixed; bottom:8px; left:8px;
-    background:#0BA5A6; color:#fff; padding:4px 8px;
-    font:700 12px/1 system-ui; border-radius:8px; z-index:99999; opacity:.85;
-  }
-
-  /* שדות קומפקטיים */
-  input[type="number"], input[type="date"], input[type="text"], select{
-    height:36px !important; padding:8px 10px !important; font-size:14px !important;
-  }
-
-  /* ריווח שורות קומפקטי + רוחב אחיד לבקרים */
-  .row{ gap:6px !important; margin:4px 0 !important; }
-  #modeSeg, #startSeg, #termQuick{ width:100% !important; max-width:180px !important; }
-
-  /* הסתרת "קבוע" (ברירת מחדל) */
-  #modeSeg .pill[data-v="flat"]{ display:none !important; }
-
-  /* כפתורי מצבים – גלישת טקסט לשתי שורות */
-  .seg .pill{ white-space:normal !important; line-height:1.2 !important; min-height:36px !important; text-align:center !important; }
-
-  /* פאנל ימין ≈ רבע מסך בדסקטופ */
-  @media (min-width:1024px){
-    .wrap{ display:grid !important; grid-template-columns: 28% 1fr !important; gap:16px !important; }
-  }
-
-  /* רצועת חודשים – 12 בעמודה אחת */
-  .months{ display:grid !important; grid-template-columns:repeat(12, minmax(110px,1fr)) !important; gap:6px !important; }
-
-  /* קוביות חודשים קומפקטיות */
-  .m{ background:#fff !important; border:1px solid #E6EBF2 !important; border-radius:12px !important; padding:8px 10px !important; min-height:170px !important; }
-  .m .line{ font-size:12px !important; display:flex !important; justify-content:space-between !important; align-items:center !important; }
-</style>
-
-<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>צו שיקום כלכלי – חדלות פירעון</title>
- <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>צו שיקום כלכלי – A1</title>
+
+  <!-- פונט -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ===== CSS בסיסי המקורי שלך (לא שיניתי) ===== -->
   <style>
     :root{--paper:#F5F7FB;--card:#fff;--ink:#0B2533;--muted:#6B7C88;--accent:#0EA5E9;--green:#22C55E;--amber:#F59E0B;--red:#EF4444;--radius:16px;--shadow:0 6px 22px rgba(2,6,23,.08)}
     *{box-sizing:border-box}
-    html,body{margin:0;height:100%;font-family:'Heebo',system-ui;background:var(--paper);color:var(--ink)}
+    html,body{margin:0;height:100%;font-family:'Rubik','Heebo',system-ui;background:var(--paper);color:var(--ink)}
     .wrap{max-width:1280px;margin:0 auto;padding:18px 18px 120px}
     .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
     h1{margin:0 0 10px;font-size:26px}
     h2{margin:0 0 8px;font-size:18px}
     label{font-weight:700;display:block;margin:4px 0}
     input,select,button{font-family:inherit}
-    /* קלטים קומפקטיים */
+    /* קלטים קומפקטיים (בסיס) */
     input[type="number"],input[type="date"],select,input[type="text"]{width:100%;max-width:180px;padding:8px;border:1px solid #d7dee6;border-radius:12px;background:#F3F7FE;text-align:left;direction:ltr}
     .row{display:grid;grid-template-columns:180px 1fr;gap:8px;align-items:center;margin:6px 0}
     .seg{display:flex;gap:6px;flex-wrap:wrap}
@@ -123,8 +74,44 @@
     .footer{position:fixed;bottom:0;inset-inline:0;background:#0b1d2a;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 16px;box-shadow:0 -8px 24px rgba(2,6,23,.25);font-weight:800;letter-spacing:.2px}
     .footer .dot{width:6px;height:6px;border-radius:999px;background:#0EA5E9}
   </style>
+
+  <!-- ===== A1 overrides (כאן עושים את השינויים שלך) ===== -->
+  <style id="a1-overrides">
+    /* תג זיהוי קטן כדי לוודא שטוענים את A1 */
+    body::after{
+      content:" A1 ";
+      position:fixed; bottom:8px; left:8px;
+      background:#0BA5A6; color:#fff; padding:4px 8px;
+      font:700 12px/1 system-ui; border-radius:8px; z-index:99999; opacity:.85;
+    }
+    /* שדות קומפקטיים יותר */
+    input[type="number"], input[type="date"], input[type="text"], select{
+      height:36px; padding:8px 10px; font-size:14px;
+    }
+    .row{ gap:6px; margin:4px 0; }
+
+    /* רוחב אחיד לבקרים בחלק העליון */
+    #modeSeg, #startSeg, #termQuick{ width:100%; max-width:180px }
+
+    /* הסתרת "קבוע" (ברירת מחדל) */
+    #modeSeg .pill[data-v="flat"]{ display:none !important; }
+
+    /* כפתורי מצבים – גלישה לשתי שורות */
+    .seg .pill{ white-space:normal; line-height:1.2; min-height:36px; text-align:center }
+
+    /* פריסת דף: ימין ~ 28% שמאל שאר התוכן (בדסקטופ) */
+    @media (min-width:1024px){
+      .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
+    }
+
+    /* 12 בלוקים בשורה קבועה */
+    .months{ display:grid; grid-template-columns:repeat(12, minmax(110px,1fr)); gap:6px }
+    .m{ background:#fff; border:1px solid #E6EBF2; border-radius:12px; padding:8px 10px; min-height:170px }
+    .m .line{ font-size:12px; display:flex; justify-content:space-between; align-items:center }
+  </style>
 </head>
 <body>
+
   <div class="wrap">
 
     <div class="card">
