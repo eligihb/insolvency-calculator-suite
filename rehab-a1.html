@@ -1,6 +1,36 @@
 
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+  <style id="a1-overrides">
+  /* שדות קומפקטיים */
+  input[type="number"], input[type="date"], input[type="text"], select{
+    height:36px; padding:8px 10px; font-size:14px;
+  }
+  .row{ gap:6px; margin:4px 0 }
+
+  /* “בחר תשלומים” – ברוחב השדות למעלה (עד 180px) */
+  #modeSeg{ width:100%; max-width:180px }
+  #startSeg, #termQuick{ width:100%; max-width:180px }
+
+  /* מסתירים את “קבוע” (ברירת מחדל) */
+  #modeSeg .pill[data-v="flat"]{ display:none !important; }
+
+  /* כפתורים מאפשרי גלישה לשתי שורות */
+  .seg .pill{ white-space:normal; line-height:1.2; min-height:36px; text-align:center }
+
+  /* פאנל הימני ≈ רבע מסך בדסקטופ */
+  @media (min-width:1024px){
+    .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
+  }
+
+  /* רצועת חודשים – 12 בעמודה אחת */
+  .months{ display:grid; grid-template-columns:repeat(12, minmax(110px,1fr)); gap:6px }
+
+  /* קוביות חודשים קומפקטיות */
+  .m{ background:#fff; border:1px solid #E6EBF2; border-radius:12px; padding:8px 10px; min-height:170px }
+  .m .line{ font-size:12px; display:flex; justify-content:space-between; align-items:center }
+</style>
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
