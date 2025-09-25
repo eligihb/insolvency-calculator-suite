@@ -1,28 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
-  <style id="a1-overrides">
-  /* שדות קומפקטיים */
-  input[type="number"], input[type="date"], input[type="text"], select{
-    height:36px; padding:8px 10px; font-size:14px;
-  }
-  .row{ gap:6px; margin:4px 0 }
-
-  /* “בחר תשלומים” – ברוחב השדות למעלה (עד 180px) */
-  #modeSeg{ width:100%; max-width:180px }
-  #startSeg, #termQuick{ width:100%; max-width:180px }
-
-  /* מסתירים את “קבוע” (ברירת מחדל) */
-  #modeSeg .pill[data-v="flat"]{ display:none !important; }
-
-  /* כפתורים מאפשרי גלישה לשתי שורות */
-  .seg .pill{ white-space:normal; line-height:1.2; min-height:36px; text-align:center }
-
-  /* פאנל הימני ≈ רבע מסך בדסקטופ */
-  @media (min-width:1024px){
-    .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
-  }
-
   /* רצועת חודשים – 12 בעמודה אחת */
   .months{ display:grid; grid-template-columns:repeat(12, minmax(110px,1fr)); gap:6px }
 
@@ -51,6 +28,43 @@
   @media (min-width:1024px){
     .wrap{ display:grid; grid-template-columns: 28% 1fr; gap:16px; }
   }
+</style>
+<!-- A1 overrides – חייב להופיע בתוך <head> ואחרי ה-CSS הראשי -->
+<style id="a1-overrides">
+  /* תג סימון קטן כדי לוודא שטוענים את A1 */
+  body::after{
+    content:" A1 ";
+    position:fixed; bottom:8px; left:8px;
+    background:#0BA5A6; color:#fff; padding:4px 8px;
+    font:700 12px/1 system-ui; border-radius:8px; z-index:99999; opacity:.85;
+  }
+
+  /* שדות קומפקטיים */
+  input[type="number"], input[type="date"], input[type="text"], select{
+    height:36px !important; padding:8px 10px !important; font-size:14px !important;
+  }
+
+  /* ריווח שורות קומפקטי + רוחב אחיד לבקרים */
+  .row{ gap:6px !important; margin:4px 0 !important; }
+  #modeSeg, #startSeg, #termQuick{ width:100% !important; max-width:180px !important; }
+
+  /* הסתרת "קבוע" (ברירת מחדל) */
+  #modeSeg .pill[data-v="flat"]{ display:none !important; }
+
+  /* כפתורי מצבים – גלישת טקסט לשתי שורות */
+  .seg .pill{ white-space:normal !important; line-height:1.2 !important; min-height:36px !important; text-align:center !important; }
+
+  /* פאנל ימין ≈ רבע מסך בדסקטופ */
+  @media (min-width:1024px){
+    .wrap{ display:grid !important; grid-template-columns: 28% 1fr !important; gap:16px !important; }
+  }
+
+  /* רצועת חודשים – 12 בעמודה אחת */
+  .months{ display:grid !important; grid-template-columns:repeat(12, minmax(110px,1fr)) !important; gap:6px !important; }
+
+  /* קוביות חודשים קומפקטיות */
+  .m{ background:#fff !important; border:1px solid #E6EBF2 !important; border-radius:12px !important; padding:8px 10px !important; min-height:170px !important; }
+  .m .line{ font-size:12px !important; display:flex !important; justify-content:space-between !important; align-items:center !important; }
 </style>
 
 <head>
