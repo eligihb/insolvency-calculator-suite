@@ -91,10 +91,6 @@
     [data-view]{display:none}
     [data-view].on{display:block}
 
-    /* Hide right controls entirely on payments view */
-    body.view-payments .controls{display:none}
-    body.view-payments .wrap{grid-template-columns:1fr}
-
     @media (max-width: 1080px){
       .wrap{grid-template-columns:1fr}
       .controls{position:static; max-height:none}
@@ -272,10 +268,10 @@
       const total = plan.reduce((s,x)=>s+(x.due||0),0);
       const paid = plan.reduce((s,x)=>s+(x.paid||0),0);
       const pct = total ? Math.min(100, Math.round(paid/total*100)) : 0;
-      document.getElementById('kpi-month').textContent = moneyText(month);
+      document.getElementById('kpi-month').textContent = '₪ ' + money(month);
       document.getElementById('kpi-months').textContent = months;
-      document.getElementById('kpi-total').textContent = moneyText(total);
-      document.getElementById('kpi-paid').textContent  = moneyText(paid);
+      document.getElementById('kpi-total').textContent = '₪ ' + money(total);
+      document.getElementById('kpi-paid').textContent  = '₪ ' + money(paid);
       document.getElementById('bar').style.width = pct + '%';
       const circ = 2*Math.PI*52; const dash = Math.max(0, (pct/100)*circ);
       document.getElementById('ringArc').setAttribute('stroke-dasharray', dash + ' ' + (circ-dash));
