@@ -3,32 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>מחשבון שיקום — v1.1</title>
+  <title>מחשבון שיקום — v1.1 (Shell)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg:#f4f7fb; --card:#fff; --ink:#0b1d2a; --muted:#516274; --line:#e8eef4; --accent:#0ea5e9;
-      --warn:#f59e0b; --ok:#22c55e; --err:#ef4444; --future:#e6f4ff;
+      --warn:#f59e0b; --ok:#22c55e; --err:#ef4444; --past:#cbd5e1; --future:#e6f4ff; --partial:#e9d5ff;
       --rad:16px; --shadow:0 10px 30px rgba(15,23,42,.08);
       --panel-w: 28rem; --gap: 1rem; --pad: 14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial; overflow-x:hidden;}
+    body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial;}
 
     /* Header */
     .topbar{position:sticky; top:0; z-index:20; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
     .topbar-inner{max-width:1400px; margin-inline:auto; padding:.6rem 1rem; display:flex; align-items:center; gap:.8rem}
     .brand{font-weight:700}
     .tabs{display:flex; gap:.5rem; margin-inline-start:auto}
-    .tab{height:38px; padding:0 14px; border-radius:12px; border:1px solid var(--line); background:#fff; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease}
-    .tab:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.06)}
+    .tab{height:38px; padding:0 14px; border-radius:12px; border:1px solid var(--line); background:#fff; cursor:pointer}
     .tab[aria-current="page"]{background:var(--accent); color:#fff; border-color:var(--accent)}
 
     /* App layout */
     .wrap{max-width:1400px; margin-inline:auto; padding:1rem; display:grid; grid-template-columns:minmax(18rem,var(--panel-w)) 1fr; gap:var(--gap)}
+
     .card{background:var(--card); border:1px solid var(--line); border-radius:var(--rad); box-shadow:var(--shadow)}
     .panel{padding:var(--pad)}
 
@@ -39,21 +39,15 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-
     label{font-size:.9rem; color:var(--muted)}
     input,select,button,textarea{width:100%; height:38px; padding:.45rem .6rem; border:1px solid #d7dee6; border-radius:12px; background:#fff; font-family:inherit}
     textarea{height:88px; resize:vertical}
-
-    /* Buttons */
     .actions{display:flex; flex-wrap:wrap; gap:.5rem}
-.btn{height:36px; padding:0 .9rem; border-radius:12px; border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease}
-.btn:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.08)}
-.btn:active{transform:translateY(0)}
-.btn.green{background:#16a34a; color:#fff}
-.btn.blue{background:#0ea5e9; color:#fff}
-.btn.gray{background:#eef3f8; color:#0b1d2a; border-color:#dfe6ef}
+    .btn{height:36px; padding:0 .9rem; border-radius:12px; border:1px solid #cfd8e3; background:#f7fafc; cursor:pointer}
+    .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
 
     /* Main (left) */
     .main{display:flex; flex-direction:column; gap:1rem}
 
     /* Sticky top actions in setup view */
-    .sticky-top{position:sticky; top:84px; z-index:10; background:#ffffffcc; backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:.5rem; display:flex; gap:.5rem; flex-wrap:wrap}
+    .sticky-top{position:sticky; top:84px; z-index:10; background:#ffffffcc; backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:.5rem; display:flex; gap:.5rem}
 
     /* Widgets */
     .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem}
@@ -63,32 +57,35 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-
 
     .flex{display:flex; gap:1rem}
     .grow{flex:1}
+
     .widget{padding:14px}
     .widget h4{margin:0 0 .6rem; font-size:1rem}
+
     .progressbar{height:12px; border-radius:999px; background:#eef3f8; overflow:hidden}
     .progressbar > span{display:block; height:100%; background:var(--accent); width:0}
+
     .svgbox{display:grid; place-items:center;}
 
     /* Payments grid */
-    .months{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:.6rem}
-.mcard{padding:.7rem; border:1px solid var(--line); border-radius:14px; background:#fff; height:140px; display:grid; grid-template-rows:auto auto auto 1fr; align-items:start}
-.mcard h5{margin:0 0 .35rem; font-size:1rem; font-weight:700}
-.due-big{font-size:1.05rem; font-weight:800; display:flex; justify-content:space-between}
-
-    .due-big{font-size:1.05rem; font-weight:800; display:flex; justify-content:space-between}
-    .kv{display:flex; justify-content:space-between; font-size:.92rem; margin:.1rem 0}
-    .kv strong{font-weight:700}
+    .months{display:grid; grid-template-columns:repeat(12,1fr); gap:.6rem}
+    .mcard{padding:.55rem; border:1px solid var(--line); border-radius:12px; background:#fff; height:120px; display:grid; grid-template-rows:auto auto auto auto}
+    .mcard h5{margin:0 0 .3rem; font-size:.95rem}
+    .kv{display:flex; justify-content:space-between; font-size:.9rem; margin:.15rem 0}
+    .kv strong{font-weight:600}
+    .mcard.sel{outline:2px solid var(--accent)}
 
     /* State colors */
     .state-future{background:var(--future)}
     .state-current{box-shadow:inset 0 0 0 2px var(--accent)}
-    .state-past{background:#f8fafc}
+    .state-past{background:linear-gradient(180deg,#fff,#f1f5f9)}
     .state-arrears{background:#fee2e2}
     .state-advance{background:#fff7ed}
     .state-partial{background:#f5f3ff}
     .state-full{background:#ecfdf5}
 
     .toolbar{display:flex; align-items:center; gap:.6rem}
+
+    .sticky{position:sticky; bottom:0; padding:.5rem; background:#ffffffcc; border-top:1px solid var(--line); backdrop-filter:blur(6px); display:flex; gap:.5rem}
 
     /* Views */
     [data-view]{display:none}
@@ -97,9 +94,6 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-
     /* Hide right controls entirely on payments view */
     body.view-payments .controls{display:none}
     body.view-payments .wrap{grid-template-columns:1fr}
-/* הסתרת ההזנה וחלוקת עמודות במסך תשלומים */
-body.view-payments .controls{display:none}
-body.view-payments .wrap{grid-template-columns:1fr}
 
     @media (max-width: 1080px){
       .wrap{grid-template-columns:1fr}
@@ -150,14 +144,45 @@ body.view-payments .wrap{grid-template-columns:1fr}
           <input id="f_months" type="number" min="1" max="84" value="24" />
         </div>
         <div>
-          <label>סכום חודשי (ש״ח)</label>
+          <label>סכום חודשי (₪)</label>
           <input id="f_amount" type="number" min="0" value="1200" />
         </div>
       </div>
 
-      <!-- חוקים עוברים למודאלים (לא מוצגים כאן) -->
+      <!-- שורת חוקים: מדורג / הפחתה / הקדמה -->
+      <h3>כללי חישוב</h3>
+      <div class="row">
+        <div>
+          <label>מדורג — חודשים ראשונים</label>
+          <input id="tier1_months" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — סכום חודשי (₪)</label>
+          <input id="tier1_amount" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — חודשים שניים</label>
+          <input id="tier2_months" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — סכום חודשי (₪)</label>
+          <input id="tier2_amount" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>הפחתת תשלומים (סה"כ ₪)</label>
+          <input id="reduction_total" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>הקדמות מותרות?</label>
+          <select id="allow_advances">
+            <option value="no">לא</option>
+            <option value="yes">כן</option>
+          </select>
+        </div>
+      </div>
+
       <div class="actions">
-        <button class="btn blue" id="btn-rebuild">בנה תוכנית</button>
+        <button class="btn" id="btn-rebuild">בנה תוכנית</button>
       </div>
     </aside>
 
@@ -165,24 +190,18 @@ body.view-payments .wrap{grid-template-columns:1fr}
     <main class="main">
       <!-- View: Setup & Progress -->
       <section class="card panel on" data-view="setup" id="view-setup">
-       <div class="sticky-top">
-  <button class="btn gray" id="btn-reset">איפוס</button>
-  <button class="btn blue" id="btn-send">שליחת נתונים</button>
-  <button class="btn blue" id="btn-mail">שליחה במייל</button>
-  <button class="btn green" id="btn-print">הדפסה</button>
-  <span style="flex:1"></span>
-  <button class="btn gray" id="open-tiered">תשלום מדורג</button>
-  <button class="btn gray" id="open-advance">הקדמת תשלומים</button>
-  <button class="btn gray" id="open-reduction">הפחתת תשלומים</button>
-</div>
-
+        <div class="sticky-top">
+          <button class="btn" id="btn-reset">איפוס</button>
+          <button class="btn" id="btn-send">שליחת נתונים</button>
+          <button class="btn" id="btn-mail">שליחה במייל</button>
+          <button class="btn primary" id="btn-print">הדפסה</button>
         </div>
 
         <div class="kpis" style="margin-top:.4rem">
-          <div class="kpi"><div class="label">סכום חודשי</div><div class="value" id="kpi-month">0 ש״ח</div></div>
+          <div class="kpi"><div class="label">סכום חודשי</div><div class="value" id="kpi-month">₪ 0</div></div>
           <div class="kpi"><div class="label">מס' חודשים</div><div class="value" id="kpi-months">0</div></div>
-          <div class="kpi"><div class="label">סכום כולל</div><div class="value" id="kpi-total">0 ש״ח</div></div>
-          <div class="kpi"><div class="label">שולם עד כה</div><div class="value" id="kpi-paid">0 ש״ח</div></div>
+          <div class="kpi"><div class="label">סכום כולל</div><div class="value" id="kpi-total">₪ 0</div></div>
+          <div class="kpi"><div class="label">שולם עד כה</div><div class="value" id="kpi-paid">₪ 0</div></div>
         </div>
 
         <div class="flex">
@@ -205,66 +224,42 @@ body.view-payments .wrap{grid-template-columns:1fr}
         </div>
 
         <div class="toolbar" style="margin-top:.6rem">
-          <button class="btn blue" data-goto="payments">עבור לתצוגת תשלומים</button>
+          <button class="btn" data-goto="payments">עבור לתצוגת תשלומים</button>
         </div>
       </section>
 
       <!-- View: Payments (12 per row) -->
       <section class="card panel" data-view="payments" id="view-payments">
         <div class="toolbar">
-          <button class="btn gray" data-goto="setup">⬅ חזרה למסך הזנה</button>
+          <button class="btn" data-goto="setup">חזרה למסך הזנה</button>
         </div>
         <div id="years"></div>
       </section>
     </main>
   </div>
 
-  <!-- Modals -->
-  <div id="modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,.35); backdrop-filter:blur(2px); z-index:50"></div>
-  <section id="modal" class="card panel" style="display:none; position:fixed; inset:10% 50% auto 50%; transform:translate(-50%,0); width:min(560px,96vw); z-index:51">
-    <header style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-bottom:.6rem">
-      <strong id="modal-title">כותרת</strong>
-      <button class="btn gray" id="modal-close">סגור</button>
-    </header>
-    <div id="modal-body"></div>
-    <footer style="display:flex; gap:.5rem; margin-top:.8rem; justify-content:flex-start">
-      <button class="btn green" id="modal-apply">החל</button>
-      <button class="btn gray" id="modal-cancel">ביטול</button>
-    </footer>
-  </section>
-<!-- Modals -->
-<div id="modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,.35); backdrop-filter:blur(2px); z-index:50"></div>
-<section id="modal" class="card panel" style="display:none; position:fixed; inset:10% 50% auto 50%; transform:translate(-50%,0); width:min(560px,96vw); z-index:51">
-  <header style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-bottom:.6rem">
-    <strong id="modal-title">כותרת</strong>
-    <button class="btn gray" id="modal-close">סגור</button>
-  </header>
-  <div id="modal-body"></div>
-  <footer style="display:flex; gap:.5rem; margin-top:.8rem; justify-content:flex-start">
-    <button class="btn green" id="modal-apply">החל</button>
-    <button class="btn gray" id="modal-cancel">ביטול</button>
-  </footer>
-</section>
-
   <script>
     // ---------- State ----------
     const monthNames = ["ינו","פבר","מרץ","אפר","מאי","יונ","יול","אוג","ספט","אוק","נוב","דצמ"];
     const money = n => new Intl.NumberFormat('he-IL').format(Math.round(n||0));
-    const moneyText = n => `${money(n)}\u00A0ש״ח`; // 200 ש״ח (RTL)
-    const moneyText = n => `${money(n)}\u00A0ש״ח`; // 200 ש״ח, RTL
 
-    let plan = []; // [{y,m,due,paid}]
+    let plan = [];// [{y,m,due,paid}]
+
     function todayKey(){ const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}; }
 
-    // Build plan (+tiering & reduction hooks if נרצה בהמשך)
-    function buildPlan({months=24, amount=1200, effect='next', t1m=0, t1a=0, t2m=0, t2a=0}){
+    function buildPlan({months=24, amount=1200, effect='next', t1m=0, t1a=0, t2m=0, t2a=0, reduction=0}){
       const start = new Date();
       const offset = (effect === 'immediate') ? 0 : 1;
       const out = [];
+      let remainingReduction = Math.max(0, reduction|0);
       for (let i=0;i<months;i++){
         const d = new Date(start.getFullYear(), start.getMonth()+i+offset, 1);
         let due = amount;
         if(i < t1m) due = t1a || amount; else if(i < t1m + t2m) due = t2a || amount;
+        if(remainingReduction>0){
+          const take = Math.min(remainingReduction, due);
+          due -= take; remainingReduction -= take;
+        }
         out.push({ y: d.getFullYear(), m: d.getMonth(), due: Math.max(0,due), paid: 0 });
       }
       return out;
@@ -306,13 +301,16 @@ body.view-payments .wrap{grid-template-columns:1fr}
     }
 
     // ---------- Payments grid ----------
-    function groupByYear(items){ return items.reduce((a,x)=>{ (a[x.y] ||= []).push(x); return a; },{}); }
+    function groupByYear(items){
+      return items.reduce((a,x)=>{ (a[x.y] ||= []).push(x); return a; },{});
+    }
+
     function classifyMonth(x){
       const t = todayKey();
       const idx = (x.y - t.y)*12 + (x.m - t.m);
       const hasPaid = (x.paid||0) > 0; const full = (x.paid||0) >= (x.due||0) && (x.due||0)>0; const partial = hasPaid && !full;
       const arrears = (idx < 0) && ((x.paid||0) < (x.due||0));
-      const advanceNoApproval = (idx > 0) && hasPaid && (allow_advances !== 'yes');
+      const advanceNoApproval = (idx > 0) && hasPaid && (document.getElementById('allow_advances').value !== 'yes');
       if(arrears) return 'state-arrears';
       if(advanceNoApproval) return 'state-advance';
       if(full) return 'state-full';
@@ -336,17 +334,10 @@ body.view-payments .wrap{grid-template-columns:1fr}
           const isCurrent = (function(){const t=todayKey(); return (+y===t.y && m===t.m);})();
           if(isCurrent) card.classList.add('state-current');
           const h5 = document.createElement('h5'); h5.textContent = monthNames[m]; card.appendChild(h5);
-
-          // חיוב בראש
-          const due = document.createElement('div'); due.className='due-big';
-          due.innerHTML = `<span>חיוב</span><strong>${moneyText(data.due)}</strong>`;
-          card.appendChild(due);
-
-          // שולם + פיגור
-          const kv2 = document.createElement('div'); kv2.className='kv'; kv2.innerHTML = `<span>שולם</span><strong>${moneyText(data.paid)}</strong>`; card.appendChild(kv2);
+          const kv1 = document.createElement('div'); kv1.className='kv'; kv1.innerHTML = `<span>חיוב</span><strong>₪ ${money(data.due)}</strong>`; card.appendChild(kv1);
+          const kv2 = document.createElement('div'); kv2.className='kv'; kv2.innerHTML = `<span>שולם</span><strong>₪ ${money(data.paid)}</strong>`; card.appendChild(kv2);
           const arrears = Math.max(0,(data.due||0)-(data.paid||0));
-          const kv3 = document.createElement('div'); kv3.className='kv'; kv3.innerHTML = `<span>פיגור</span><strong>${arrears? moneyText(arrears): 'אין'}</strong>`; card.appendChild(kv3);
-
+          const kv3 = document.createElement('div'); kv3.className='kv'; kv3.innerHTML = `<span>פיגור</span><strong>${arrears? '₪ '+money(arrears): 'אין'}</strong>`; card.appendChild(kv3);
           grid.appendChild(card);
         });
         host.appendChild(section);
@@ -354,125 +345,34 @@ body.view-payments .wrap{grid-template-columns:1fr}
     }
 
     // ---------- View switch ----------
-   function switchTo(name){
-  document.querySelectorAll('[data-view]').forEach(el=>el.classList.remove('on'));
-  document.querySelector(`[data-view="${name}"]`)?.classList.add('on');
-  document.querySelectorAll('.tab').forEach(b=>b.removeAttribute('aria-current'));
-  document.querySelector(`.tab[data-target="${name}"]`)?.setAttribute('aria-current','page');
-  document.body.classList.toggle('view-payments', name==='payments');
- }
+    function switchTo(name){
+      document.querySelectorAll('[data-view]').forEach(el=>el.classList.remove('on'));
+      document.querySelector(`[data-view="${name}"]`)?.classList.add('on');
+      document.querySelectorAll('.tab').forEach(b=>b.removeAttribute('aria-current'));
+      document.querySelector(`.tab[data-target="${name}"]`)?.setAttribute('aria-current','page');
+    }
 
     // ---------- Events ----------
     document.querySelectorAll('[data-goto]').forEach(b=> b.addEventListener('click', ()=> switchTo(b.dataset.goto)));
     document.querySelectorAll('.tab').forEach(b=> b.addEventListener('click', ()=> switchTo(b.dataset.target)));
 
-    document.getElementById('btn-rebuild').addEventListener('click', rebuildFromInputs);
-    document.getElementById('btn-reset').addEventListener('click',()=>{ if(confirm('לאפס הכל?')){
-      plan = []; document.getElementById('f_months').value = 24; document.getElementById('f_amount').value = 1200;
-      plan = buildPlan({months:24, amount:1200, effect:'next'}); recomputeKpis(); renderPayments();
-    }});
-    document.getElementById('btn-print').addEventListener('click',()=>window.print());
-    document.getElementById('btn-send').addEventListener('click',()=> alert('שליחת נתונים — נוסיף חיבור בפאזה הבאה'));
-    document.getElementById('btn-mail').addEventListener('click',()=> alert('שליחה במייל — נוסיף חיבור בפאזה הבאה'));
-
-    // ---------- Modals ----------
-    const modal = {
-      el: document.getElementById('modal'),
-      backdrop: document.getElementById('modal-backdrop'),
-      title: document.getElementById('modal-title'),
-      body: document.getElementById('modal-body'),
-      apply: document.getElementById('modal-apply'),
-      cancel: document.getElementById('modal-cancel'),
-      close: document.getElementById('modal-close'),
-      open(cfg){ this.title.textContent = cfg.title; this.body.innerHTML = cfg.html; this.apply.onclick = cfg.onapply; this.el.style.display='block'; this.backdrop.style.display='block'; },
-      hide(){ this.el.style.display='none'; this.backdrop.style.display='none'; }
-    };
-    modal.close.addEventListener('click', ()=> modal.hide());
-    modal.cancel.addEventListener('click', ()=> modal.hide());
-
-    // אחסון זמני
-    let tiered = {t1m:0,t1a:0,t2m:0,t2a:0};
-    let allow_advances = 'no';
-
-    // תשלום מדורג
-    document.getElementById('open-tiered').addEventListener('click', ()=>{
-      modal.open({
-        title:'תשלום מדורג',
-        html:`<div class="row">
-                <div><label>מדרגה ראשונה — סכום חודשי</label><input id="m_t1a" type="number" min="0" value="${tiered.t1a}"></div>
-                <div><label>לתקופה (חודשים)</label><input id="m_t1m" type="number" min="0" value="${tiered.t1m}"></div>
-                <div><label>מדרגה שנייה — סכום חודשי</label><input id="m_t2a" type="number" min="0" value="${tiered.t2a}"></div>
-                <div><label>לתקופה (חודשים)</label><input id="m_t2m" type="number" min="0" value="${tiered.t2m}"></div>
-              </div>`,
-        onapply: ()=>{
-          tiered = {
-            t1a:+document.getElementById('m_t1a').value||0,
-            t1m:+document.getElementById('m_t1m').value||0,
-            t2a:+document.getElementById('m_t2a').value||0,
-            t2m:+document.getElementById('m_t2m').value||0
-          };
-          rebuildFromInputs();
-          modal.hide();
-        }
-      });
-    });
-
-    // הקדמת תשלומים
-    let advancesMeta = {approved:false, by:'', date:'', note:''};
-    document.getElementById('open-advance').addEventListener('click', ()=>{
-      modal.open({
-        title:'הקדמת תשלומים',
-        html:`<div class="row">
-                <div><label>סוג החלטה</label><select id="m_adv_by"><option value="">בחר/י</option><option>בית משפט</option><option>ממונה</option></select></div>
-                <div><label>תאריך החלטה</label><input id="m_adv_date" type="date"></div>
-                <div style="grid-column:1 / -1"><label>הערות</label><textarea id="m_adv_note" style="height:72px"></textarea></div>
-              </div>`,
-        onapply: ()=>{
-          advancesMeta = {approved: !!document.getElementById('m_adv_by').value, by:document.getElementById('m_adv_by').value, date:document.getElementById('m_adv_date').value, note:document.getElementById('m_adv_note').value };
-          allow_advances = advancesMeta.approved ? 'yes' : 'no';
-          modal.hide();
-          renderPayments();
-        }
-      });
-    });
-
-    // הפחתת תשלומים
-    document.getElementById('open-reduction').addEventListener('click', ()=>{
-      modal.open({
-        title:'הפחתת תשלומים',
-        html:`<div class="row">
-                <div><label>סוג החלטה</label><select id="m_red_by"><option value="">בחר/י</option><option>בית משפט</option><option>ממונה</option></select></div>
-                <div><label>תאריך החלטה</label><input id="m_red_date" type="date"></div>
-                <div><label>סכום חודשי חדש</label><input id="m_red_amount" type="number" min="0" value="0"></div>
-                <div><label>מתאריך</label><input id="m_red_from" type="month"></div>
-                <div style="grid-column:1 / -1; font-size:.85rem; color:var(--muted)">אם לא יוגדר תאריך סיום — ישפיע עד סוף התקופה.</div>
-              </div>`,
-        onapply: ()=>{
-          const amt = +document.getElementById('m_red_amount').value||0;
-          const from = document.getElementById('m_red_from').value; // YYYY-MM
-          if(amt>0 && from){ applyReductionFrom(amt, from); }
-          modal.hide();
-          recomputeKpis(); renderPayments();
-        }
-      });
-    });
-
-    // ---------- Helpers ----------
-    function rebuildFromInputs(){
+    document.getElementById('btn-rebuild').addEventListener('click',()=>{
       const months  = +document.getElementById('f_months').value || 24;
       const amount  = +document.getElementById('f_amount').value || 0;
       const effect  = document.getElementById('f_effect').value;
-      plan = buildPlan({months, amount, effect, t1m:tiered.t1m, t1a:tiered.t1a, t2m:tiered.t2m, t2a:tiered.t2a});
+      const t1m = +document.getElementById('tier1_months').value || 0;
+      const t1a = +document.getElementById('tier1_amount').value || 0;
+      const t2m = +document.getElementById('tier2_months').value || 0;
+      const t2a = +document.getElementById('tier2_amount').value || 0;
+      const reduction = +document.getElementById('reduction_total').value || 0;
+      plan = buildPlan({months, amount, effect, t1m, t1a, t2m, t2a, reduction});
       recomputeKpis(); renderPayments();
-    }
+    });
 
-    function applyReductionFrom(newAmount, fromYYYYMM){
-      if(!plan.length) return;
-      const [fy, fm] = fromYYYYMM.split('-').map(Number); // YYYY, MM
-      const startIdx = plan.findIndex(x=> x.y===fy && (x.m+1)===fm );
-      if(startIdx===-1) return;
-      for(let i=startIdx;i<plan.length;i++){ plan[i].due = newAmount; }
-    }
+    document.getElementById('btn-reset').addEventListener('click',()=>{ if(confirm('לאפס הכל?')){ plan = []; document.getElementById('f_months').value = 24; document.getElementById('f_amount').value = 1200; document.getElementById('tier1_months').value=0; document.getElementById('tier1_amount').value=0; document.getElementById('tier2_months').value=0; document.getElementById('tier2_amount').value=0; document.getElementById('reduction_total').value=0; plan = buildPlan({months:24, amount:1200, effect:'next'}); recomputeKpis(); renderPayments(); }});
+    document.getElementById('btn-print').addEventListener('click',()=>window.print());
+    document.getElementById('btn-send').addEventListener('click',()=> alert('שליחת נתונים — נוסיף חיבור בפאזה הבאה'));
+    document.getElementById('btn-mail').addEventListener('click',()=> alert('שליחה במייל — נוסיף חיבור בפאזה הבאה'));
 
     // ---------- Init ----------
     plan = buildPlan({months:24, amount:1200, effect:'next'});
