@@ -10,7 +10,7 @@
   <style>
     :root{
       --bg:#f4f7fb; --card:#fff; --ink:#0b1d2a; --muted:#516274; --line:#e8eef4; --accent:#0ea5e9;
-      --warn:#f59e0b; --ok:#22c55e; --err:#ef4444;
+      --warn:#f59e0b; --ok:#22c55e; --err:#ef4444; --past:#cbd5e1; --future:#e6f4ff; --partial:#e9d5ff;
       --rad:16px; --shadow:0 10px 30px rgba(15,23,42,.08);
       --panel-w: 28rem; --gap: 1rem; --pad: 14px;
     }
@@ -19,10 +19,7 @@
     body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial;}
 
     /* Header */
-    .topbar{
-      position:sticky; top:0; z-index:20; background:rgba(255,255,255,.8); backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
-    }
+    .topbar{position:sticky; top:0; z-index:20; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
     .topbar-inner{max-width:1400px; margin-inline:auto; padding:.6rem 1rem; display:flex; align-items:center; gap:.8rem}
     .brand{font-weight:700}
     .tabs{display:flex; gap:.5rem; margin-inline-start:auto}
@@ -33,7 +30,7 @@
     .wrap{max-width:1400px; margin-inline:auto; padding:1rem; display:grid; grid-template-columns:minmax(18rem,var(--panel-w)) 1fr; gap:var(--gap)}
 
     .card{background:var(--card); border:1px solid var(--line); border-radius:var(--rad); box-shadow:var(--shadow)}
-    .panel{padding:var(--pad);}
+    .panel{padding:var(--pad)}
 
     /* Controls (right) */
     .controls{position:sticky; top:84px; align-self:start; display:flex; flex-direction:column; gap:.8rem; max-height:calc(100dvh - 110px); overflow:auto}
@@ -48,6 +45,9 @@
 
     /* Main (left) */
     .main{display:flex; flex-direction:column; gap:1rem}
+
+    /* Sticky top actions in setup view */
+    .sticky-top{position:sticky; top:84px; z-index:10; background:#ffffffcc; backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:.5rem; display:flex; gap:.5rem}
 
     /* Widgets */
     .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem}
@@ -67,13 +67,23 @@
     .svgbox{display:grid; place-items:center;}
 
     /* Payments grid */
-    .toolbar{display:flex; gap:.6rem; align-items:end}
-    .months{display:grid; grid-template-columns:repeat(12,minmax(120px,1fr)); gap:.6rem}
-    .mcard{padding:.55rem; border:1px solid var(--line); border-radius:12px; background:#fff}
+    .months{display:grid; grid-template-columns:repeat(12,1fr); gap:.6rem}
+    .mcard{padding:.55rem; border:1px solid var(--line); border-radius:12px; background:#fff; height:120px; display:grid; grid-template-rows:auto auto auto auto}
     .mcard h5{margin:0 0 .3rem; font-size:.95rem}
     .kv{display:flex; justify-content:space-between; font-size:.9rem; margin:.15rem 0}
     .kv strong{font-weight:600}
     .mcard.sel{outline:2px solid var(--accent)}
+
+    /* State colors */
+    .state-future{background:var(--future)}
+    .state-current{box-shadow:inset 0 0 0 2px var(--accent)}
+    .state-past{background:linear-gradient(180deg,#fff,#f1f5f9)}
+    .state-arrears{background:#fee2e2}
+    .state-advance{background:#fff7ed}
+    .state-partial{background:#f5f3ff}
+    .state-full{background:#ecfdf5}
+
+    .toolbar{display:flex; align-items:center; gap:.6rem}
 
     .sticky{position:sticky; bottom:0; padding:.5rem; background:#ffffffcc; border-top:1px solid var(--line); backdrop-filter:blur(6px); display:flex; gap:.5rem}
 
@@ -91,7 +101,7 @@
       .kpis{grid-template-columns:1fr}
     }
     @media print{
-      .topbar, .controls, .sticky{display:none !important}
+      .topbar, .controls, .sticky, .sticky-top, .toolbar{display:none !important}
       .wrap{padding:0}
       .months{grid-template-columns:repeat(12,1fr)}
       .mcard{padding:6px}
@@ -130,26 +140,45 @@
           <input id="f_months" type="number" min="1" max="84" value="24" />
         </div>
         <div>
-          <label>צו תשלומים</label>
-          <select id="f_type">
-            <option value="fixed">קבוע</option>
-            <option value="ladder">מדורג</option>
-          </select>
-        </div>
-        <div>
           <label>סכום חודשי (₪)</label>
           <input id="f_amount" type="number" min="0" value="1200" />
         </div>
+      </div>
+
+      <!-- שורת חוקים: מדורג / הפחתה / הקדמה -->
+      <h3>כללי חישוב</h3>
+      <div class="row">
         <div>
-          <label>תיאור/הערות</label>
-          <textarea id="f_note" placeholder="הערה פנימית"></textarea>
+          <label>מדורג — חודשים ראשונים</label>
+          <input id="tier1_months" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — סכום חודשי (₪)</label>
+          <input id="tier1_amount" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — חודשים שניים</label>
+          <input id="tier2_months" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>מדורג — סכום חודשי (₪)</label>
+          <input id="tier2_amount" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>הפחתת תשלומים (סה"כ ₪)</label>
+          <input id="reduction_total" type="number" min="0" value="0" />
+        </div>
+        <div>
+          <label>הקדמות מותרות?</label>
+          <select id="allow_advances">
+            <option value="no">לא</option>
+            <option value="yes">כן</option>
+          </select>
         </div>
       </div>
+
       <div class="actions">
         <button class="btn" id="btn-rebuild">בנה תוכנית</button>
-        <button class="btn" id="btn-copy">העתקה ל-Google Sheets</button>
-        <button class="btn" id="btn-export">ייצוא CSV</button>
-        <button class="btn primary" id="btn-print">הדפס</button>
       </div>
     </aside>
 
@@ -157,37 +186,28 @@
     <main class="main">
       <!-- View: Setup & Progress -->
       <section class="card panel on" data-view="setup" id="view-setup">
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">סכום חודשי</div>
-            <div class="value" id="kpi-month">₪ 0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">מס' חודשים</div>
-            <div class="value" id="kpi-months">0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">סכום כולל</div>
-            <div class="value" id="kpi-total">₪ 0</div>
-          </div>
-          <div class="kpi">
-            <div class="label">שולם עד כה</div>
-            <div class="value" id="kpi-paid">₪ 0</div>
-          </div>
+        <div class="sticky-top">
+          <button class="btn" id="btn-reset">איפוס</button>
+          <button class="btn" id="btn-send">שליחת נתונים</button>
+          <button class="btn" id="btn-mail">שליחה במייל</button>
+          <button class="btn primary" id="btn-print">הדפסה</button>
+        </div>
+
+        <div class="kpis" style="margin-top:.4rem">
+          <div class="kpi"><div class="label">סכום חודשי</div><div class="value" id="kpi-month">₪ 0</div></div>
+          <div class="kpi"><div class="label">מס' חודשים</div><div class="value" id="kpi-months">0</div></div>
+          <div class="kpi"><div class="label">סכום כולל</div><div class="value" id="kpi-total">₪ 0</div></div>
+          <div class="kpi"><div class="label">שולם עד כה</div><div class="value" id="kpi-paid">₪ 0</div></div>
         </div>
 
         <div class="flex">
           <section class="card widget grow">
             <h4>התקדמות כוללת</h4>
-            <div class="progressbar" aria-label="התקדמות">
-              <span id="bar" style="width:0%"></span>
-            </div>
+            <div class="progressbar" aria-label="התקדמות"><span id="bar" style="width:0%"></span></div>
             <div class="svgbox" style="height:160px">
-              <!-- טבעת התקדמות SVG -->
               <svg id="ring" viewBox="0 0 120 120" width="160" height="160" role="img" aria-label="תרשים טבעת">
                 <circle cx="60" cy="60" r="52" fill="none" stroke="#eef3f8" stroke-width="14" />
-                <circle id="ringArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"
-                        stroke-dasharray="0 999" transform="rotate(-90 60 60)" />
+                <circle id="ringArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 60 60)" />
                 <text id="ringText" x="60" y="66" text-anchor="middle" font-size="20" font-weight="700">0%</text>
               </svg>
             </div>
@@ -199,7 +219,7 @@
           </section>
         </div>
 
-        <div class="sticky">
+        <div class="toolbar" style="margin-top:.6rem">
           <button class="btn" data-goto="payments">עבור לתצוגת תשלומים</button>
         </div>
       </section>
@@ -207,22 +227,9 @@
       <!-- View: Payments (12 per row) -->
       <section class="card panel" data-view="payments" id="view-payments">
         <div class="toolbar">
-          <div class="grow">
-            <label>הזנת תשלום לחודש נבחר</label>
-            <div class="row">
-              <input id="pay-amount" type="number" min="0" placeholder="₪ סכום לתשלום" />
-              <button class="btn primary" id="btn-pay">עדכן תשלום</button>
-            </div>
-          </div>
-          <button class="btn" data-goto="setup">חזרה להתקדמות</button>
+          <button class="btn" data-goto="setup">חזרה למסך הזנה</button>
         </div>
-
         <div id="years"></div>
-
-        <div class="sticky">
-          <button class="btn" id="btn-clear">איפוס נתוני תשלומים</button>
-          <button class="btn primary" onclick="window.print()">הדפס</button>
-        </div>
       </section>
     </main>
   </div>
@@ -233,15 +240,23 @@
     const money = n => new Intl.NumberFormat('he-IL').format(Math.round(n||0));
 
     let plan = [];// [{y,m,due,paid}]
-    let selected = null; // {y,m}
 
-    function buildPlan({months=24, amount=1200, effect='next'}){
+    function todayKey(){ const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}; }
+
+    function buildPlan({months=24, amount=1200, effect='next', t1m=0, t1a=0, t2m=0, t2a=0, reduction=0}){
       const start = new Date();
       const offset = (effect === 'immediate') ? 0 : 1;
       const out = [];
+      let remainingReduction = Math.max(0, reduction|0);
       for (let i=0;i<months;i++){
         const d = new Date(start.getFullYear(), start.getMonth()+i+offset, 1);
-        out.push({ y: d.getFullYear(), m: d.getMonth(), due: amount, paid: 0 });
+        let due = amount;
+        if(i < t1m) due = t1a || amount; else if(i < t1m + t2m) due = t2a || amount;
+        if(remainingReduction>0){
+          const take = Math.min(remainingReduction, due);
+          due -= take; remainingReduction -= take;
+        }
+        out.push({ y: d.getFullYear(), m: d.getMonth(), due: Math.max(0,due), paid: 0 });
       }
       return out;
     }
@@ -258,41 +273,26 @@
       document.getElementById('kpi-total').textContent = '₪ ' + money(total);
       document.getElementById('kpi-paid').textContent  = '₪ ' + money(paid);
       document.getElementById('bar').style.width = pct + '%';
-      // ring
-      const circ = 2*Math.PI*52;
-      const dash = Math.max(0, (pct/100)*circ);
+      const circ = 2*Math.PI*52; const dash = Math.max(0, (pct/100)*circ);
       document.getElementById('ringArc').setAttribute('stroke-dasharray', dash + ' ' + (circ-dash));
       document.getElementById('ringText').textContent = pct + '%';
-      // bars
       drawBars();
     }
 
     function drawBars(){
-      const svg = document.getElementById('bars');
-      svg.innerHTML = '';
+      const svg = document.getElementById('bars'); svg.innerHTML = '';
       const W=320, H=160, pad=20; svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-      const n = Math.min(12, plan.length);
-      const slice = plan.slice(0,n);
+      const n = Math.min(12, plan.length); const slice = plan.slice(0,n);
       const maxVal = Math.max(1, ...slice.map(x=>Math.max(x.due, x.paid)));
       const bw = (W - pad*2) / n - 6;
       slice.forEach((x,i)=>{
         const dueH  = (x.due / maxVal) * (H - pad*2);
         const paidH = (x.paid/ maxVal) * (H - pad*2);
         const x0 = pad + i*(bw+6);
-        // axes baseline
         if(i===0){ const axis = document.createElementNS('http://www.w3.org/2000/svg','line'); axis.setAttribute('x1',pad);axis.setAttribute('x2',W-pad);axis.setAttribute('y1',H-pad);axis.setAttribute('y2',H-pad);axis.setAttribute('stroke','#e5e9f0'); svg.appendChild(axis); }
-        // due
-        const r1 = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        r1.setAttribute('x',x0); r1.setAttribute('y',H-pad-dueH); r1.setAttribute('width',bw); r1.setAttribute('height',dueH); r1.setAttribute('fill','#e5f5fd'); r1.setAttribute('rx','4');
-        svg.appendChild(r1);
-        // paid
-        const r2 = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        r2.setAttribute('x',x0); r2.setAttribute('y',H-pad-paidH); r2.setAttribute('width',bw); r2.setAttribute('height',paidH); r2.setAttribute('fill','var(--accent)'); r2.setAttribute('rx','4');
-        svg.appendChild(r2);
-        // label
-        const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-        t.setAttribute('x', x0 + bw/2); t.setAttribute('y', H-4); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','10'); t.textContent = monthNames[x.m];
-        svg.appendChild(t);
+        const r1 = document.createElementNS('http://www.w3.org/2000/svg','rect'); r1.setAttribute('x',x0); r1.setAttribute('y',H-pad-dueH); r1.setAttribute('width',bw); r1.setAttribute('height',dueH); r1.setAttribute('fill','#e5f5fd'); r1.setAttribute('rx','4'); svg.appendChild(r1);
+        const r2 = document.createElementNS('http://www.w3.org/2000/svg','rect'); r2.setAttribute('x',x0); r2.setAttribute('y',H-pad-paidH); r2.setAttribute('width',bw); r2.setAttribute('height',paidH); r2.setAttribute('fill','var(--accent)'); r2.setAttribute('rx','4'); svg.appendChild(r2);
+        const t = document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x', x0 + bw/2); t.setAttribute('y', H-4); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','10'); t.textContent = monthNames[x.m]; svg.appendChild(t);
       });
     }
 
@@ -301,9 +301,23 @@
       return items.reduce((a,x)=>{ (a[x.y] ||= []).push(x); return a; },{});
     }
 
+    function classifyMonth(x){
+      const t = todayKey();
+      const idx = (x.y - t.y)*12 + (x.m - t.m);
+      const hasPaid = (x.paid||0) > 0; const full = (x.paid||0) >= (x.due||0) && (x.due||0)>0; const partial = hasPaid && !full;
+      const arrears = (idx < 0) && ((x.paid||0) < (x.due||0));
+      const advanceNoApproval = (idx > 0) && hasPaid && (document.getElementById('allow_advances').value !== 'yes');
+      if(arrears) return 'state-arrears';
+      if(advanceNoApproval) return 'state-advance';
+      if(full) return 'state-full';
+      if(partial) return 'state-partial';
+      if(idx === 0) return 'state-current';
+      if(idx < 0) return 'state-past';
+      return 'state-future';
+    }
+
     function renderPayments(){
-      const host = document.getElementById('years');
-      host.innerHTML = '';
+      const host = document.getElementById('years'); host.innerHTML = '';
       const byYear = groupByYear(plan);
       Object.keys(byYear).sort().forEach(y=>{
         const section = document.createElement('section'); section.className='panel card'; section.style.marginTop='.8rem';
@@ -311,16 +325,15 @@
         const grid = document.createElement('div'); grid.className='months'; section.appendChild(grid);
         const months = Array.from({length:12}, (_,i)=>i);
         months.forEach(m=>{
-          const data = byYear[y].find(x=>x.m===m);
-          const card = document.createElement('article'); card.className='mcard';
-          if(selected && selected.y==y && selected.m==m) card.classList.add('sel');
+          const data = byYear[y].find(x=>x.m===m) || {y:+y,m, due:0, paid:0};
+          const card = document.createElement('article'); card.className='mcard '+ classifyMonth(data);
+          const isCurrent = (function(){const t=todayKey(); return (+y===t.y && m===t.m);})();
+          if(isCurrent) card.classList.add('state-current');
           const h5 = document.createElement('h5'); h5.textContent = monthNames[m]; card.appendChild(h5);
-          const kv1 = document.createElement('div'); kv1.className='kv'; kv1.innerHTML = `<span>חיוב</span><strong>₪ ${money(data?data.due:0)}</strong>`; card.appendChild(kv1);
-          const kv2 = document.createElement('div'); kv2.className='kv'; kv2.innerHTML = `<span>שולם</span><strong>₪ ${money(data?data.paid:0)}</strong>`; card.appendChild(kv2);
-          const arrears = data? Math.max(0,(data.due||0)-(data.paid||0)):0;
-          const kv3 = document.createElement('div'); kv3.className='kv';
-          kv3.innerHTML = `<span>פיגור</span><strong style="color:${arrears? 'var(--err)':'var(--ok)'}">${arrears? '₪ '+money(arrears) : 'אין'}</strong>`; card.appendChild(kv3);
-          card.addEventListener('click',()=>{ selected = {y:+y,m}; document.getElementById('pay-amount').value = data? (Math.max(0,(data.due||0)-(data.paid||0))) : 0; renderPayments();});
+          const kv1 = document.createElement('div'); kv1.className='kv'; kv1.innerHTML = `<span>חיוב</span><strong>₪ ${money(data.due)}</strong>`; card.appendChild(kv1);
+          const kv2 = document.createElement('div'); kv2.className='kv'; kv2.innerHTML = `<span>שולם</span><strong>₪ ${money(data.paid)}</strong>`; card.appendChild(kv2);
+          const arrears = Math.max(0,(data.due||0)-(data.paid||0));
+          const kv3 = document.createElement('div'); kv3.className='kv'; kv3.innerHTML = `<span>פיגור</span><strong>${arrears? '₪ '+money(arrears): 'אין'}</strong>`; card.appendChild(kv3);
           grid.appendChild(card);
         });
         host.appendChild(section);
@@ -336,47 +349,26 @@
     }
 
     // ---------- Events ----------
-    document.querySelectorAll('[data-goto]').forEach(b=>{
-      b.addEventListener('click', ()=> switchTo(b.dataset.goto));
-    });
-    document.querySelectorAll('.tab').forEach(b=>{
-      b.addEventListener('click', ()=> switchTo(b.dataset.target));
-    });
+    document.querySelectorAll('[data-goto]').forEach(b=> b.addEventListener('click', ()=> switchTo(b.dataset.goto)));
+    document.querySelectorAll('.tab').forEach(b=> b.addEventListener('click', ()=> switchTo(b.dataset.target)));
 
     document.getElementById('btn-rebuild').addEventListener('click',()=>{
-      const months = +document.getElementById('f_months').value || 24;
-      const amount = +document.getElementById('f_amount').value || 0;
-      const effect = document.getElementById('f_effect').value;
-      plan = buildPlan({months, amount, effect}); selected = null;
+      const months  = +document.getElementById('f_months').value || 24;
+      const amount  = +document.getElementById('f_amount').value || 0;
+      const effect  = document.getElementById('f_effect').value;
+      const t1m = +document.getElementById('tier1_months').value || 0;
+      const t1a = +document.getElementById('tier1_amount').value || 0;
+      const t2m = +document.getElementById('tier2_months').value || 0;
+      const t2a = +document.getElementById('tier2_amount').value || 0;
+      const reduction = +document.getElementById('reduction_total').value || 0;
+      plan = buildPlan({months, amount, effect, t1m, t1a, t2m, t2a, reduction});
       recomputeKpis(); renderPayments();
     });
 
-    document.getElementById('btn-pay').addEventListener('click',()=>{
-      if(!selected){ alert('בחר/י חודש מתוך הגריד'); return; }
-      const val = +document.getElementById('pay-amount').value || 0;
-      const idx = plan.findIndex(x=>x.y===selected.y && x.m===selected.m);
-      if(idx>-1){ plan[idx].paid = Math.max(0, Math.min(plan[idx].due, val + (plan[idx].paid||0))); }
-      recomputeKpis(); renderPayments();
-    });
-
-    document.getElementById('btn-clear').addEventListener('click',()=>{
-      if(confirm('לאפס תשלומים ששולמו?')){ plan = plan.map(x=>({...x, paid:0})); recomputeKpis(); renderPayments(); }
-    });
-
+    document.getElementById('btn-reset').addEventListener('click',()=>{ if(confirm('לאפס הכל?')){ plan = []; document.getElementById('f_months').value = 24; document.getElementById('f_amount').value = 1200; document.getElementById('tier1_months').value=0; document.getElementById('tier1_amount').value=0; document.getElementById('tier2_months').value=0; document.getElementById('tier2_amount').value=0; document.getElementById('reduction_total').value=0; plan = buildPlan({months:24, amount:1200, effect:'next'}); recomputeKpis(); renderPayments(); }});
     document.getElementById('btn-print').addEventListener('click',()=>window.print());
-
-    // TODO: hook to Sheets/CSV as needed
-    document.getElementById('btn-copy').addEventListener('click',()=>{
-      alert('חיבור ל-Google Sheets יתווסף בשלב הבא.');
-    });
-    document.getElementById('btn-export').addEventListener('click',()=>{
-      const rows = [['שנה','חודש','חיוב','שולם']].concat(plan.map(x=>[x.y, monthNames[x.m], x.due, x.paid]));
-      const csv = rows.map(r=>r.join(',')).join('\n');
-      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), {href:url, download:'rehab-plan.csv'});
-      document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove();
-    });
+    document.getElementById('btn-send').addEventListener('click',()=> alert('שליחת נתונים — נוסיף חיבור בפאזה הבאה'));
+    document.getElementById('btn-mail').addEventListener('click',()=> alert('שליחה במייל — נוסיף חיבור בפאזה הבאה'));
 
     // ---------- Init ----------
     plan = buildPlan({months:24, amount:1200, effect:'next'});
