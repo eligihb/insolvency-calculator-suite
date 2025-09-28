@@ -16,7 +16,7 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial; overflow-x:hidden;}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:Heebo,system-ui,-apple-system,"Segoe UI",Arial; overflow-x:hidden;}
 
     /* Header */
     .topbar{position:sticky; top:0; z-index:20; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
@@ -42,12 +42,12 @@
 
     /* Buttons */
     .actions{display:flex; flex-wrap:wrap; gap:.5rem}
-    .btn{height:36px; padding:0 .9rem; border-radius:12px; border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease}
-    .btn:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.08)}
-    .btn:active{transform:translateY(0)}
-    .btn.green{background:#16a34a; color:#fff}
-    .btn.blue{background:#0ea5e9; color:#fff}
-    .btn.gray{background:#eef3f8; color:#0b1d2a; border-color:#dfe6ef}
+.btn{height:36px; padding:0 .9rem; border-radius:12px; border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease}
+.btn:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.btn:active{transform:translateY(0)}
+.btn.green{background:#16a34a; color:#fff}
+.btn.blue{background:#0ea5e9; color:#fff}
+.btn.gray{background:#eef3f8; color:#0b1d2a; border-color:#dfe6ef}
 
     /* Main (left) */
     .main{display:flex; flex-direction:column; gap:1rem}
@@ -71,8 +71,10 @@
 
     /* Payments grid */
     .months{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:.6rem}
-    .mcard{padding:.7rem; border:1px solid var(--line); border-radius:14px; background:#fff; height:140px; display:grid; grid-template-rows:auto auto auto 1fr; align-items:start}
-    .mcard h5{margin:0 0 .35rem; font-size:1rem; font-weight:700}
+.mcard{padding:.7rem; border:1px solid var(--line); border-radius:14px; background:#fff; height:140px; display:grid; grid-template-rows:auto auto auto 1fr; align-items:start}
+.mcard h5{margin:0 0 .35rem; font-size:1rem; font-weight:700}
+.due-big{font-size:1.05rem; font-weight:800; display:flex; justify-content:space-between}
+
     .due-big{font-size:1.05rem; font-weight:800; display:flex; justify-content:space-between}
     .kv{display:flex; justify-content:space-between; font-size:.92rem; margin:.1rem 0}
     .kv strong{font-weight:700}
@@ -95,6 +97,9 @@
     /* Hide right controls entirely on payments view */
     body.view-payments .controls{display:none}
     body.view-payments .wrap{grid-template-columns:1fr}
+/* הסתרת ההזנה וחלוקת עמודות במסך תשלומים */
+body.view-payments .controls{display:none}
+body.view-payments .wrap{grid-template-columns:1fr}
 
     @media (max-width: 1080px){
       .wrap{grid-template-columns:1fr}
@@ -160,15 +165,17 @@
     <main class="main">
       <!-- View: Setup & Progress -->
       <section class="card panel on" data-view="setup" id="view-setup">
-        <div class="sticky-top">
-          <button class="btn gray" id="btn-reset">איפוס</button>
-          <button class="btn blue" id="btn-send">שליחת נתונים</button>
-          <button class="btn blue" id="btn-mail">שליחה במייל</button>
-          <button class="btn green" id="btn-print">הדפסה</button>
-          <span style="flex:1"></span>
-          <button class="btn gray" id="open-tiered">תשלום מדורג</button>
-          <button class="btn gray" id="open-advance">הקדמת תשלומים</button>
-          <button class="btn gray" id="open-reduction">הפחתת תשלומים</button>
+       <div class="sticky-top">
+  <button class="btn gray" id="btn-reset">איפוס</button>
+  <button class="btn blue" id="btn-send">שליחת נתונים</button>
+  <button class="btn blue" id="btn-mail">שליחה במייל</button>
+  <button class="btn green" id="btn-print">הדפסה</button>
+  <span style="flex:1"></span>
+  <button class="btn gray" id="open-tiered">תשלום מדורג</button>
+  <button class="btn gray" id="open-advance">הקדמת תשלומים</button>
+  <button class="btn gray" id="open-reduction">הפחתת תשלומים</button>
+</div>
+
         </div>
 
         <div class="kpis" style="margin-top:.4rem">
@@ -225,11 +232,25 @@
       <button class="btn gray" id="modal-cancel">ביטול</button>
     </footer>
   </section>
+<!-- Modals -->
+<div id="modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,.35); backdrop-filter:blur(2px); z-index:50"></div>
+<section id="modal" class="card panel" style="display:none; position:fixed; inset:10% 50% auto 50%; transform:translate(-50%,0); width:min(560px,96vw); z-index:51">
+  <header style="display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-bottom:.6rem">
+    <strong id="modal-title">כותרת</strong>
+    <button class="btn gray" id="modal-close">סגור</button>
+  </header>
+  <div id="modal-body"></div>
+  <footer style="display:flex; gap:.5rem; margin-top:.8rem; justify-content:flex-start">
+    <button class="btn green" id="modal-apply">החל</button>
+    <button class="btn gray" id="modal-cancel">ביטול</button>
+  </footer>
+</section>
 
   <script>
     // ---------- State ----------
     const monthNames = ["ינו","פבר","מרץ","אפר","מאי","יונ","יול","אוג","ספט","אוק","נוב","דצמ"];
     const money = n => new Intl.NumberFormat('he-IL').format(Math.round(n||0));
+    const moneyText = n => `${money(n)}\u00A0ש״ח`; // 200 ש״ח (RTL)
     const moneyText = n => `${money(n)}\u00A0ש״ח`; // 200 ש״ח, RTL
 
     let plan = []; // [{y,m,due,paid}]
@@ -333,13 +354,13 @@
     }
 
     // ---------- View switch ----------
-    function switchTo(name){
-      document.querySelectorAll('[data-view]').forEach(el=>el.classList.remove('on'));
-      document.querySelector(`[data-view="${name}"]`)?.classList.add('on');
-      document.querySelectorAll('.tab').forEach(b=>b.removeAttribute('aria-current'));
-      document.querySelector(`.tab[data-target="${name}"]`)?.setAttribute('aria-current','page');
-      document.body.classList.toggle('view-payments', name==='payments'); // מסתיר עמודת הזנה
-    }
+   function switchTo(name){
+  document.querySelectorAll('[data-view]').forEach(el=>el.classList.remove('on'));
+  document.querySelector(`[data-view="${name}"]`)?.classList.add('on');
+  document.querySelectorAll('.tab').forEach(b=>b.removeAttribute('aria-current'));
+  document.querySelector(`.tab[data-target="${name}"]`)?.setAttribute('aria-current','page');
+  document.body.classList.toggle('view-payments', name==='payments');
+ }
 
     // ---------- Events ----------
     document.querySelectorAll('[data-goto]').forEach(b=> b.addEventListener('click', ()=> switchTo(b.dataset.goto)));
