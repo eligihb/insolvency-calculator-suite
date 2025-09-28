@@ -1,29 +1,226 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>מחשבון צו שיקום – גרסת ניסיון</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>צו שיקום כלכלי – חדלות פירעון</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    html,body{margin:0;height:100%}
-    .banner{
-      position:fixed; inset-inline:0; top:0;
-      background:#0b1d2a; color:#fff; text-align:center;
-      padding:10px 14px; font:600 13px/1.5 system-ui;
-      z-index:9999; box-shadow:0 2px 16px rgba(0,0,0,.2)
-    }
-    /* ממלאים את כל המסך מתחת לפס */
-    .frame{
-      position:fixed; left:0; right:0; top:44px; bottom:0;
-      width:100%; height:calc(100vh - 44px); border:0;
-    }
+    :root{--paper:#F5F7FB;--card:#fff;--ink:#0B2533;--muted:#6B7C88;--accent:#0EA5E9;--green:#22C55E;--amber:#F59E0B;--red:#EF4444;--radius:16px;--shadow:0 6px 22px rgba(2,6,23,.08)}
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:'Heebo',system-ui;background:var(--paper);color:var(--ink)}
+    .wrap{max-width:1280px;margin:0 auto;padding:18px 18px 120px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+    h1{margin:0 0 10px;font-size:26px}
+    h2{margin:0 0 8px;font-size:18px}
+    label{font-weight:700;display:block;margin:4px 0}
+    input,select,button{font-family:inherit}
+    /* קלטים קומפקטיים */
+    input[type="number"],input[type="date"],select,input[type="text"]{width:100%;max-width:180px;padding:8px;border:1px solid #d7dee6;border-radius:12px;background:#F3F7FE;text-align:left;direction:ltr}
+    .row{display:grid;grid-template-columns:180px 1fr;gap:8px;align-items:center;margin:6px 0}
+    .seg{display:flex;gap:6px;flex-wrap:wrap}
+    .seg .pill{padding:7px 10px;border-radius:999px;background:#eef2f7;font-weight:800;cursor:pointer;border:1px solid #e3e8ef}
+    .seg .pill.active{background:var(--accent);color:#fff;border-color:transparent}
+    .quick{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+    .quick .chip{padding:6px 9px;border-radius:999px;background:#eef2f7;border:1px solid #e3e8ef;cursor:pointer;font-weight:700}
+    .quick .chip.active{background:#cfefff;border-color:#90d9ff}
+
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+    .kpi{background:#fff;border-radius:12px;padding:10px;box-shadow:var(--shadow)}
+    .kpi .k{font-size:12px;color:var(--muted)}
+    .kpi .v{font-size:18px;font-weight:900}
+    .bar{height:6px;background:#e8eef6;border-radius:999px;margin-top:6px;overflow:hidden}
+    .bar>span{display:block;height:100%;background:var(--accent);width:0}
+
+    .year{background:#fff;border-radius:12px;padding:10px;box-shadow:var(--shadow);margin-bottom:10px}
+    .year-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .months{display:grid;grid-template-columns:repeat(12,1fr);gap:6px}
+    .m{border:1px solid #e6ebf2;border-radius:10px;padding:6px;background:#fafcff;display:flex;flex-direction:column;gap:4px}
+    .m.current{outline:2px solid var(--accent)}
+    .m .line{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+    .m .amt{font-weight:900}
+    .m .paid-row{display:flex;gap:4px;align-items:center}
+    .m input[type="number"]{background:#fff;max-width:120px}
+    .m input[type="date"]{background:#fff;max-width:135px}
+    .tiny{font-size:11px;color:var(--muted)}
+    .status{font-size:12px;font-weight:800}
+    .status.ok{color:var(--green)}
+    .status.partial{color:#0ea5e9}
+    .status.warn{color:var(--amber)}
+    .status.late{color:#EF4444}
+    .tag{display:inline-block;padding:2px 6px;border-radius:999px;font-size:11px;font-weight:800;background:#eef2f7}
+    .tag.now{background:#dbeafe}
+
+    .legend{display:flex;gap:10px;align-items:center}
+    .legend .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .bg-late{background:#ffe0e0}
+    .bg-warn{background:#fff2cf}
+    .bg-part{background:#e8f4ff}
+
+    .events-grid{display:grid;gap:8px}
+    .event-row{display:grid;grid-template-columns:1fr 1fr auto auto auto auto;gap:8px;align-items:end;background:#fafafa;border:1px solid #e6e6e6;border-radius:12px;padding:10px}
+    .event-row input[type="number"]{background:#fff;max-width:160px}
+    .event-btn{padding:8px 10px;border-radius:10px;border:1px solid #e3e8ef;background:#eef2f7;font-weight:800;cursor:pointer}
+    .event-btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+
+    @media (max-width: 1100px){.kpis{grid-template-columns:repeat(3,1fr)} .months{grid-template-columns:repeat(3,1fr)} }
+
+    .footer{position:fixed;bottom:0;inset-inline:0;background:#0b1d2a;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 16px;box-shadow:0 -8px 24px rgba(2,6,23,.25);font-weight:800;letter-spacing:.2px}
+    .footer .dot{width:6px;height:6px;border-radius:999px;background:#0EA5E9}
   </style>
 </head>
 <body>
-  <div class="banner">⚠️ גרסת ניסיון – לא לשימוש מול לקוחות</div>
-  <!-- חשוב: עדכן/י את השם כאן לקובץ היציב שקיים בפועל -->
-<iframe class="frame" src="./rehab-a1.html?v=5" title="גרסת ניסיון – צו שיקום"></iframe>
-  <!-- אם לא נטען, יוצג קישור נפילה: -->
-  <noscript><p style="text-align:center"><a href="./rehab.html">למעבר לגרסה היציבה לחץ כאן</a></p></noscript>
+  <div class="wrap">
+
+    <div class="card">
+      <h1>צו שיקום כלכלי – חדלות פירעון</h1>
+      <div class="row"><label>שם ממלא הטופס</label><input type="text" id="fillerName" placeholder="השם שלך" /></div>
+      <div class="row"><label>תאריך מילוי</label><input type="text" id="fillDate" readonly /></div>
+      <div class="row"><label>תאריך מתן הצו</label><input type="date" id="orderDate" /></div>
+      <div class="row"><label>תחולת חיוב</label><div class="seg" id="startSeg"><div class="pill active" data-v="next">חודש הבא</div><div class="pill" data-v="immediate">מיידי</div></div></div>
+      <div class="row"><label>מס' חודשי התוכנית</label><div class="quick" id="termQuick"><div class="chip" data-v="36">36</div><div class="chip" data-v="48">48</div><div class="chip" data-v="60">60</div><input type="number" id="termMonths" min="1" placeholder="למשל 60" /></div></div>
+      <div class="row"><label>צו תשלומים</label><div class="seg" id="modeSeg"><div class="pill active" data-v="flat">קבוע</div><div class="pill" data-v="tiered">תשלום מדורג</div><div class="pill" data-v="reduction">הפחתת תשלומים</div></div></div>
+      <div id="fields-flat" class="row"><label>סכום חודשי קבוע</label><input type="number" id="flatAmount" placeholder="₪" inputmode="numeric" pattern="\d{1,6}" min="0" max="999999" /></div>
+      <div id="fields-tiered" class="card" style="display:none">
+        <h2 style="margin-bottom:6px">תשלום מדורג</h2>
+        <div class="row"><label>חודשי מדרגה 1</label><input type="number" id="tier1Months" placeholder="10" min="0" max="360" /></div>
+        <div class="row"><label>סכום חודשי – מדרגה 1</label><input type="number" id="tier1Amount" placeholder="₪" min="0" max="999999" inputmode="numeric" pattern="\d{1,6}" /></div>
+        <div class="row"><label>סכום חודשי – מדרגה 2</label><input type="number" id="tier2Amount" placeholder="₪" min="0" max="999999" inputmode="numeric" pattern="\d{1,6}" /></div>
+      </div>
+      <div id="fields-reduction" class="card" style="display:none">
+        <h2 style="margin-bottom:6px">הפחתת תשלומים</h2>
+        <div class="events-grid" id="events"></div>
+        <div class="quick" style="margin-top:8px"><button class="event-btn" id="addEvent">➕ הוסף הפחתה</button></div>
+        <div class="tiny">לחץ "אשר" כדי להכניס את ההחלטה לפריסה. ניתן לבחור: <b>החלטת ממונה</b> או <b>החלטת ביה״ש</b>.</div>
+      </div>
+
+      <div class="kpis" style="margin-top:8px">
+        <div class="kpi"><div class="k">התחלה → סיום</div><div class="v" id="rangeKPI">—</div></div>
+        <div class="kpi"><div class="k">משך התוכנית</div><div class="v" id="durationKPI">—</div></div>
+        <div class="kpi"><div class="k">עבר / נותר</div><div class="v" id="elapsedLeftKPI">—</div><div class="bar"><span id="barElapsed"></span></div></div>
+        <div class="kpi"><div class="k">צפוי עד היום / שולם עד היום</div><div class="v" id="expectedPaidKPI">—</div><div class="bar"><span id="barPaid"></span></div></div>
+        <div class="kpi"><div class="k">פיגור (₪) / מס' פיגורים</div><div class="v" id="arrearsKPI">—</div></div>
+        <div class="kpi"><div class="k">סך התוכנית</div><div class="v" id="totalKPI">—</div></div>
+      </div>
+
+      <div class="quick" style="margin-top:8px; gap:6px">
+        <button class="event-btn" id="exportCSV" disabled>ייצוא ל-Google Sheets (CSV)</button>
+        <button class="event-btn" id="copyTSV" disabled>העתקה לשיטס (טבלאי)</button>
+        <button class="event-btn primary" id="sendToSheet" disabled>שלח נתונים</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="legend tiny">
+        <span class="dot" style="background:#22C55E"></span> בזמן ·
+        <span class="dot" style="background:#EF4444"></span> פיגור ·
+        <span class="dot" style="background:#F59E0B"></span> תשלום עתידי ללא אישור ·
+        <span class="dot" style="background:#0EA5E9"></span> תשלום חלקי ·
+        <span class="tag now">חודש נוכחי</span>
+      </div>
+      <h2>פריסה שנתית (שורה = שנה, עמודות = חודשים)</h2>
+      <div id="years"></div>
+    </div>
+
+  </div>
+
+  <div class="footer"><span class="dot"></span> נערך על ידי אליאב · כל הזכויות שמורות <span class="dot"></span></div>
+
+  <script>
+    const HEB_MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    const SKEY='rehab.v7.state',PKEY='rehab.v7.paid',DKEY='rehab.v7.paidDate',AKEY='rehab.v7.prepayApproval',SHEET_NAME_KEY='rehab.v7.sheetName',WEB_APP_KEY='rehab.v7.webAppUrl';
+    const orderDate=$('#orderDate'),fillerName=$('#fillerName'),fillDate=$('#fillDate'),startSeg=$('#startSeg'),termMonths=$('#termMonths'),termQuick=$('#termQuick'),modeSeg=$('#modeSeg'),flatAmount=$('#flatAmount'),t1m=$('#tier1Months'),t1a=$('#tier1Amount'),t2a=$('#tier2Amount');
+    const fieldsFlat=$('#fields-flat'),fieldsTier=$('#fields-tiered'),fieldsRedu=$('#fields-reduction'),eventsWrap=$('#events');
+    const rangeKPI=$('#rangeKPI'),durationKPI=$('#durationKPI'),elapsedLeftKPI=$('#elapsedLeftKPI'),expectedPaidKPI=$('#expectedPaidKPI'),arrearsKPI=$('#arrearsKPI'),totalKPI=$('#totalKPI'),barElapsed=$('#barElapsed'),barPaid=$('#barPaid');
+    const exportCSVBtn=$('#exportCSV'),copyTSVBtn=$('#copyTSV'),sendBtn=$('#sendToSheet');
+
+    function $(sel){return document.querySelector(sel)}
+    const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}};
+    const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+    const num=v=>Number(String(v||'').replace(/[^\d.-]/g,''))||0; const pad=n=>String(n).padStart(2,'0');
+    const toKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-01`; const addMonths=(d,n)=>{const x=new Date(d);x.setMonth(x.getMonth()+n);return x};
+
+    function setActionsEnabled(on){[exportCSVBtn,copyTSVBtn,sendBtn].forEach(b=>{if(!b)return;b.disabled=!on;b.style.opacity=on?'1':'.6'})}
+    function getStartMode(){return startSeg.querySelector('.pill.active').dataset.v}
+    function setStartMode(v){startSeg.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.v===v))}
+    startSeg.addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;setStartMode(p.dataset.v);build()});
+
+    function getMode(){return modeSeg.querySelector('.pill.active').dataset.v}
+    function setMode(v){modeSeg.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.v===v));fieldsFlat.style.display=(v==='flat'||v==='reduction')?'grid':'none';fieldsTier.style.display=(v==='tiered'||v==='reduction')?'block':'none';fieldsRedu.style.display=(v==='reduction')?'block':'none'}
+    modeSeg.addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;setMode(p.dataset.v);build()})
+
+    termQuick.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;termMonths.value=c.dataset.v;termQuick.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');build()})
+
+    // הגבלת 6 ספרות לסכומים
+    ;[flatAmount,t1a,t2a].forEach(el=> el.addEventListener('input',()=>{const v=el.value.replace(/\D/g,'').slice(0,6); el.value=v; }))
+
+    function renderEventRow(ev={effective:'',amount:'',until:'end',untilDate:'',decision:'ממונה'}){
+      const row=document.createElement('div'); row.className='event-row';
+      row.innerHTML=`<div><label>תאריך תחולה</label><input type="date" data-f="eff" value="${ev.effective}"></div>
+        <div><label>סכום חדש</label><input type="number" data-f="amt" placeholder="₪" min="0" max="999999"></div>
+        <div><label>משך</label><div class="seg" data-f="dur"><div class="pill ${ev.until==='end'?'active':''}" data-v="end">עד סוף התקופה</div><div class="pill ${ev.until==='date'?'active':''}" data-v="date">עד תאריך…</div></div></div>
+        <div><label>תאריך סיום</label><input type="date" data-f="until" ${ev.until==='date'?'':'disabled'} value="${ev.untilDate||''}"></div>
+        <div><label>סוג החלטה</label><div class="seg" data-f="dec"><div class="pill ${ev.decision==='ממונה'?'active':''}" data-v="ממונה">החלטת ממונה</div><div class="pill ${ev.decision==='בית משפט'?'active':''}" data-v="בית משפט">החלטת ביה"ש</div></div></div>
+        <div><button class="event-btn primary" data-act="apply">אשר</button><button class="event-btn" data-act="del">מחק</button></div>`;
+      row.addEventListener('click',e=>{
+        const pill=e.target.closest('.pill');
+        if(pill&&pill.parentElement.dataset.f==='dur'){row.querySelectorAll('[data-f="dur"] .pill').forEach(p=>p.classList.remove('active'));pill.classList.add('active');row.querySelector('[data-f="until"]').disabled=pill.dataset.v!=='date'}
+        if(pill&&pill.parentElement.dataset.f==='dec'){row.querySelectorAll('[data-f="dec"] .pill').forEach(p=>p.classList.remove('active'));pill.classList.add('active')}
+        const act=e.target.dataset.act; if(act==='apply'){const ev=collectEvent(row); if(!ev.effective||!ev.amount){alert('נא למלא תאריך וסכום');return;} addReduction(ev); row.remove();}
+        if(act==='del'){row.remove();}
+      });
+      eventsWrap.appendChild(row);
+    }
+    document.getElementById('addEvent')?.addEventListener('click',()=>renderEventRow());
+    function collectEvent(row){return{effective:row.querySelector('[data-f="eff"]').value,amount:num(row.querySelector('[data-f="amt"]').value),until:row.querySelector('[data-f="dur"] .pill.active').dataset.v,untilDate:row.querySelector('[data-f"until"]').value,decision:row.querySelector('[data-f="dec"] .pill.active').dataset.v}}
+    const getEvents=()=>JSON.parse(localStorage.getItem('reductions')||'[]'); const setEvents=arr=>localStorage.setItem('reductions',JSON.stringify(arr)); const addReduction=ev=>{const arr=getEvents();arr.push(ev);setEvents(arr);build()}
+
+    const getPaid=()=>read(PKEY); const setPaid=v=>write(PKEY,v); const getPaidDate=()=>read(DKEY); const setPaidDate=v=>write(DKEY,v);
+    const getPrepayApproval=()=>localStorage.getItem(AKEY)||''; const setPrepayApproval=v=>localStorage.setItem(AKEY,v);
+
+    function baseAmount(idx){ if(num(t1m.value)||num(t1a.value)||num(t2a.value)) return (idx<num(t1m.value))?num(t1a.value):num(t2a.value); return num(flatAmount.value)||0; }
+
+    function monthsToRows(months){ const rows=months.map(m=>[HEB_MONTHS[m.due.getMonth()],m.due.getFullYear(),m.key,m.expected,m.paid||'',m.paidDate||'',fillerName.value||'',new Date().toLocaleDateString('he-IL')]); return [['חודש','שנה','מפתח','צפוי','שולם בפועל','תאריך תשלום בפועל','שם ממלא','תאריך יצוא'],...rows]; }
+    function downloadCSV(rows){const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/\"/g,'\"\"')}"`).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rehab-export-${Date.now()}.csv`; document.body.appendChild(a); a.click(); a.remove(); }
+    function copyTSV(rows){const tsv=rows.map(r=>r.join('\t')).join('\n'); navigator.clipboard.writeText(tsv).then(()=>alert('הטבלה הועתקה – הדבק לשיטס'));}
+
+    exportCSVBtn.addEventListener('click',()=>{const s=read(SKEY);if(!s||!s.term){alert('מלא את פרטי התוכנית');return;} const startRaw=orderDate.value?new Date(orderDate.value):null;if(!startRaw){alert('חסר תאריך צו');return;} const start=new Date(startRaw); if(getStartMode()==='next') start.setMonth(start.getMonth()+1); const monthsCount=num(termMonths.value)||0; const months=[]; for(let i=0;i<monthsCount;i++){const due=addMonths(start,i);const key=`${due.getFullYear()}-${String(due.getMonth()+1).padStart(2,'0')}-01`;const expected=baseAmount(i);const paid=getPaid()[key]||'';const paidDate=getPaidDate()[key]||'';months.push({due,key,expected,paid,paidDate});} downloadCSV(monthsToRows(months));});
+
+    copyTSVBtn.addEventListener('click',()=>{const startRaw=orderDate.value?new Date(orderDate.value):null;if(!startRaw){alert('חסר תאריך צו');return;} const start=new Date(startRaw); if(getStartMode()==='next') start.setMonth(start.getMonth()+1); const monthsCount=num(termMonths.value)||0; const months=[]; for(let i=0;i<monthsCount;i++){const due=addMonths(start,i);const key=`${due.getFullYear()}-${String(due.getMonth()+1).padStart(2,'0')}-01`;const expected=baseAmount(i);const paid=getPaid()[key]||'';const paidDate=getPaidDate()[key]||'';months.push({due,key,expected,paid,paidDate});} copyTSV(monthsToRows(months));});
+
+    sendBtn.addEventListener('click',async()=>{const currentName=localStorage.getItem(SHEET_NAME_KEY)||''; const name=prompt('שם גיליון חדש בשיטס (לדוגמה: צו_12345)',currentName); if(name===null) return; localStorage.setItem(SHEET_NAME_KEY,name); const startRaw=orderDate.value?new Date(orderDate.value):null;if(!startRaw){alert('חסר תאריך צו');return;} const start=new Date(startRaw); if(getStartMode()==='next') start.setMonth(start.getMonth()+1); const monthsCount=num(termMonths.value)||0; const months=[]; for(let i=0;i<monthsCount;i++){const due=addMonths(start,i);const key=`${due.getFullYear()}-${String(due.getMonth()+1).padStart(2,'0')}-01`;const expected=baseAmount(i);const paid=getPaid()[key]||'';const paidDate=getPaidDate()[key]||'';months.push({due,key,expected,paid,paidDate});} const rows=monthsToRows(months); let url=localStorage.getItem(WEB_APP_KEY)||''; if(!url){ url=prompt('הדבק כאן את ה-URL של ה-Web App (Apps Script)'); if(!url){ downloadCSV(rows); copyTSV(rows); return; } localStorage.setItem(WEB_APP_KEY,url.trim()); } try{ const resp=await fetch(url+'?sheet='+encodeURIComponent(name),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rows)}); const text=await resp.text(); if(resp.ok && /OK/i.test(text)) alert('נשלח לגיליון: '+name); else throw new Error(text||('HTTP '+resp.status)); }catch(err){ alert('שליחה נכשלה: '+err+'\nמוריד CSV ומעתיק טבלה.'); downloadCSV(rows); copyTSV(rows);} });
+
+    function build(){ write(SKEY,{orderDate:orderDate.value,start:getStartMode(),term:num(termMonths.value),mode:getMode(),flat:num(flatAmount.value),t1m:num(t1m.value),t1a:num(t1a.value),t2a:num(t2a.value),fillerName:fillerName.value}); const startRaw=orderDate.value?new Date(orderDate.value):null; const monthsCount=num(termMonths.value); const ready=!!(startRaw&&monthsCount>0); setActionsEnabled(ready); if(!ready){ document.getElementById('years').innerHTML=''; [rangeKPI,durationKPI,elapsedLeftKPI,expectedPaidKPI,arrearsKPI,totalKPI].forEach(el=>el.textContent='—'); return; } const start=new Date(startRaw); if(getStartMode()==='next') start.setMonth(start.getMonth()+1); const reductions=getEvents().sort((a,b)=>new Date(a.effective)-new Date(b.effective)); const months=[]; for(let i=0;i<monthsCount;i++){ const due=addMonths(start,i); let expected=baseAmount(i); reductions.forEach(ev=>{const effM=new Date(new Date(ev.effective).getFullYear(),new Date(ev.effective).getMonth(),1); const dueM=new Date(due.getFullYear(),due.getMonth(),1); let inRange=effM<=dueM; if(ev.until==='date'&&ev.untilDate){const untilM=new Date(new Date(ev.untilDate).getFullYear(),new Date(ev.untilDate).getMonth(),1); inRange=inRange&&(dueM<=untilM);} if(inRange) expected=ev.amount;}); const key=`${due.getFullYear()}-${String(due.getMonth()+1).padStart(2,'0')}-01`; const paid=num(getPaid()[key]); const paidDate=getPaidDate()[key]||''; months.push({idx:i,due,key,expected,paid,paidDate}); }
+      const end=months[months.length-1].due; rangeKPI.textContent=`${start.toLocaleDateString('he-IL')} → ${end.toLocaleDateString('he-IL')}`; durationKPI.textContent=`${Math.floor(months.length/12)} שנים ו-${months.length%12} חודשים`; const todayM=new Date(new Date().getFullYear(),new Date().getMonth(),1); const elapsed=months.filter(m=>new Date(m.due.getFullYear(),m.due.getMonth(),1)<=todayM).length; const left=Math.max(0,months.length-elapsed); elapsedLeftKPI.textContent=`${elapsed} / ${left}`; barElapsed.style.width=`${(elapsed/months.length)*100}%`; const expToDate=months.filter(m=>new Date(m.due.getFullYear(),m.due.getMonth(),1)<=todayM).reduce((s,m)=>s+m.expected,0); const paidToDate=months.filter(m=>new Date(m.due.getFullYear(),m.due.getMonth(),1)<=todayM).reduce((s,m)=>s+m.paid,0); expectedPaidKPI.textContent=`₪ ${fmt(expToDate)} / ₪ ${fmt(paidToDate)}`; barPaid.style.width=`${Math.min(100,(paidToDate/Math.max(1,expToDate))*100)}%`;
+      const yearsDiv=document.getElementById('years'); yearsDiv.innerHTML=''; const groups=new Map(); months.forEach(m=>{const y=m.due.getFullYear(); if(!groups.has(y)) groups.set(y,[]); groups.get(y).push(m)}); const years=Array.from(groups.keys()).sort((a,b)=>a-b); const prepayApproval=getPrepayApproval(); let lateCount=0,arrears=0; years.forEach(y=>{ const wrap=document.createElement('div'); wrap.className='year'; wrap.innerHTML=`<div class=\"year-head\"><div><strong>${y}</strong></div><div class=\"tiny\">📅 בחר תאריך בפועל דרך האייקון</div></div>`; const row=document.createElement('div'); row.className='months'; const list=groups.get(y).sort((a,b)=>a.due-b.due); for(let m=0;m<12;m++){ const md=list.find(x=>x.due.getMonth()===m); const cell=document.createElement('div'); cell.className='m'; if(!md){ cell.innerHTML=`<div class=\"line\"><span>${HEB_MONTHS[m]}</span><span class=\"amt\">—</span></div>`; row.appendChild(cell); continue; } const due=md.due; const dueM=new Date(due.getFullYear(),due.getMonth(),1); const todayM2=todayM; const isCurrent=(dueM.getTime()===todayM2.getTime()); if(isCurrent) cell.classList.add('current'); const endOfMonth=new Date(due.getFullYear(),due.getMonth()+1,0); const lateThreshold=new Date(endOfMonth); lateThreshold.setDate(lateThreshold.getDate()+20); let status='ok',statusText='בזמן',bgClass=''; if(md.paid>0&&md.paidDate){ const payD=new Date(md.paidDate); if(payD<new Date(due.getFullYear(),due.getMonth(),1)){ if(!prepayApproval||new Date(prepayApproval)>payD){ status='warn'; statusText='תשלום עתידי ללא אישור'; bgClass='bg-warn'; } } } if(md.paid<md.expected){ status='partial'; statusText='תשלום חלקי'; bgClass='bg-part'; } if(md.paidDate){ const payD=new Date(md.paidDate); if(payD>lateThreshold){ status='late'; statusText='פיגור'; bgClass='bg-late'; lateCount++; } } if(new Date(due)<todayM2){ arrears+=Math.max(0,md.expected-md.paid); }
+          cell.innerHTML=`<div class=\"line\"><span>${HEB_MONTHS[m]} ${isCurrent?'<span class=\"tag now\">חודש נוכחי</span>':''}</span><span class=\"amt\">₪ ${fmt(md.expected)}</span></div>
+            <div class=\"paid-row\">
+              <input type=\"number\" min=\"0\" placeholder=\"שולם בפועל\" value=\"${md.paid||''}\" data-k=\"${md.key}\">
+              <button title=\"קבע תאריך תשלום בפועל\" data-open-cal=\"${md.key}\">📅 בפועל</button>
+              <button title=\"סכום מלא\" data-full=\"${md.key}\">💯 מלא</button>
+              <input type=\"date\" class=\"datepick\" data-datekey=\"${md.key}\" style=\"display:none\" />
+            </div>
+            <div class=\"line\"><span class=\"status ${status}\">${statusText}</span><span class=\"tiny\">${md.paidDate?('תשלום: '+md.paidDate):''}</span></div>`;
+          if(bgClass) cell.classList.add(bgClass);
+          cell.querySelector('[data-full]')?.addEventListener('click',()=>{const p=getPaid(); p[md.key]=md.expected; setPaid(p); build();});
+          cell.querySelector('[data-open-cal]')?.addEventListener('click',()=>{const di=cell.querySelector('[data-datekey]'); di.style.display='block'; di.showPicker?.(); di.focus();});
+          cell.querySelector('[data-datekey]')?.addEventListener('change',e=>{const pd=getPaidDate(); pd[md.key]=e.target.value; setPaidDate(pd); build();});
+          cell.querySelector('input[type=\"number\"]')?.addEventListener('change',e=>{const p=getPaid(); p[md.key]=num(e.target.value); setPaid(p); build();});
+          row.appendChild(cell);
+        }
+        wrap.appendChild(row);
+        const appr=document.createElement('div'); appr.className='tiny'; appr.innerHTML=`אישור הקדמת תשלומים (אופציונלי): <button class=\"event-btn\" id=\"setPrepay${y}\">קבע תאריך החלטה</button> <span id=\"apvText${y}\">${getPrepayApproval()||'—'}</span>`; wrap.appendChild(appr); wrap.querySelector('#setPrepay'+y).addEventListener('click',()=>{const d=prompt('תאריך החלטה (YYYY-MM-DD)',getPrepayApproval()||''); if(d!==null){ setPrepayApproval(d); document.getElementById('apvText'+y).textContent=d||'—'; build(); }});
+        yearsDiv.appendChild(wrap);
+      });
+      arrearsKPI.textContent=`₪ ${fmt(arrears)} / ${lateCount} פיגורים`; totalKPI.textContent=`₪ ${fmt(months.reduce((s,m)=>s+m.expected,0))}`;
+    }
+
+    function fmt(n){return new Intl.NumberFormat('he-IL').format(Math.round(n||0))}
+
+    // boot
+    (function init(){ fillDate.value=new Date().toLocaleString('he-IL'); const s=read(SKEY); if(s.orderDate) orderDate.value=s.orderDate; setStartMode(s.start||'next'); if(s.term) termMonths.value=s.term; setMode(s.mode||'flat'); flatAmount.value=s.flat||''; t1m.value=s.t1m||''; t1a.value=s.t1a||''; t2a.value=s.t2a||''; if(s.fillerName) fillerName.value=s.fillerName; document.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',build)); [orderDate,termMonths].forEach(el=>el.addEventListener('input',()=>setActionsEnabled(!!(orderDate.value && num(termMonths.value)>0)))); build(); })();
+  </script>
 </body>
 </html>
