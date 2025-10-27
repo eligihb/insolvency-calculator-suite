@@ -177,16 +177,12 @@
     const head = document.createElement('tr');
     head.innerHTML = '<th style="width:64px">כלול</th><th>שדה</th><th>ערך</th>';
     tbl.appendChild(head);
-    // create rows with checkbox + editable input
     Object.entries(obj).forEach(([k,v])=>{
       const tr = document.createElement('tr');
       const val = String(v ?? '');
       tr.innerHTML = `<td><input type="checkbox" class="inc" checked data-key="${escapeHtml(k)}"/></td>
         <td>${escapeHtml(k)}</td>
         <td><input type="text" class="fld" data-key="${escapeHtml(k)}" value="${escapeHtml(val)}"/></td>`;
-      tbl.appendChild(tr);
-    });
-  }</td><td>${escapeHtml(String(v ?? ''))}</td>`;
       tbl.appendChild(tr);
     });
   }
@@ -379,6 +375,98 @@
       const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='summary.xlsx'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
   });
+// ====== Edit / Select / Export helpers ======
+  function getCurrentRecord(){
+    const out = {};
+    const rows = Array.from(tbl.querySelectorAll('tr')).slice(1);
+    rows.forEach(r=>{
+      const inc = r.querySelector('input.inc');
+      const inp = r.querySelector('input.fld');
+      if(inc && inc.checked && inp){ out[inp.dataset.key] = inp.value; }
+    });
+    out['סיכום תמציתי'] = $('#summaryBox').textContent || '';
+    out['המלצות (מזוהות)'] = $('#recoBox').textContent || '';
+    return out;
+  }
+  function toggleEdit(){
+    editMode = !editMode;
+    const inputs = tbl.querySelectorAll('input.fld');
+    inputs.forEach(i=>{ i.readOnly = !editMode; i.style.opacity = editMode?1:0.7; });
+    $('#btnEdit').textContent = 'מצב עריכה: ' + (editMode?'פועל':'כבוי');
+  }
+  function selectAll(v){
+    tbl.querySelectorAll('input.inc').forEach(c=>c.checked = v);
+  }
+  function fieldGroup(name){
+    if(!cfg||!cfg.fields) return 'אחר';
+    const f = cfg.fields.find(x=>x.name===name);
+    return (f && f.group) ? f.group : 'אחר';
+  }
+  function buildPrintableHTML(data){
+    const groupsOrder = ['פרטי תיק','פרטים אישיים','השכלה','הכנסות','אחר'];
+    const byGroup = {};
+    Object.keys(data).forEach(k=>{
+      if(k==='סיכום תמציתי' || k==='המלצות (מזוהות)') return;
+      const g = fieldGroup(k);
+      byGroup[g] = byGroup[g]||[];
+      byGroup[g].push([k, data[k]]);
+    });
+    let sections = groupsOrder.filter(g=>byGroup[g]&&byGroup[g].length);
+    let html = `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>דו"ח מסכם</title>
+      <style>body{font-family:Heebo,Arial;direction:rtl;margin:24px;color:#111}
+      h1{margin:0 0 12px} h2{margin:18px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}
+      table{width:100%;border-collapse:collapse;margin:6px 0 14px}
+      td{border-bottom:1px solid #eee;padding:6px 4px;vertical-align:top}
+      .muted{color:#666;font-size:12px;margin-top:18px}
+      .box{white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:8px}
+      </style></head><body>`;
+    html += `<h1>דו"ח מסכם</h1>`;
+    sections.forEach(g=>{
+      html += `<h2>${g}</h2><table>`;
+      byGroup[g].forEach(([k,v])=>{ html += `<tr><td style="width:220px"><strong>${k}</strong></td><td>${(v||'').toString().replace(/</g,'&lt;')}</td></tr>`; });
+      html += `</table>`;
+    });
+    if(data['סיכום תמציתי']){
+      html += `<h2>סיכום תמציתי</h2><div class="box">${data['סיכום תמציתי'].replace(/</g,'&lt;')}</div>`;
+    }
+    if(data['המלצות (מזוהות)']){
+      html += `<h2>המלצות</h2><div class="box">${data['המלצות (מזוהות)'].replace(/</g,'&lt;')}</div>`;
+    }
+    html += `<div class="muted">הופק על ידי אליאב יחיאל</div>`;
+    html += `</body></html>`;
+    return html;
+  }
+  function openPrintPDF(){
+    if(!rec){ alert('אין תוצאה'); return; }
+    const data = getCurrentRecord();
+    const w = window.open('', '_blank');
+    w.document.open();
+    w.document.write(buildPrintableHTML(data));
+    w.document.close();
+    w.focus();
+    setTimeout(()=>{ w.print(); }, 400);
+  }
+  function openMail(){
+    if(!rec){ alert('אין תוצאה'); return; }
+    const data = getCurrentRecord();
+    const subject = encodeURIComponent('דו"ח מסכם — ממצאי בדיקה');
+    const lines = [];
+    Object.keys(data).forEach(k=>{ if(k!=='סיכום תמציתי' && k!=='המלצות (מזוהות)'){ lines.push(`${k}: ${data[k]}`); } });
+    if(data['סיכום תמציתי']){ lines.push('', 'סיכום:', data['סיכום תמציתי']); }
+    if(data['המלצות (מזוהות)']){ lines.push('', 'המלצות:', data['המלצות (מזוהות)']); }
+    lines.push('', '— הופק על ידי אליאב יחיאל');
+    const body = encodeURIComponent(lines.join('\n'));
+    const a = document.getElementById('btnMail');
+    a.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  // Bind new controls
+  document.getElementById('btnEdit').addEventListener('click', toggleEdit);
+  document.getElementById('btnSelectAll').addEventListener('click', ()=>selectAll(true));
+  document.getElementById('btnSelectNone').addEventListener('click', ()=>selectAll(false));
+  document.getElementById('btnPDF').addEventListener('click', openPrintPDF);
+  document.getElementById('btnMail').addEventListener('click', openMail);
+
 </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/F7oHugm2VbQm+fH9xC2BzCkJ0lC4x9qPkaZcT+6t1vVQhSe8k1C5iR3I8w8M2qG8mK3rJf9o+6M0bC7y1C2Zw==" crossorigin="anonymous"></script>
 </body>
