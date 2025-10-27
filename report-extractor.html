@@ -494,17 +494,24 @@
     w.focus();
     setTimeout(()=>{ w.print(); }, 400);
   }
-  function openMail(){
-    if(!rec){ alert('אין תוצאה'); return; }
-    const data = getCurrentRecord();
-    const subject = encodeURIComponent('דו"ח מסכם — ממצאי בדיקה');
-    const lines = [];
-    Object.keys(data).forEach(k=>{ if(k!=='סיכום תמציתי' && k!=='המלצות (מזוהות)'){ lines.push(`${k}: ${data[k]}`); } });
-    if(data['סיכום תמציתי']){ lines.push('', 'סיכום:', data['סיכום תמציתי']); }
-    if(data['המלצות (מזוהות)']){ lines.push('', 'המלצות:', data['המלצות (מזוהות)']); }
-    lines.push('', '— הופק על ידי אליאב יחיאל');
-    const body = encodeURIComponent(lines.join('
-'));
+ function openMail(){
+  if(!rec){ alert('אין תוצאה'); return; }
+  const data = getCurrentRecord();
+  const subject = encodeURIComponent('דו"ח מסכם — ממצאי בדיקה');
+  const lines = [];
+  Object.keys(data).forEach(k=>{
+    if(k!=='סיכום תמציתי' && k!=='המלצות (מזוהות)'){
+      lines.push(`${k}: ${data[k]}`);
+    }
+  });
+  if(data['סיכום תמציתי']) { lines.push('', 'סיכום:', data['סיכום תמציתי']); }
+  if(data['המלצות (מזוהות)']) { lines.push('', 'המלצות:', data['המלצות (מזוהות)']); }
+  lines.push('', '— הופק על ידי אליאב יחיאל');
+  const body = encodeURIComponent(lines.join('\n'));
+  const a = document.getElementById('btnMail');
+  a.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
     const a = document.getElementById('btnMail');
     a.href = `mailto:?subject=${subject}&body=${body}`;
   }
