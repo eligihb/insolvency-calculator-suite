@@ -5,7 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>דוחות ממצאי בדיקה — הופק על ידי אליאב יחיאל</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&display=swap" rel="stylesheet">
- 
+  <style>
+    body{background:#0b1220;color:#e6eef6;font-family:Heebo,Arial;padding:24px;direction:rtl}
+    h1{margin-top:0;font-size:24px}
+    .card{background:#111a2b;padding:20px;border-radius:14px;border:1px solid #1e2b45;margin-bottom:20px}
+    .btn{background:#133159;border:1px solid #22406b;border-radius:10px;padding:10px 14px;color:#fff;cursor:pointer}
+    .btn:hover{background:#18457a}
+    .hidden{display:none}
+    .loading{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .loading .box{background:#0e1a2f;padding:18px 22px;border-radius:14px;border:1px solid #2f4b75;font-weight:600}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // קובע worker ל-pdf.js — בלעדיו העיבוד "נתקע"
+    if (!window.pdfjsLib) {
+      alert('שגיאה בטעינת pdf.js — נסה לרענן את העמוד (Ctrl+F5).');
+    } else {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+</head>
+<body>
+  <h1>דוחות ממצאי בדיקה</h1>
+  <div class="card">
+    <input type="file" id="file" accept="application/pdf" />
+    <button class="btn" id="process">עבד דוח</button>
+    <button class="btn" id="reset">אתחל</button>
+  </div>
+  <div id="output" class="card hidden"></div>
+  <div class="loading hidden" id="loading"><div class="box">מעבד דוח…</div></div>
+
+  <script>
+    const fileInput = document.getElementById('file');
+    const output = document.getElementById('output');
+    const loading = document.getElementById('loading');
+    let pdfBytes = null;
+
+    fileInput.addEventListener('change', async (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      pdfBytes = await f.arrayBuffer();
+    });
+
+    async function readPDF(arrayBuffer){
+      try{
+        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+        if(!pdf || !pdf.numPages) throw new Error('לא נמצאו עמודים במסמך');
+        let texts = [];
+        for (let p=1;p<=pdf.numPages;p++){
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          texts.push(content.items.map(i=>i.str).join(' '));
+        }
+        return texts.join('
+');
+      }catch(err){
+        throw new Error('כשל בקריאת ה‑PDF (בדוק שהקובץ לא סריקה/תמונה וש‑pdf.js נטען): '+err.message);
+      }
+    }
+
+    function extractData(text){
+      return {
+        'מספר תיק': (text.match(/מספר תיק[:\s]*([0-9\-/]+)/)||[])[1]||'',
+        'שם לקוח': (text.match(/שם לקוח[:\s]*([א-תA-Za-z\s]+)/)||[])[1]||'',
+        'תאריך החלטה': (text.match(/תאריך החלטה[:\s]*([0-9./-]+)/)||[])[1]||'',
+        'המלצות': (text.match(/(?:המלצות|מומלץ|יש לבצע)[:\s]*([^\n]+)/)||[])[1]||''
+      };
+    }
+
+    async function process(){
+      if(!pdfBytes){alert('נא לבחור קובץ PDF');return;}
+      loading.classList.remove('hidden');
+      // מחווה ויזואלית
+      document.getElementById('process').textContent = 'מעבד דוח…'; document.getElementById('process').disabled = true;
+      try{
+        const text = await readPDF(pdfBytes);
+        const data = extractData(text);
+        let html = '<h3>סיכום נתונים</h3><table>';
+        for(const k in data){html += `<tr><td><b>${k}</b></td><td>${data[k]||'—'}</td></tr>`}
+        html += '</table><p style="margin-top:10px;font-size:12px;opacity:.7">הופק על ידי אליאב יחיאל</p>';
+        output.innerHTML = html;
+        output.classList.remove('hidden');
+      }catch(err){
+        alert('שגיאה בעיבוד: '+err.message);
+      }finally{
+        loading.classList.add('hidden');
+      document.getElementById('process').textContent = 'עבד דוח'; document.getElementById('process').disabled = false;
+      }
+    }
+
     document.getElementById('process').addEventListener('click', process);
     document.getElementById('reset').addEventListener('click', ()=>{output.innerHTML='';output.classList.add('hidden');fileInput.value='';});
   </script>
