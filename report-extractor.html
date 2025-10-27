@@ -3,47 +3,230 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>בדיקת טעינה — גרסה BUILD 2025-10-27-01</title>
-  <style>body{background:#0b1220;color:#e6eef6;font-family:Arial;padding:24px} .card{background:#111a2b;padding:16px;border-radius:12px;border:1px solid #1e2b45}</style>
+  <title>מחלץ דוחות — דוח ממצאי בדיקה (BUILD 2025-10-27-02)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1220;--panel:#111a2b;--muted:#a7b5c8;--line:#1e2b45;--accent:#4cc9f0}
+    *{box-sizing:border-box}
+    body{background:var(--bg);color:#e6eef6;font-family:Heebo,Arial;margin:0}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    h1{margin:0 0 14px;font-size:clamp(20px,3vw,28px)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .btn{background:#133159;border:1px solid #22406b;color:#fff;border-radius:10px;padding:10px 14px;cursor:pointer}
+    .btn.secondary{background:#102138}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    input[type="text"],textarea{width:100%;background:#0e1a2f;border:1px solid #213053;border-radius:10px;color:#e6eef6;padding:10px 12px}
+    label{font-size:13px;color:var(--muted);margin:6px 0 4px;display:block}
+    .muted{color:var(--muted);font-size:13px}
+    .tbl{width:100%;border-collapse:separate;border-spacing:0 6px}
+    .tbl th{font-weight:600;color:#b8c4d4;text-align:right;font-size:13px}
+    .tbl td,.tbl th{padding:10px 12px;background:#0d172a;border-top:1px solid #20304f;border-bottom:1px solid #20304f}
+    .tbl tr td:first-child,.tbl tr th:first-child{border-right:1px solid #20304f;border-top-right-radius:12px;border-bottom-right-radius:12px}
+    .tbl tr td:last-child,.tbl tr th:last-child{border-left:1px solid #20304f;border-top-left-radius:12px;border-bottom-left-radius:12px}
+    .code{white-space:pre-wrap;background:#0d172a;border:1px dashed #20304f;padding:12px;border-radius:12px}
+    footer{opacity:.8;margin-top:10px;font-size:12px}
+    /* Loader */
+    .loading{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .loading .box{background:#0e1a2f;border:1px solid #213053;padding:18px 22px;border-radius:14px;font-weight:600}
+    .hidden{display:none}
+  </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
-  <h1>בדיקת טעינה</h1>
-  <div class="card">
-    <p>אם אתה רואה את המספר: <b>BUILD 2025-10-27-01</b> — אתה על הדף המעודכן.</p>
-    <input id="file" type="file" accept="application/pdf">
-    <button id="go">בדוק PDF</button>
-    <div id="out" style="margin-top:10px"></div>
+  <div class="wrap">
+    <h1>דוח ממצאי בדיקה</h1>
+    <div class="card">
+      <div class="row">
+        <input id="file" type="file" accept="application/pdf" class="btn" />
+        <button class="btn" id="btnProcess">עבד דוח</button>
+        <button class="btn secondary" id="btnReset">אתחל</button>
+        <span class="muted">פרטיות: העיבוד כולו בדפדפן שלך.</span>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <section class="card">
+        <h3 style="margin-top:0">תוצאה — שדות ותקציר</h3>
+        <div class="row" style="gap:8px; margin-bottom:8px">
+          <button class="btn" id="btnEdit">מצב עריכה: פועל</button>
+          <button class="btn secondary" id="btnSelectAll">סמן הכל</button>
+          <button class="btn secondary" id="btnSelectNone">נקה סימון</button>
+        </div>
+        <table class="tbl" id="fieldsTable"></table>
+        <h4>סיכום תמציתי</h4>
+        <div class="code" id="summaryBox">—</div>
+        <h4>המלצות (מזוהות)</h4>
+        <div class="code" id="recoBox">—</div>
+        <div class="row" style="margin-top:12px; flex-wrap:wrap">
+          <button class="btn" id="btnCSV">הורד CSV</button>
+          <button class="btn" id="btnXLSX">הורד Excel</button>
+          <button class="btn" id="btnJSON">הורד JSON</button>
+          <button class="btn" id="btnPDF">הורד PDF</button>
+          <a class="btn secondary" id="btnMail" href="#">פתח מייל חדש</a>
+        </div>
+        <footer class="muted">הופק על ידי אליאב יחיאל</footer>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">הגדרות חילוץ</h3>
+        <p class="muted">ניתן להתאים את השדות (Regex/עוגנים). כפתור אתחול טוען תבנית תקינה.</p>
+        <label>שדות (JSON)</label>
+        <textarea id="fieldsJson" rows="14" class="mono"></textarea>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="btnDefaults">אתחל לברירת מחדל</button>
+          <button class="btn" id="btnApplyCfg">החל הגדרות</button>
+        </div>
+        <div style="margin-top:16px">
+          <h3 style="margin-top:0">הגדרות סיכום</h3>
+          <label>מקסימום משפטים</label>
+          <input type="text" id="maxSent" value="5" />
+          <label>התעלמות ממשפטים קצרים (תווים)</label>
+          <input type="text" id="minLen" value="25" />
+          <label>עוגנים ל"המלצות" (מופרדים בפסיק)</label>
+          <input type="text" id="anchors" value="המלצות,מומלץ,הנחיות,יש לבצע" />
+          <label>חלון תווים אחרי עוגן</label>
+          <input type="text" id="winChars" value="1200" />
+        </div>
+      </aside>
+    </div>
+
+    <div id="loading" class="loading hidden"><div class="box">מעבד דוח…</div></div>
   </div>
 
-  <script>
-    // חובה להגדיר worker ל-pdf.js
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-    } else {
-      alert("pdf.js לא נטען — רענן עם Ctrl+F5");
-    }
+<script>
+  // ====== pdf.js worker ======
+  if (!window.pdfjsLib) {
+    alert('שגיאה בטעינת pdf.js — רענן (Ctrl+F5).');
+  } else {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
 
-    async function readPDF(buf){
-      const pdf = await pdfjsLib.getDocument({data: buf}).promise;
-      const first = await pdf.getPage(1);
-      const tc = await first.getTextContent();
-      return { pages: pdf.numPages, sample: tc.items.slice(0,5).map(i=>i.str).join(" ") };
-    }
+  // ====== Utils ======
+  const $ = (sel)=>document.querySelector(sel);
+  const tbl = $('#fieldsTable');
+  let pdfBytes=null, fullText='', cfg=null, rec=null, editMode=true;
 
-    document.getElementById("go").onclick = async ()=>{
-      const f = document.getElementById("file").files[0];
-      if(!f){ alert("בחר PDF"); return; }
-      document.getElementById("out").textContent = "קורא...";
-      try {
-        const buf = await f.arrayBuffer();
-        const info = await readPDF(buf);
-        document.getElementById("out").textContent =
-          "עמודים: " + info.pages + " | דוגמה: " + (info.sample || "(אין טקסט)");
-      } catch(e){
-        document.getElementById("out").textContent = "שגיאה: " + e.message;
-      }
-    };
-  </script>
+  function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m])); }
+  function download(filename, text){ const blob=new Blob([text],{type:'text/plain;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(url),800); }
+  function toCSV(obj){ const headers=Object.keys(obj); const values=headers.map(k=>String(obj[k]??'').replace(/\n/g,' ')); return headers.join(',')+'\n'+values.map(v=>`"${v.replace(/"/g,'""')}"`).join(','); }
+
+  // ====== Default fields config (valid JSON) ======
+  const configDefault = {"fields":[
+    {"name":"מספר תיק","group":"פרטי תיק","try":[{"regex":"(?:מספר[\\s-]*תיק|תיק\\s*מס'):?[\\s\\t]*([0-9\\-\\/]+)"},{"anchor":{"start":"מספר תיק","end":"\\n"}}]},
+    {"name":"בית משפט","group":"פרטי תיק","try":[{"regex":"(?:בית(?:\\s*המשפט)?):?\\s*([א-תA-Za-z\\s\"'\\-]+)"},{"anchor":{"start":"בית משפט","end":"\\n"}}]},
+    {"name":"סוג הליך","group":"פרטי תיק","try":[{"regex":"(?:סוג(?:\\s*ההליך)?):?\\s*([א-תA-Za-z\\s\"'\\-]+)"}]},
+    {"name":"שופט/רשם","group":"פרטי תיק","try":[{"regex":"(?:שופט|רשם):?\\s*([א-ת\\s\"'\\-]+)"}]},
+    {"name":"מועד דיון","group":"פרטי תיק","try":[{"regex":"(?:מועד(?:\\s*דיון)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
+    {"name":"סטטוס","group":"פרטי תיק","try":[{"anchor":{"start":"סטטוס","end":"\\n"}},{"regex":"סטטוס[:\\s]*([^\\n\\r]+)"}]},
+    {"name":"אולם","group":"פרטי תיק","try":[{"regex":"(?:אולם):?\\s*([א-תA-Za-z0-9\\- ]+)"}]},
+    {"name":"תאריך החלטה","group":"פרטי תיק","try":[{"regex":"(?:תאריך(?:\\s*החלטה)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
+    {"name":"מספר החלטה","group":"פרטי תיק","try":[{"regex":"(?:מספר(?:\\s*החלטה)?):?\\s*([0-9\\-\\/]+)"}]},
+
+    {"name":"שם פרטי","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*פרטי):?\\ס*([א-תA-Za-z\"'\\-]+)"}]},
+    {"name":"שם משפחה","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*משפחה):?\\ס*([א-תA-Za-z\"'\\-]+)"}]},
+    {"name":"תעודת זהות","group":"פרטים אישיים","try":[{"regex":"(?:ת\\.?ז\\.?|מספר זהות):?\\s*([0-9]{7,9})"}]},
+    {"name":"תאריך לידה","group":"פרטים אישיים","try":[{"regex":"(?:תאריך(?:\\s*לידה)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
+    {"name":"מצב משפחתי","group":"פרטים אישיים","try":[{"regex":"(?:מצב\\s*משפחתי):?\\s*([א-תA-Za-z ]+)"}]},
+    {"name":"כתובת","group":"פרטים אישיים","try":[{"regex":"(?:כתובת):?\\s*([^\\n\\r]+)"}]},
+    {"name":"טלפון","group":"פרטים אישיים","try":[{"regex":"(?:טל(?:\\.|פון)?):?\\s*([0-9\\-]{8,12})"}]},
+    {"name":"אימייל","group":"פרטים אישיים","try":[{"regex":"([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})"}]},
+
+    {"name":"השכלה אחרונה","group":"השכלה","try":[{"regex":"(?:השכלה(?:\\s*אחרונה)?):?\\s*([^\\n\\r]+)"}]},
+    {"name":"מוסד לימודים","group":"השכלה","try":[{"regex":"(?:מוסד(?:\\s*לימודים)?):?\\s*([^\\n\\r]+)"}]},
+    {"name":"תואר/תעודה","group":"השכלה","try":[{"regex":"(?:תואר|תעודה):?\\s*([^\\n\\ר]+)"}]},
+    {"name":"שנת סיום","group":"השכלה","try":[{"regex":"(?:שנת(?:\\s*סיום)?):?\\s*([12][0-9]{3})"}]},
+
+    {"name":"סטטוס תעסוקתי","group":"הכנסות","try":[{"regex":"(?:סטטוס(?:\\s*תעסוקתי)?):?\\s*([^\\n\\r]+)"}]},
+    {"name":"מקום עבודה","group":"הכנסות","try":[{"regex":"(?:מקום(?:\\s*עבודה)?):?\\s*([^\\n\\r]+)"}]},
+    {"name":"שכר חודשי ברוטו","group":"הכנסות","try":[{"regex":"(?:שכר\\s*חודשי(?:\\s*ברוטו)?):?\\s*([0-9,\\.]+)"}]},
+    {"name":"שכר חודשי נטו","group":"הכנסות","try":[{"regex":"(?:שכר\\s*חודשי\\s*נטו):?\\s*([0-9,\\.]+)"}]},
+    {"name":"הכנסות נוספות","group":"הכנסות","try":[{"regex":"(?:הכנסות(?:\\s*נוספות)?):?\\s*([^\\n\\r]+)"}]},
+    {"name":"קצבאות/מלגות","group":"הכנסות","try":[{"regex":"(?:קצבאות|מלגות):?\\s*([^\\n\\r]+)"}]},
+    {"name":"הכנסות בן/בת זוג","group":"הכנסות","try":[{"regex":"(?:הכנסות\\s*בן\\/בת\\s*זוג):?\\s*([0-9,\\.]+)"}]},
+    {"name":"מספר ילדים","group":"הכנסות","try":[{"regex":"(?:מספר\\s*ילדים):?\\s*([0-9]+)"}]},
+    {"name":"מזונות","group":"הכנסות","try":[{"regex":"(?:מזונות):?\\s*([0-9,\\.]+)"}]},
+    {"name":"הוצאות קבועות","group":"הכנסות","try":[{"regex":"(?:הוצאות\\s*קבועות):?\\s*([^\\n\\r]+)"}]}
+  ],"postprocess":{"date_fields":["מועד דיון","תאריך החלטה","תאריך לידה"],"number_fields":["שכר חודשי ברוטו","שכר חודשי נטו","הכנסות בן/בת זוג","מספר ילדים","מזונות"]}};
+
+  function putDefaultCfg(){ const ta=$('#fieldsJson'); ta.value = JSON.stringify(configDefault, null, 2); }
+  window.addEventListener('DOMContentLoaded', putDefaultCfg);
+
+  // ====== Table rendering ======
+  function setTable(obj){
+    tbl.innerHTML='';
+    const head=document.createElement('tr'); head.innerHTML='<th style="width:64px">כלול</th><th>שדה</th><th>ערך</th>'; tbl.appendChild(head);
+    Object.entries(obj).forEach(([k,v])=>{
+      const tr=document.createElement('tr'); const val=String(v??'');
+      tr.innerHTML=`<td><input type="checkbox" class="inc" checked data-key="${escapeHtml(k)}"/></td>
+      <td>${escapeHtml(k)}</td>
+      <td><input type="text" class="fld" data-key="${escapeHtml(k)}" value="${escapeHtml(val)}"/></td>`;
+      tbl.appendChild(tr);
+    });
+  }
+
+  // ====== PDF helpers ======
+  async function readPDF(buf){
+    const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    let texts=[]; for(let p=1;p<=pdf.numPages;p++){ const page=await pdf.getPage(p); const content=await page.getTextContent(); texts.push(content.items.map(i=>i.str).join(' ')); }
+    return texts.join('\n');
+  }
+
+  // ====== Extraction ======
+  function parseCfg(){ try{ const o=JSON.parse($('#fieldsJson').value); if(!o.fields) throw new Error('אין fields'); return o; }catch(e){ alert('שגיאה ב-JSON של השדות: '+e.message); throw e; } }
+  function extractByRegex(text, pattern){ const rx=new RegExp(pattern,'imu'); const m=rx.exec(text); return m? (m[1]??m[0]).trim():''; }
+  function extractByAnchor(text, start, end){ const s=text.indexOf(start); if(s===-1) return ''; const sub=text.slice(s+start.length); const e=sub.search(new RegExp(end,'mu')); const part=(e===-1?sub:sub.slice(0,e)); return part.trim(); }
+  function normalizeDate(s){ s=(s||'').trim(); const r=/(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})/; const m=r.exec(s); if(m){const dd=m[1].padStart(2,'0'),mm=m[2].padStart(2,'0'),y=m[3].length===2?('20'+m[3]):m[3]; return `${y}-${mm}-${dd}`;} return s; }
+  function postprocess(record,cfg){ (cfg.postprocess?.date_fields||[]).forEach(k=>{ if(record[k]) record[k]=normalizeDate(record[k]); }); return record; }
+
+  // ====== Summary ======
+  function splitSentences(t){ return t.replace(/\s+/g,' ').split(/(?<=[.!?\u05BE\u05C3])\s+/).map(s=>s.trim()).filter(Boolean); }
+  function summarize(t,maxSent=5,minLen=25){ const sents=splitSentences(t).filter(s=>s.length>=minLen); if(!sents.length) return ''; const tf=sents.map(s=>{const terms=s.toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]; const bag={}; terms.forEach(w=>bag[w]=(bag[w]||0)+1); return bag;}); const df={}; tf.forEach(b=>{Object.keys(b).forEach(w=>df[w]=(df[w]||0)+1)}); const N=sents.length; const score=sents.map((s,i)=>{let sc=0; const bag=tf[i]; for(const w in bag){const idf=Math.log(1+N/((df[w]||1))); sc+=bag[w]*idf;} return sc;}); const idx=score.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).slice(0,Math.min(maxSent,sents.length)).map(x=>x[1]).sort((a,b)=>a-b); return idx.map(i=>`- ${sents[i]}`).join('\n'); }
+  function extractRecommendations(t, anchors, winChars){ for(const a of anchors){ const i=t.indexOf(a); if(i!==-1){ let chunk=t.slice(i,i+winChars); const m=/\n\s*[א-תA-Za-z\s]{2,20}:?\s*\n/.exec(chunk); if(m) chunk=chunk.slice(0,m.index); return chunk.trim(); } } return t.split(/\n+/).filter(ln=>/(מומלץ|יש לבצע|נדרש|לעדכן|להתקין)/.test(ln)).slice(0,8).join('\n'); }
+
+  // ====== Actions ======
+  async function process(){
+    if(!pdfBytes){ alert('נא לבחור קובץ PDF'); return; }
+    const loader=$('#loading'); loader.classList.remove('hidden'); $('#btnProcess').textContent='מעבד דוח…'; $('#btnProcess').disabled=true;
+    try{
+      cfg=parseCfg();
+      const text=await readPDF(pdfBytes); fullText=text;
+      if(!/[A-Za-zא-ת]/.test(text)) { alert('לא אותר טקסט במסמך. ייתכן שזה PDF סרוק כתמונה. אפשר להוסיף OCR בהמשך.'); }
+      let record={"_source":"קובץ"};
+      for(const f of cfg.fields){ let val=''; for(const tr of (f.try||[])){ if(tr.regex){ val=extractByRegex(text,tr.regex); if(val) break; } else if(tr.anchor){ val=extractByAnchor(text,tr.anchor.start,tr.anchor.end); if(val) break; } } record[f.name]=val; }
+      record=postprocess(record,cfg);
+      const maxSent=parseInt($('#maxSent').value||'5',10); const minLen=parseInt($('#minLen').value||'25',10); const anchors=($('#anchors').value||'').split(',').map(s=>s.trim()).filter(Boolean); const winChars=parseInt($('#winChars').value||'1200',10);
+      record['סיכום תמציתי']=summarize(text,maxSent,minLen);
+      record['המלצות (מזוהות)']=extractRecommendations(text,anchors,winChars);
+      rec=record;
+      setTable(Object.fromEntries(Object.entries(record).filter(([k])=>k!=='_source')));
+      $('#summaryBox').textContent=record['סיכום תמציתי']||'—'; $('#recoBox').textContent=record['המלצות (מזוהות)']||'—';
+    }catch(e){ console.error(e); alert('שגיאה בעיבוד: '+e.message); }
+    finally{ loader.classList.add('hidden'); $('#btnProcess').textContent='עבד דוח'; $('#btnProcess').disabled=false; }
+  }
+
+  function getCurrentRecord(){ const out={}; const rows=Array.from(tbl.querySelectorAll('tr')).slice(1); rows.forEach(r=>{ const inc=r.querySelector('input.inc'); const inp=r.querySelector('input.fld'); if(inc&&inc.checked&&inp){ out[inp.dataset.key]=inp.value; } }); out['סיכום תמציתי']=$('#summaryBox').textContent||''; out['המלצות (מזוהות)']=$('#recoBox').textContent||''; return out; }
+  function fieldGroup(name){ if(!cfg||!cfg.fields) return 'אחר'; const f=cfg.fields.find(x=>x.name===name); return (f&&f.group)?f.group:'אחר'; }
+  function buildPrintableHTML(data){ const groupsOrder=['פרטי תיק','פרטים אישיים','השכלה','הכנסות','אחר']; const byGroup={}; Object.keys(data).forEach(k=>{ if(k==='סיכום תמציתי'||k==='המלצות (מזוהות)') return; const g=fieldGroup(k); (byGroup[g]=byGroup[g]||[]).push([k,data[k]]); }); let sections=groupsOrder.filter(g=>byGroup[g]&&byGroup[g].length); let html='<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>דו"ח מסכם</title><style>body{font-family:Heebo,Arial;margin:24px;color:#111} h1{margin:0 0 12px} h2{margin:18px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px} table{width:100%;border-collapse:collapse;margin:6px 0 14px} td{border-bottom:1px solid #eee;padding:6px 4px;vertical-align:top} .muted{color:#666;font-size:12px;margin-top:18px} .box{white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:8px}</style></head><body>'; html+='<h1>דו"ח מסכם</h1>'; sections.forEach(g=>{ html+=`<h2>${g}</h2><table>`; byGroup[g].forEach(([k,v])=>{ html+=`<tr><td style="width:220px"><strong>${k}</strong></td><td>${(v||'').toString().replace(/</g,'&lt;')}</td></tr>`; }); html+='</table>'; }); if(data['סיכום תמציתי']) html+=`<h2>סיכום תמציתי</h2><div class="box">${data['סיכום תמציתי'].replace(/</g,'&lt;')}</div>`; if(data['המלצות (מזוהות)']) html+=`<h2>המלצות</h2><div class="box">${data['המלצות (מזוהות)'].replace(/</g,'&lt;')}</div>`; html+='<div class="muted">הופק על ידי אליאב יחיאל</div></body></html>'; return html; }
+  function openPrintPDF(){ if(!rec){ alert('אין תוצאה'); return; } const data=getCurrentRecord(); const w=window.open('','_blank'); w.document.open(); w.document.write(buildPrintableHTML(data)); w.document.close(); w.focus(); setTimeout(()=>w.print(),350); }
+  function openMail(){ if(!rec){ alert('אין תוצאה'); return; } const data=getCurrentRecord(); const subject=encodeURIComponent('דו"ח מסכם — ממצאי בדיקה'); const lines=[]; Object.keys(data).forEach(k=>{ if(k!=='סיכום תמציתי'&&k!=='המלצות (מזוהות)') lines.push(`${k}: ${data[k]}`); }); if(data['סיכום תמציתי']) lines.push('', 'סיכום:', data['סיכום תמציתי']); if(data['המלצות (מזוהות)']) lines.push('', 'המלצות:', data['המלצות (מזוהות)']); lines.push('', '— הופק על ידי אליאב יחיאל'); const body=encodeURIComponent(lines.join('\n')); $('#btnMail').href=`mailto:?subject=${subject}&body=${body}`; }
+
+  // ====== Events ======
+  $('#file').addEventListener('change', async e=>{ const f=e.target.files[0]; if(!f) return; pdfBytes=await f.arrayBuffer(); });
+  $('#btnProcess').addEventListener('click', process);
+  $('#btnReset').addEventListener('click', ()=>{ pdfBytes=null; fullText=''; rec=null; setTable({}); $('#summaryBox').textContent='—'; $('#recoBox').textContent='—'; $('#file').value=''; });
+  $('#btnDefaults').addEventListener('click', putDefaultCfg);
+  $('#btnApplyCfg').addEventListener('click', ()=>{ if(rec){ alert('הגדרות עודכנו — הרץ שוב על הקובץ.'); } });
+  $('#btnCSV').addEventListener('click', ()=>{ if(!rec){alert('אין תוצאה');return;} download('summary.csv', toCSV(getCurrentRecord())); });
+  $('#btnJSON').addEventListener('click', ()=>{ if(!rec){alert('אין תוצאה');return;} download('summary.json', JSON.stringify(getCurrentRecord(), null, 2)); });
+  // Excel via CDN (on demand)
+  const sheetJsUrl='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.19.3/xlsx.full.min.js'; let sheetLoaded=false; function ensureSheet(cb){ if(sheetLoaded) return cb(); const s=document.createElement('script'); s.src=sheetJsUrl; s.onload=()=>{sheetLoaded=true; cb();}; document.body.appendChild(s);}  
+  $('#btnXLSX').addEventListener('click', ()=>{ if(!rec){alert('אין תוצאה');return;} ensureSheet(()=>{ const ws=XLSX.utils.json_to_sheet([getCurrentRecord()]); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Summary'); const wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'}); const blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='summary.xlsx'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),800); }); });
+  $('#btnPDF').addEventListener('click', openPrintPDF);
+  $('#btnMail').addEventListener('click', openMail);
+  $('#btnEdit').addEventListener('click', ()=>{ editMode=!editMode; tbl.querySelectorAll('input.fld').forEach(i=>{ i.readOnly=!editMode; i.style.opacity=editMode?1:.7; }); $('#btnEdit').textContent='מצב עריכה: '+(editMode?'פועל':'כבוי'); });
+  $('#btnSelectAll').addEventListener('click', ()=> tbl.querySelectorAll('input.inc').forEach(c=>c.checked=true));
+  $('#btnSelectNone').addEventListener('click', ()=> tbl.querySelectorAll('input.inc').forEach(c=>c.checked=false));
+</script>
 </body>
 </html>
