@@ -69,18 +69,24 @@
 
         <div class="card" style="margin-top:16px">
           <h3 style="margin-top:0">תוצאה — שדות ותקציר</h3>
+          <div class="row" style="gap:8px; margin-bottom:8px">
+            <button class="btn" id="btnEdit">מצב עריכה: פועל</button>
+            <button class="btn secondary" id="btnSelectAll">סמן הכל</button>
+            <button class="btn secondary" id="btnSelectNone">נקה סימון</button>
+          </div>
           <table class="tbl" id="fieldsTable"></table>
           <h4>סיכום תמציתי</h4>
           <div class="code" id="summaryBox">—</div>
           <h4>המלצות (מזוהות)</h4>
           <div class="code" id="recoBox">—</div>
-          <div class="row" style="margin-top:12px">
+          <div class="row" style="margin-top:12px; flex-wrap:wrap">
             <button class="btn" id="btnCSV">הורד CSV</button>
             <button class="btn" id="btnXLSX">הורד Excel</button>
             <button class="btn" id="btnJSON">הורד JSON</button>
+            <button class="btn" id="btnPDF">הורד PDF</button>
+            <a class="btn secondary" id="btnMail" href="#">פתח מייל חדש</a>
           </div>
-        </div>
-      </section>
+        </section>
 
       <aside>
         <div class="card">
@@ -159,7 +165,7 @@
   // ====== Utils ======
   const $ = (sel)=>document.querySelector(sel);
   const tbl = $('#fieldsTable');
-  let pdfBytes = null, fullText = '', cfg = null, rec = null;
+  let pdfBytes = null, fullText = '', cfg = null, rec = null, editMode = true;
 
   // PDF.js worker (חובה להגדיר)
   if (window['pdfjsLib']) {
@@ -169,11 +175,18 @@
   function setTable(obj){
     tbl.innerHTML = '';
     const head = document.createElement('tr');
-    head.innerHTML = '<th>שדה</th><th>ערך</th>';
+    head.innerHTML = '<th style="width:64px">כלול</th><th>שדה</th><th>ערך</th>';
     tbl.appendChild(head);
+    // create rows with checkbox + editable input
     Object.entries(obj).forEach(([k,v])=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${escapeHtml(k)}</td><td>${escapeHtml(String(v ?? ''))}</td>`;
+      const val = String(v ?? '');
+      tr.innerHTML = `<td><input type="checkbox" class="inc" checked data-key="${escapeHtml(k)}"/></td>
+        <td>${escapeHtml(k)}</td>
+        <td><input type="text" class="fld" data-key="${escapeHtml(k)}" value="${escapeHtml(val)}"/></td>`;
+      tbl.appendChild(tr);
+    });
+  }</td><td>${escapeHtml(String(v ?? ''))}</td>`;
       tbl.appendChild(tr);
     });
   }
@@ -367,6 +380,6 @@
     });
   });
 </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/F7oHugm2VbQm+fH9xC2BzCkJ0lC4x9qPkaZcT+6t1vVQhSe8k1C5iR3I8w8M2qG8mK3rJf9o+6M0bC7y1C2Zw==" crossorigin="anonymous"></script>
 </body>
 </html>
-
