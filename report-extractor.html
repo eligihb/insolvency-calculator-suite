@@ -16,6 +16,14 @@
     .loading .box{background:#0e1a2f;padding:18px 22px;border-radius:14px;border:1px solid #2f4b75;font-weight:600}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // קובע worker ל-pdf.js — בלעדיו העיבוד "נתקע"
+    if (!window.pdfjsLib) {
+      alert('שגיאה בטעינת pdf.js — נסה לרענן את העמוד (Ctrl+F5).');
+    } else {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
 </head>
 <body>
   <h1>דוחות ממצאי בדיקה</h1>
@@ -40,14 +48,19 @@
     });
 
     async function readPDF(arrayBuffer){
-      const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-      let texts = [];
-      for (let p=1;p<=pdf.numPages;p++){
-        const page = await pdf.getPage(p);
-        const content = await page.getTextContent();
-        texts.push(content.items.map(i=>i.str).join(' '));
+      try{
+        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+        if(!pdf || !pdf.numPages) throw new Error('לא נמצאו עמודים במסמך');
+        let texts = [];
+        for (let p=1;p<=pdf.numPages;p++){
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          texts.push(content.items.map(i=>i.str).join(' '));
+        }
+        return texts.join('\n');
+      }catch(err){
+        throw new Error('כשל בקריאת ה‑PDF (בדוק שהקובץ לא סריקה/תמונה וש‑pdf.js נטען): '+err.message);
       }
-      return texts.join('\n');
     }
 
     function extractData(text){
@@ -62,6 +75,8 @@
     async function process(){
       if(!pdfBytes){alert('נא לבחור קובץ PDF');return;}
       loading.classList.remove('hidden');
+      // מחווה ויזואלית
+      document.getElementById('process').textContent = 'מעבד דוח…'; document.getElementById('process').disabled = true;
       try{
         const text = await readPDF(pdfBytes);
         const data = extractData(text);
@@ -74,6 +89,7 @@
         alert('שגיאה בעיבוד: '+err.message);
       }finally{
         loading.classList.add('hidden');
+      document.getElementById('process').textContent = 'עבד דוח'; document.getElementById('process').disabled = false;
       }
     }
 
