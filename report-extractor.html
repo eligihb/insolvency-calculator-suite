@@ -32,6 +32,8 @@
     .hidden{display:none}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Tesseract.js for OCR fallback (heb+eng), runs locally in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -92,6 +94,7 @@
     </div>
 
     <div id="loading" class="loading hidden"><div class="box">מעבד דוח…</div></div>
+    <canvas id="ocrCanvas" class="hidden"></canvas>
   </div>
 
 <script>
@@ -123,8 +126,8 @@
     {"name":"תאריך החלטה","group":"פרטי תיק","try":[{"regex":"(?:תאריך(?:\\s*החלטה)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
     {"name":"מספר החלטה","group":"פרטי תיק","try":[{"regex":"(?:מספר(?:\\s*החלטה)?):?\\s*([0-9\\-\\/]+)"}]},
 
-    {"name":"שם פרטי","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*פרטי):?\\s*([א-תA-Za-z\"'\\-]+)"}]},
-    {"name":"שם משפחה","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*משפחה):?\\s*([א-תA-Za-z\"'\\-]+)"}]},
+    {"name":"שם פרטי","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*פרטי):?\s*([א-תA-Za-z\"'\\-]+)"}]},
+    {"name":"שם משפחה","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*משפחה):?\s*([א-תA-Za-z\"'\\-]+)"}]},
     {"name":"תעודת זהות","group":"פרטים אישיים","try":[{"regex":"(?:ת\\.?ז\\.?|מספר זהות):?\\s*([0-9]{7,9})"}]},
     {"name":"תאריך לידה","group":"פרטים אישיים","try":[{"regex":"(?:תאריך(?:\\s*לידה)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
     {"name":"מצב משפחתי","group":"פרטים אישיים","try":[{"regex":"(?:מצב\\s*משפחתי):?\\s*([א-תA-Za-z ]+)"}]},
@@ -134,7 +137,7 @@
 
     {"name":"השכלה אחרונה","group":"השכלה","try":[{"regex":"(?:השכלה(?:\\s*אחרונה)?):?\\s*([^\\n\\r]+)"}]},
     {"name":"מוסד לימודים","group":"השכלה","try":[{"regex":"(?:מוסד(?:\\s*לימודים)?):?\\s*([^\\n\\r]+)"}]},
-    {"name":"תואר/תעודה","group":"השכלה","try":[{"regex":"(?:תואר|תעודה):?\\s*([^\\n\\r]+)"}]},
+    {"name":"תואר/תעודה","group":"השכלה","try":[{"regex":"(?:תואר|תעודה):?\s*([^\n\r]+)"}]}]},
     {"name":"שנת סיום","group":"השכלה","try":[{"regex":"(?:שנת(?:\\s*סיום)?):?\\s*([12][0-9]{3})"}]},
 
     {"name":"סטטוס תעסוקתי","group":"הכנסות","try":[{"regex":"(?:סטטוס(?:\\s*תעסוקתי)?):?\\s*([^\\n\\r]+)"}]},
@@ -169,7 +172,32 @@
   async function readPDF(buf){
     const pdf = await pdfjsLib.getDocument({data: buf}).promise;
     let texts=[]; for(let p=1;p<=pdf.numPages;p++){ const page=await pdf.getPage(p); const content=await page.getTextContent(); texts.push(content.items.map(i=>i.str).join(' ')); }
-    return texts.join('\n');
+    const plain = texts.join('
+');
+    // If no letters detected, fall back to OCR
+    if(!/[A-Za-zא-ת]/.test(plain)){
+      return await readPDF_OCR(pdf);
+    }
+    return plain;
+  }
+
+  async function readPDF_OCR(pdf){
+    const canvas = document.getElementById('ocrCanvas');
+    const ctx = canvas.getContext('2d');
+    const out = [];
+    for(let p=1; p<=pdf.numPages; p++){
+      const page = await pdf.getPage(p);
+      const viewport = page.getViewport({scale: 2});
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      await page.render({canvasContext: ctx, viewport}).promise;
+      const box = document.querySelector('#loading .box'); if(box) box.textContent = `מזהה טקסט (OCR)… עמוד ${p}/${pdf.numPages}`;
+      try{
+        const result = await Tesseract.recognize(canvas, 'heb+eng', { logger: m=>{ if(box && m.status){ box.textContent = `OCR ${p}/${pdf.numPages}: ${m.status} ${(m.progress*100|0)}%`; } } });
+        out.push(result.data.text || '');
+      }catch(err){ out.push(''); console.error('OCR error page', p, err); }
+    }
+    return out.join('
+');
   }
 
   // ====== Extraction ======
