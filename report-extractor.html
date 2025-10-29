@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>מחלץ דוחות — דוח ממצאי בדיקה (BUILD 2025-10-27-03)</title>
+  <title>מחלץ דוחות — דוח ממצאי בדיקה (BUILD 2025-10-27-04)</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#0b1220;--panel:#111a2b;--muted:#a7b5c8;--line:#1e2b45}
@@ -117,37 +117,35 @@
     {"name":"בית משפט","group":"פרטי תיק","try":[{"regex":"(?:בית(?:\\s*המשפט)?):?\\s*([א-תA-Za-z\\s\"'\\-]+)"},{"anchor":{"start":"בית משפט","end":"\\n"}}]},
     {"name":"סוג הליך","group":"פרטי תיק","try":[{"regex":"(?:סוג(?:\\s*ההליך)?):?\\s*([א-תA-Za-z\\s\"'\\-]+)"}]},
     {"name":"שופט/רשם","group":"פרטי תיק","try":[{"regex":"(?:שופט|רשם):?\\s*([א-ת\\s\"'\\-]+)"}]},
-    {"name":"מועד דיון","group":"פרטי תיק","try":[{"regex":"(?:מועד(?:\\s*דיון)?):?\\ס*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
+    {"name":"מועד דיון","group":"פרטי תיק","try":[{"regex":"(?:מועד(?:\\s*דיון)?):?\\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
     {"name":"סטטוס","group":"פרטי תיק","try":[{"anchor":{"start":"סטטוס","end":"\\n"}},{"regex":"סטטוס[:\\s]*([^\\n\\r]+)"}]},
     {"name":"אולם","group":"פרטי תיק","try":[{"regex":"(?:אולם):?\\s*([א-תA-Za-z0-9\\- ]+)"}]},
     {"name":"תאריך החלטה","group":"פרטי תיק","try":[{"regex":"(?:תאריך(?:\\s*החלטה)?):?\\s*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\d{2}|\\d{4}))"}]},
     {"name":"מספר החלטה","group":"פרטי תיק","try":[{"regex":"(?:מספר(?:\\s*החלטה)?):?\\s*([0-9\\-\\/]+)"}]},
 
     {"name":"שם פרטי","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*פרטי):?\\s*([א-תA-Za-z\"'\\-]+)"}]},
-    {"name":"שם משפחה","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*משפחה):?\\ס*([א-תA-Za-z\"'\\-]+)"}]},
-    {"name":"תעודת זהות","group":"פרטים אישיים","try":[{"regex":"(?:ת\\.?ז\\.?|מספר זהות):?\\ס*([0-9]{7,9})"}]},
-    {"name":"תאריך לידה","group":"פרטים אישיים","try":[{"regex":"(?:תאריך(?:\\ס*לידה)?):?\\ס*([0-3]?\\d[\\./\\-][0-1]?\\d[\\./\\-](?:\\ד{2}|\\ד{4}))"}]},
-    {"name":"מצב משפחתי","group":"פרטים אישיים","try":[{"regex":"(?:מצב\\ס*משפחתי):?\\ס*([א-תA-Za-z ]+)"}]},
-    {"name":"כתובת","group":"פרטים אישיים","try":[{"regex":"(?:כתובת):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"טלפון","group":"פרטים אישיים","try":[{"regex":"(?:טל(?:\\.|פון)?):?\\ס*([0-9\\-]{8,12})"}]},
+    {"name":"שם משפחה","group":"פרטים אישיים","try":[{"regex":"(?:שם\\s*משפחה):?\\\s[א-תA-Za-z\"'\\-]+)"}]},
+    {"name":"תעודת זהות","group":"פרטים אישיים","try":[{"regex":"(?:ת\\.?ז\\.?|מספר זהות):?\\ס\\s-9]{7,9})"}]},
+    {"name":"תאריך לידה","group":"פרטים אישיים","try":[{"regex":"(?:תאריך(?:\\ס*ל\\sה):?\\ס*([0\\s]?d[\\./\\-][0-1]?\\d[\\./\\-](?:\\ד{2}|\\ד{4}))"}]},
+    {"name":"מצב משפחתי","group":"פרטים אישיים","try":[{"regex":"(?:מצב\\ס*משפחת\\s:?\*([א-תA-\\s-z ]"}]},
+    {"name":"כתובת","group":"פרטים אישיים","try":[{"regex":"(?:כתובת):?\\ס*([^\\n\\r\\s)"}]}    {"name":"טלפון","group":"פרטים אישיים","try":[{"regex":"(?:טל(?:\\.|פון)?):?\\ס*([0-9\\-]{8\\s2})"}]
     {"name":"אימייל","group":"פרטים אישיים","try":[{"regex":"([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})"}]},
 
-    {"name":"השכלה אחרונה","group":"השכלה","try":[{"regex":"(?:השכלה(?:\\ס*אחרונה)?):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"מוסד לימודים","group":"השכלה","try":[{"regex":"(?:מוסד(?:\\ס*לימודים)?):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"תואר/תעודה","group":"השכלה","try":[{"regex":"(?:תואר|תעודה):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"שנת סיום","group":"השכלה","try":[{"regex":"(?:שנת(?:\\ס*סיום)?):?\\ס*([12][0-9]{3})"}]},
+    {"name":"השכלה אחרונה","group":"השכלה","try":[{"regex":"(?:השכלה(?:\\ס*אחרונה)?):?\\\\s([^\\n\]+)"}]\\s
+    {"ne":"מוסד לימודים","group":"השכלה","try":[{"regex":"(?:מוסד(?:\\ס*לימודים)?):?\\ס*(\\s\\n\\r]+)]},
+ \\s {"name":"אר/תעודה","group":"השכלה","try":[{"regex":"(?:תואר|תעודה):?\\ס*([^\\n\\r]+)"}]},
+   \\s"name":"שנתיום","group":"השכלה","try":[{"regex":"(?:שנת(?:\\ס*סיום)?):?\\ס*([12][0-9]\\s})"}]},
 
-    {"name":"סטטוס תעסוקתי","group":"הכנסות","try":[{"regex":"(?:סטטוס(?:\\ס*תעסוקתי)?):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"מקום עבודה","group":"הכנסות","try":[{"regex":"(?:מקום(?:\\ס*עבודה)?):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"שכר חודשי ברוטו","group":"הכנסות","try":[{"regex":"(?:שכר\\ס*חודשי(?:\\ס*ברוטו)?):?\\ס*([0-9,\\.]+)"}]},
-    {"name":"שכר חודשי נטו","group":"הכנסות","try":[{"regex":"(?:שכר\\ס*חודשי\\ס*נטו):?\\ס*([0-9,\\.]+)"}]},
-    {"name":"הכנסות נוספות","group":"הכנסות","try":[{"regex":"(?:הכנסות(?:\\ס*נוספות)?):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"קצבאות/מלגות","group":"הכנסות","try":[{"regex":"(?:קצבאות|מלגות):?\\ס*([^\\n\\r]+)"}]},
-    {"name":"הכנסות בן/בת זוג","group":"הכנסות","try":[{"regex":"(?:הכנסות\\ס*בן\\/בת\\ס*זוג):?\\ס*([0-9,\\.]+)"}]},
-    {"name":"מספר ילדים","group":"הכנסות","try":[{"regex":"(?:מספר\\ס*ילדים):?\\ס*([0-9]+)"}]},
-    {"name":"מזונות","group":"הכנסות","try":[{"regex":"(?:מזונות):?\\ס*([0-9,\\.]+)"}]},
-    {"name":"הוצאות קבועות","group":"הכנסות","try":[{"regex":"(?:הוצאות\\ס*קבועות):?\\ס*([^\\n\\r]+)"}]}
-  ],"postprocess":{"date_fields":["מועד דיון","תאריך החלטה","תאריך לידה"],"number_fields":["שכר חודשי ברוטו","שכר חודשי נטו","הכנסות בן/בת זוג","מספר ילדים","מזונות"]}};
+  \\sname":"סטטוס סוקתי","group":"הכנסות","try":[{"regex":"(?:סטטוס(?:\\ס*תעסוקתי)?):?\\ס*([^\\n\\r]+\\s}]},
+    {"nam\\sמקום עבודה","grp":"הכנסות","try":[{"regex":"(?:מקום(?:\\ס*עבודה)?):?\\ס*([^\\n\\r]+)"}]},\\s   {"name":"\\sר דשי ברוטו","gro":"הכנסות","try":[{"regex":"(?:שכר\\ס*חודשי(?:\\ס*ברוטו)?):?\\ס*([0-9,\\.\\s)"}]},
+   \\s"name"שכר חו\\sי נטו"group":"הכנסות"try":[{"regex":"(?:שכר\\ס*חודשי\\ס*נטו):?\\ס*([0-9,\\.]+)"}]},
+    \\sname":"\\sנסות נוס\\sת"group":"הכות","try":[regex":"(?:הכנסות(?:\\ס*נוספות)?):?\\ס*([^\\n\\r]+)"}]},
+    {"name":"ק\\sאות/מלגות","g\\sup":"הכנס","try":[{"regex"(?:קצבאות|מלגות):?\\ס*([^\\n\\r]+)"}]},
+    {"name":"הכנסות בן/בת זוג","g\\sup":"הכנסות","try":[{"rege:"(?:הכנסות\\ס*בן\\/בת\\ס*זוג):?\\ס*([0-9,\\.]+)"}]},
+    {"name":"מ\\sר ילדים",\\sroup":"ה\\sסות","y":[{"regex"(?:מספר\\ס*דים):?\\ס*([0-9]+)"}]},
+    {"name":"מזונות","group":"הכנ\\sת","try":[\\sregex":"(?:מזונות)\\ס*([0-9,\\.)"}]},
+    {"name":"הוצאות קבועות","group":"הכנסות",\\sry":[{"regex":"(?:הוצאות\\ס*קבוע):?\\ס*([^\\n\\r]+)"}]}
+  ],"postprocess":{"date_fields":["\\sעד דיון","ת\\sיך החלטה","תאריך ליד],"number_fiel":["שכר חודשי ברוטו","שכר חודשי נטו","הכנסות בן/בת זוג","מספר ילדים","מזונות"]}};
 
   function putDefaultCfg(){ $('#fieldsJson').value = JSON.stringify(configDefault, null, 2); }
   window.addEventListener('DOMContentLoaded', putDefaultCfg);
@@ -199,8 +197,21 @@
   }
 
   // === Parsing ===
-  function parseCfg(){ try{ const o=JSON.parse($('#fieldsJson').value); if(!o.fields) throw new Error('אין fields'); return o; }catch(e){ alert('שגיאה ב-JSON של השדות: '+e.message); throw e; } }
-  function extractByRegex(text, pattern){ const rx=new RegExp(pattern,'imu'); const m=rx.exec(text); return m? (m[1]??m[0]).trim():''; }
+  function parseCfg(){ try{ const o=JSON.parse($('#fieldsJson').value); iffunction parseCfg(){
+    try{
+      const raw = $('#fieldsJson').value;
+      // זיהוי תווי בריחה שגויים (\\ס וכו') ותיקון אוטומטי לפני JSON.parse
+      const sanitized = raw.replace(/\\[\u0590-\u05FF]/g, (m)=>{ if(m==='\\ס') return '\\s'; return m; });
+      const o = JSON.parse(sanitized);
+      if(!o.fields) throw new Error('אין fields');
+      // נשמור גם את הגרסה המתוקנת חזרה לתיבה כדי שלא תקרוס שוב
+      $('#fieldsJson').value = JSON.stringify(o, null, 2);
+      return o;
+    }catch(e){
+      alert('שגיאה ב-JSON של השדות: '+e.message);
+      throw e;
+    }
+  }ction extractByRegex(text, pattern){ const rx=new RegExp(pattern,'imu'); const m=rx.exec(text); return m? (m[1]??m[0]).trim():''; }
   function extractByAnchor(text, start, end){ const s=text.indexOf(start); if(s===-1) return ''; const sub=text.slice(s+start.length); const e=sub.search(new RegExp(end,'mu')); const part=(e===-1?sub:sub.slice(0,e)); return part.trim(); }
   function normalizeDate(s){ s=(s||'').trim(); const r=/(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})/; const m=r.exec(s); if(m){const dd=m[1].padStart(2,'0'),mm=m[2].padStart(2,'0'),y=m[3].length===2?('20'+m[3]):m[3]; return `${y}-${mm}-${dd}`;} return s; }
   function postprocess(record,cfg){ (cfg.postprocess?.date_fields||[]).forEach(k=>{ if(record[k]) record[k]=normalizeDate(record[k]); }); return record; }
