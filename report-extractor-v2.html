@@ -48,6 +48,11 @@
       <button id="btnClear" class="btn secondary" disabled>נקה</button>
       <span id="fileBadge" class="pill">לא נבחר קובץ</span>
       <span id="pagesBadge" class="pill" style="display:none"></span>
+     <label class="pill">
+  <input type="checkbox" id="fastMode" checked style="margin-inline-end:6px">
+  מצב מהיר
+</label>
+
       <button class="btn secondary" style="margin-inline-start:auto" onclick="window.print()">הדפס/שמור PDF</button>
       <button id="btnJSON" class="btn">הורד JSON</button>
     </div>
@@ -259,7 +264,8 @@ btnRun.addEventListener('click', async ()=>{
         const img = await fileToImage(fileObj);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        const scale = 2200/Math.max(img.width,img.height);
+       const fast = document.getElementById('fastMode')?.checked ?? true;
+const scale = fast ? 2000/Math.max(img.width,img.height) : 2600/Math.max(img.width,img.height);
         canvas.width = Math.round(img.width*scale);
         canvas.height = Math.round(img.height*scale);
         ctx.drawImage(img,0,0,canvas.width,canvas.height);
@@ -285,11 +291,94 @@ btnRun.addEventListener('click', async ()=>{
 });
 
 /* ---- OCR helpers ---- */
+<script>
+// קובע אם כבר יש לנו "מספיק" שדות כדי לעצור
+function haveEnough(struct){
+  if(!struct) return false;
+  const c = struct.case || {}, d = struct.debtor || {}, o = struct.orders_and_payments || {};
+  const caseOk = !!(c.court_name || c.insolvency_case_no || c.commissioner_file_no);
+  const idOk   = !!d.id_number;
+  const payOk  = !!(o.opening_order_date || o.monthly_payment_amount);
+  return caseOk && idOk && payOk;
+}
+
+// OCR קנבס עם פרמטרים מצומצמים לתווים שימושיים
 async function tesseractOnCanvas(canvas, onProg){
   const { data:{ text } } = await Tesseract.recognize(canvas, 'heb+eng', {
-    tessedit_pageseg_mode: 6, // שורות
+    tessedit_pageseg_mode: 6,
+    tessedit_char_whitelist: "אבגדהוזחטיכלמנסעפצקרשת ןםךףץ0123456789./-:,₪\"'",
     logger: m => { if(onProg && m.progress!=null) onProg(m.progress); }
   });
+  return text || '';
+}
+
+// OCR ל-PDF עם קונקורנטיות + מצב מהיר + עצירה כש״מספיק״
+async function ocrPdf(arrayBuffer, pages, onProg, token){
+  const fast = document.getElementById('fastMode')?.checked ?? true;
+  const pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+
+  const CONCURRENCY = fast ? 3 : 1;
+  const SCALE       = fast ? 1.6 : 2.2;
+  const FIRST_PASS  = fast ? Math.min(pdf.numPages, 6) : pdf.numPages;
+
+  let collectedText = '';
+  let progressPages = 0;
+  let stopped       = false;
+
+  const runPage = async (i, processedCount) => {
+    if(token?.aborted || stopped) return '';
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: SCALE});
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({canvasContext:ctx, viewport}).promise;
+
+    // ניסיון ראשון ללא סף
+    let text = await tesseractOnCanvas(canvas, p=>{
+      if(onProg) onProg(((processedCount-1)+p)/pages*100);
+    });
+
+    // אם הטקסט דל מאוד — ניסיון שני עם בינאריזציה (threshold)
+    if(text.replace(/\s/g,'').length < 80){
+      preprocessCanvas(ctx, canvas, 160);
+      text = await tesseractOnCanvas(canvas, p=>{
+        if(onProg) onProg(((processedCount-1)+p)/pages*100);
+      });
+    }
+    return text + '\n';
+  };
+
+  async function runRange(start, end){
+    let i = start;
+    const workers = new Array(CONCURRENCY).fill(0).map(async ()=>{
+      while(i<=end && !stopped && !(token&&token.aborted)){
+        const myIndex = i++;
+        const text = await runPage(myIndex, ++progressPages);
+        collectedText += text;
+
+        // לחלץ תוך כדי, ואם מספיק — לעצור
+        extractFields(postClean(collectedText), pages);
+        if(haveEnough(lastStruct)) stopped = true;
+
+        if(onProg) onProg(45 + Math.round(progressPages/pages*45));
+        await new Promise(r=>requestAnimationFrame(()=>r()));
+      }
+    });
+    await Promise.all(workers);
+  }
+
+  // מעבר ראשון (מהיר)
+  await runRange(1, FIRST_PASS);
+  // אם לא מספיק ויש עוד עמודים — משלים
+  if(!stopped && FIRST_PASS < pdf.numPages){
+    await runRange(FIRST_PASS+1, pdf.numPages);
+  }
+
+  return collectedText;
+}
+</script>
+
   return text || '';
 }
 function preprocessCanvas(ctx, canvas, thresh=160){
