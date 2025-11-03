@@ -3,52 +3,70 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>מחלץ דוחות (פרטי) – PDF/תמונה → שדות</title>
+<title>מחלץ דוחות (פרטי) – PDF/תמונה → דו"ח מסוכם</title>
 
-<!-- PDF.js -->
-<!-- PDF.js (גרסה יציבה ל-web) -->
-<!-- PDF.js (גרסה יציבה ל-web) -->
+<!-- PDF.js יציבה ל-web -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
   pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
 </script>
 
+<!-- Tesseract.js (OCR, רץ מקומית בדפדפן) -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
 <style>
   :root{
     --bg:#f6f7fb; --card:#fff; --ink:#111; --muted:#6b7280; --accent:#0d6efd;
-    --ok:#16a34a; --err:#dc2626; --warn:#d97706; --radius:14px;
+    --ok:#16a34a; --err:#dc2626; --warn:#d97706; --radius:16px; --shadow:0 12px 36px rgba(15,23,42,.10);
   }
+  *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:Heebo,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
-  .wrap{max-width:1120px;margin:28px auto;padding:0 16px;display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-  @media (max-width:980px){.wrap{grid-template-columns:1fr}}
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 10px 30px rgba(0,0,0,.08);padding:18px 18px 20px}
   h1,h2,h3{margin:0 0 10px}
-  .filebox{border:2px dashed #d1d5db;border-radius:14px;padding:18px;text-align:center;background:#fcfcfe;cursor:pointer}
+  .page{max-width:1220px;margin:28px auto;padding:0 18px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 18px 22px}
+
+  /* מסך א – העלאה */
+  .wrap-upload{display:grid;grid-template-columns:1fr 1.1fr;gap:18px}
+  @media (max-width:980px){.wrap-upload{grid-template-columns:1fr}}
+  .filebox{border:2px dashed #d1d5db;border-radius:16px;padding:18px;text-align:center;background:#fcfcfe;cursor:pointer}
   .filebox input{display:none}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;padding:6px 10px;font-size:.85rem;background:#eef2ff}
   .pill.ok{background:#ecfdf5;color:#065f46}
   .pill.err{background:#fef2f2;color:#991b1b}
   .pill.warn{background:#fffbeb;color:#92400e}
-  .muted{color:var(--muted);font-size:.85rem}
-  .btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer}
+  .muted{color:var(--muted);font-size:.9rem}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer}
   .btn.secondary{background:#e5e7eb;color:#000}
+  .btn.ghost{background:transparent;border:1px solid #d1d5db;color:#111}
   .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
   .bar{height:100%;width:0%;background:var(--accent);transition:width .2s}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  .preview{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:10px;font-size:.8rem;max-height:240px;overflow:auto;white-space:pre-wrap}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-  .field{border:1px solid #e5e7eb;border-radius:10px;padding:10px}
-  .field b{display:block;margin-bottom:4px}
-  .statusline{margin-top:6px;font-size:.85rem}
+  .statusline{margin-top:8px;font-size:.95rem}
   .statusline.ok{color:var(--ok)} .statusline.err{color:var(--err)} .statusline.warn{color:var(--warn)}
-  .section-title{margin-top:16px;margin-bottom:8px;border-bottom:1px solid #e5e7eb;padding-bottom:6px}
-  .small{font-size:.8rem}
+  .preview{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px;font-size:.82rem;max-height:240px;overflow:auto;white-space:pre-wrap;direction:ltr}
+
+  /* מסך ב – דו"ח */
+  .hidden{display:none}
+  .header-report{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+  .badge{background:#eef2ff;border:1px solid #e5e7eb;border-radius:10px;padding:8px 12px;font-size:.9rem}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:980px){.grid-2,.grid-3{grid-template-columns:1fr}}
+  .section{border:1px solid #e5e7eb;border-radius:14px;padding:14px 14px 10px;background:#fff}
+  .section h3{margin-bottom:10px;border-bottom:1px solid #eef2ff;padding-bottom:6px}
+  .kv{display:grid;grid-template-columns:220px 1fr;gap:8px 12px;align-items:start}
+  .key{font-weight:600;color:#111}
+  .val{color:#111}
+  .val.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .val.muted{color:#6b7280}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- צד שמאל: העלאה, התקדמות, טקסט גולמי -->
+
+<!-- ===== מסך א – העלאה וטעינה ===== -->
+<section id="screenUpload" class="page">
+  <div class="wrap-upload">
     <div class="card">
       <h2>1) העלאת קובץ ובדיקת טעינה</h2>
       <div id="filebox" class="filebox">
@@ -71,115 +89,167 @@
         <div class="pill" id="pageCountPill" style="display:none;"></div>
       </div>
 
-      <h3 class="section-title">טקסט שחולץ (תצוגה)</h3>
-      <div id="raw" class="preview mono" dir="ltr"></div>
+      <h3 style="margin-top:14px;margin-bottom:8px">טקסט שחולץ (תצוגה)</h3>
+      <div id="raw" class="preview"></div>
     </div>
 
-    <!-- צד ימין: תוצאות לפי נושאים -->
-    <div class="card" id="resultsCard">
-      <h2>2) שדות מחולצים לפי נושא</h2>
-      <div id="sections"></div>
-
-      <h3 class="section-title">JSON</h3>
-      <div id="jsonOut" class="preview mono">{}</div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn" id="btnCopy">העתק JSON</button>
-        <button class="btn secondary" id="btnDownload">הורד JSON</button>
+    <div class="card">
+      <h2>2) תצוגה מקדימה של דו״ח מסוכם</h2>
+      <p class="muted">כשתסתיים הטעינה הכפתור הבא יהפוך לזמין, והדו״ח יוצג במסך ייעודי, מלא-רוחב.</p>
+      <div class="row" style="margin-top:6px">
+        <button class="btn ghost" id="btnGotoReport" disabled>עבור למסך הדו״ח</button>
       </div>
+      <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
+      <p class="muted">טיפ: ב-PDF סרוק, OCR עשוי לקחת זמן. השתמש בקובץ חד למקסימום דיוק.</p>
     </div>
   </div>
+</section>
+
+<!-- ===== מסך ב – דו"ח מסוכם ===== -->
+<section id="screenReport" class="page hidden">
+  <div class="card">
+    <div class="header-report">
+      <h2>דו״ח מסוכם – חילוץ שדות</h2>
+      <div class="toolbar">
+        <span id="badgeFile" class="badge">קובץ: —</span>
+        <span id="badgePages" class="badge">עמודים: —</span>
+        <button class="btn secondary" id="btnBack">חזרה למסך העלאה</button>
+        <button class="btn" id="btnDownloadJSON">הורד JSON</button>
+        <button class="btn ghost" onclick="window.print()">הדפס/שמור PDF</button>
+      </div>
+    </div>
+
+    <!-- שורה 1 -->
+    <div class="grid-3">
+      <div class="section">
+        <h3>פרטי תיק</h3>
+        <div class="kv" id="kvCase"></div>
+      </div>
+      <div class="section">
+        <h3>פרטים אישיים</h3>
+        <div class="kv" id="kvDebtor"></div>
+      </div>
+      <div class="section">
+        <h3>נתוני מסמך</h3>
+        <div class="kv" id="kvDoc"></div>
+      </div>
+    </div>
+
+    <!-- שורה 2 -->
+    <div class="grid-2" style="margin-top:16px">
+      <div class="section">
+        <h3>החלטות ותשלומים (א.1)</h3>
+        <div class="kv" id="kvOrders"></div>
+      </div>
+      <div class="section">
+        <h3>חובות ותביעות חוב (ה)</h3>
+        <div class="kv" id="kvDebts"></div>
+      </div>
+    </div>
+
+    <!-- שורה 3 -->
+    <div class="grid-2" style="margin-top:16px">
+      <div class="section">
+        <h3>נכסים (ו)</h3>
+        <div class="kv" id="kvAssets"></div>
+      </div>
+      <div class="section">
+        <h3>פרק ז’ – מסקנות הנאמן</h3>
+        <div class="kv" id="kvG"></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px">JSON</h3>
+    <div id="jsonOut" class="preview"></div>
+  </div>
+</section>
 
 <script>
-/* ===================== פרטיות =====================
-   כל העיבוד נעשה בדפדפן. לא נשלח אף קובץ לשום שרת.
-   ספריות נטענות כקוד בלבד; הנתונים נשארים מקומית.
-====================================================*/
-
-/* ===================== סכמת שדות =====================
-   מבוסס על האפיון המשותף. אפשר לעדכן/להסיר/להוסיף.
-   regex מבוצע כברירת מחדל עם דגלים 'mi' (רב-שורה, case-insensitive).
-======================================================*/
-
+/* =============== סכמת שדות (כמו שסיכמנו) =============== */
 const FIELD_SCHEMA = [
-  // ---- פרטי תיק ----
-  {section:"case", groupLabel:"פרטי תיק", fields:[
+  {section:"case", label:"פרטי תיק", fields:[
     {key:"court_name", label:"בית משפט", scope:"header", regex:"בית\\s+משפט\\s+([^\\n]+)", required:true},
     {key:"insolvency_case_no", label:"מס’ הליך (בימ\"ש)", scope:"header", regex:"(?:חדל[״\"']?פ|מס'?\\s*תיק.*בית\\s*משפט)[:\\s]+([0-9\\-\\/]+)", required:true},
     {key:"commissioner_file_no", label:"מס’ תיק בממונה", scope:"a1", regex:"תיק\\s+ממונה[:\\s]+([0-9]+)", required:true},
-    {key:"hearing_datetime", label:"מועד דיון", scope:"header", regex:"קבוע\\s+לדיון[:\\s]+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4}\\s+\\d{1,2}:\\d{2})", required:false}
+    {key:"hearing_datetime", label:"מועד דיון", scope:"header", regex:"קבוע\\s+לדיון[:\\s]+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4}\\s+\\d{1,2}:\\d{2})"}
   ]},
-
-  // ---- פרטים אישיים ----
-  {section:"debtor", groupLabel:"פרטים אישיים", fields:[
+  {section:"debtor", label:"פרטים אישיים", fields:[
     {key:"debtor_name", label:"שם החייב/ת", scope:"a1", regex:"שם\\s+החייב(?:\\/ת)?[:\\s]+([^\\n]+)", required:true},
     {key:"id_number", label:"מספר זיהוי", scope:"a1", regex:"(?:מספר\\s+זיהוי|ת\\.?ז)[:\\s]+(\\d{5,10})", required:true}
   ]},
-
-  // ---- החלטות ותשלומים (א.1) ----
-  {section:"orders_and_payments", groupLabel:"החלטות ותשלומים (א.1)", fields:[
-    {key:"opening_order_date", label:"תאריך צו פתיחת הליכים", scope:"a1", regex:"ביום\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})\\s+ניתן\\s+צו\\s+לפתיחת\\s+הליכים", required:true, normalize:"date"},
-    {key:"monthly_payment_amount", label:"תשלום חודשי (סכום)", scope:"a1", regex:"תשלום\\s+חודשי.*?בסך[:\\s]+([\\d\\.,]+)", required:true, normalize:"money"},
-    {key:"monthly_payment_from_date", label:"תשלום חודשי – החל מ", scope:"a1", regex:"החל\\s+מ(?:יום|תאריך)?[:\\s]+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", required:true, normalize:"date"},
-    {key:"arrears_amount", label:"סכום פיגורים", scope:"a1_or_d", regex:"פיגורים\\s+בסך\\s+של?\\s*([\\d\\.,]+)", required:false, normalize:"money"},
-    {key:"arrears_count", label:"מס’ פיגורים", scope:"d", regex:"צבר\\s+(\\d+)\\s+פיגורים", required:false, normalize:"int"},
-    {key:"last_payment_date", label:"תשלום אחרון בוצע ליום", scope:"a1_or_d", regex:"תשלום\\s+אחרון\\s+בוצע\\s+ליום\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", required:false, normalize:"date"},
-    {key:"estate_cash_balance", label:"יתרה בקופת הנשייה", scope:"a1", regex:"הצטבר\\s+בקופת\\s+הנשייה\\s+סך\\s+של\\s+כ?\\s*([\\d\\.,]+)", required:false, normalize:"money"}
+  {section:"orders_and_payments", label:"החלטות ותשלומים (א.1)", fields:[
+    {key:"opening_order_date", label:"תאריך צו פתיחת הליכים", scope:"a1", regex:"ביום\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})\\s+ניתן\\s+צו\\s+לפתיחת\\s+הליכים", normalize:"date"},
+    {key:"monthly_payment_amount", label:"תשלום חודשי (סכום)", scope:"a1", regex:"תשלום\\s+חודשי.*?בסך[:\\s]+([\\d\\.,]+)", normalize:"money"},
+    {key:"monthly_payment_from_date", label:"תשלום חודשי – החל מ", scope:"a1", regex:"החל\\s+מ(?:יום|תאריך)?[:\\s]+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", normalize:"date"},
+    {key:"arrears_amount", label:"סכום פיגורים", scope:"a1_or_d", regex:"פיגורים\\s+בסך\\s+של?\\s*([\\d\\.,]+)", normalize:"money"},
+    {key:"arrears_count", label:"מס’ פיגורים", scope:"d", regex:"צבר\\s+(\\d+)\\s+פיגורים", normalize:"int"},
+    {key:"last_payment_date", label:"תשלום אחרון בוצע ליום", scope:"a1_or_d", regex:"תשלום\\s+אחרון\\s+בוצע\\s+ליום\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", normalize:"date"},
+    {key:"estate_cash_balance", label:"יתרה בקופת הנשייה", scope:"a1", regex:"הצטבר\\s+בקופת\\s+הנשייה\\s+סך\\s+של\\s+כ?\\s*([\\d\\.,]+)", normalize:"money"}
   ]},
-
-  // ---- חובות ותביעות חוב (ה) ----
-  {section:"debts_and_claims", groupLabel:"חובות ותביעות חוב (ה)", fields:[
-    {key:"declared_debt_total", label:"חובות מוצהרים", scope:"e", regex:"חובותיו\\s+נאמדים\\s+בסך\\s+של?\\s*([\\d\\.,]+)", required:false, normalize:"money"},
-    {key:"claims_filed_count", label:"מס' תביעות שהוגשו", scope:"e", regex:"הוגשו\\s+(\\d+)\\s+תביעות\\s+חוב", required:false, normalize:"int"},
-    {key:"claims_filed_total", label:"סך תביעות שהוגשו", scope:"e", regex:"בסך\\s+כולל\\s+של?\\s*([\\d\\.,]+)\\s*₪", required:false, normalize:"money"},
-    {key:"claims_approved_total", label:"סך שאושר", scope:"e", regex:"אישר(?:\\s+\\d+\\s+תביעות\\s+חוב)?\\s+בסך\\s+([\\d\\.,]+)", required:false, normalize:"money"}
+  {section:"debts_and_claims", label:"חובות ותביעות חוב (ה)", fields:[
+    {key:"declared_debt_total", label:"חובות מוצהרים", scope:"e", regex:"חובותיו\\s+נאמדים\\s+בסך\\s+של?\\s*([\\d\\.,]+)", normalize:"money"},
+    {key:"claims_filed_count", label:"מס' תביעות שהוגשו", scope:"e", regex:"הוגשו\\s+(\\d+)\\s+תביעות\\s+חוב", normalize:"int"},
+    {key:"claims_filed_total", label:"סך תביעות שהוגשו", scope:"e", regex:"בסך\\s+כולל\\s+של?\\s*([\\d\\.,]+)\\s*₪", normalize:"money"},
+    {key:"claims_approved_total", label:"סך שאושר", scope:"e", regex:"אישר(?:\\s+\\d+\\s+תביעות\\s+חוב)?\\s+בסך\\s+([\\d\\.,]+)", normalize:"money"}
   ]},
-
-  // ---- נכסים (ו) ----
-  {section:"assets", groupLabel:"נכסים (ו)", fields:[
-    {key:"assets_total_to_realize", label:"שווי סך הנכסים למימוש", scope:"f", regex:"שווי\\s+סך\\s+הנכסים\\s+למימוש\\s+הינו\\s+([\\d\\.,]+)", required:false, normalize:"money"}
+  {section:"assets", label:"נכסים (ו)", fields:[
+    {key:"assets_total_to_realize", label:"סך נכסים למימוש", scope:"f", regex:"שווי\\s+סך\\s+הנכסים\\s+למימוש\\s+הינו\\s+([\\d\\.,]+)", normalize:"money"}
   ]},
-
-  // ---- פרק ז' – מסקנות הנאמן ----
-  {section:"chapter_g_trustee", groupLabel:"פרק ז’ – מסקנות הנאמן", fields:[
-    {key:"trustee_recommendation", label:"המלצת הנאמן (enum)", scope:"g", regex:"ביטול\\s+הצו|הפטר\\s+לאלתר", required:true, normalize:"recommendation"},
-    {key:"trustee_reasons_text", label:"נימוקים עיקריים (טקסט)", scope:"g", regex:"(חוסר\\s+תום\\-לב|פיגורים|אי\\-הגשת\\s+דוחות|אי\\-המצאת\\s+מסמכים|סתירות)", required:false, normalize:"reasonsCollect"},
-    {key:"trustee_summary_ch7", label:"סיכום פרק ז' (תמציתי)", scope:"g", regex:".*", required:true, synthesize:"summaryG"}
+  {section:"chapter_g_trustee", label:"פרק ז’ – מסקנות הנאמן", fields:[
+    {key:"trustee_recommendation", label:"המלצת הנאמן", scope:"g", regex:"ביטול\\s+הצו|הפטר\\s+לאלתר", normalize:"recommendation"},
+    {key:"trustee_reasons_text", label:"נימוקים עיקריים", scope:"g", regex:"(חוסר\\s+תום\\-לב|פיגורים|אי\\-הגשת\\s+דוחות|אי\\-המצאת\\s+מסמכים|סתירות)", normalize:"reasonsCollect"},
+    {key:"trustee_summary_ch7", label:"סיכום תמציתי", scope:"g", regex:".*", synthesize:"summaryG"}
   ]},
-
-  // ---- נתוני מסמך ----
-  {section:"document_meta", groupLabel:"נתוני מסמך", fields:[
-    {key:"report_date", label:"תאריך הדוח", scope:"any", regex:"תאריך\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", required:false, normalize:"date"},
-    {key:"pages_count", label:"מס’ עמודים (PDF)", scope:"meta", regex:"", required:false}
+  {section:"document_meta", label:"נתוני מסמך", fields:[
+    {key:"report_date", label:"תאריך הדוח", scope:"any", regex:"תאריך\\s+(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})", normalize:"date"},
+    {key:"pages_count", label:"מס’ עמודים (PDF)", scope:"meta", regex:""}
   ]}
 ];
+const GROUPS = ["case","debtor","document_meta","orders_and_payments","debts_and_claims","assets","chapter_g_trustee"];
 
-// קבוצות להצגה מסודרת
-const GROUP_ORDER = ["case","debtor","orders_and_payments","debts_and_claims","assets","chapter_g_trustee","document_meta"];
-
-/* ===================== אלמנטים ===================== */
+/* =============== אלמנטים =============== */
+const screenUpload = document.getElementById('screenUpload');
+const screenReport = document.getElementById('screenReport');
 const infile = document.getElementById('infile');
 const filebox = document.getElementById('filebox');
 const btnProcess = document.getElementById('btnProcess');
 const btnClear = document.getElementById('btnClear');
+const btnGotoReport = document.getElementById('btnGotoReport');
 const statusEl = document.getElementById('status');
 const bar = document.getElementById('bar');
 const filenameEl = document.getElementById('filename');
 const fileokEl = document.getElementById('fileok');
 const pageCountPill = document.getElementById('pageCountPill');
 const rawEl = document.getElementById('raw');
-const sectionsEl = document.getElementById('sections');
+const badgeFile = document.getElementById('badgeFile');
+const badgePages = document.getElementById('badgePages');
+const btnBack = document.getElementById('btnBack');
+const btnDownloadJSON = document.getElementById('btnDownloadJSON');
+const kvCase = document.getElementById('kvCase');
+const kvDebtor = document.getElementById('kvDebtor');
+const kvDoc = document.getElementById('kvDoc');
+const kvOrders = document.getElementById('kvOrders');
+const kvDebts = document.getElementById('kvDebts');
+const kvAssets = document.getElementById('kvAssets');
+const kvG = document.getElementById('kvG');
 const jsonOut = document.getElementById('jsonOut');
-const btnCopy = document.getElementById('btnCopy');
-const btnDownload = document.getElementById('btnDownload');
 
-/* ===================== עזר ===================== */
-const setStatus = (txt, cls) => {
-  statusEl.textContent = txt;
-  statusEl.className = 'statusline ' + (cls||'');
-};
+/* =============== עזר ונירמול =============== */
+const setStatus = (txt, cls) => { statusEl.textContent = txt; statusEl.className = 'statusline ' + (cls||''); };
 const setProgress = (pct) => { bar.style.width = Math.max(0, Math.min(100, pct)) + '%'; };
-const human = n => (n==null?'-':n);
-const cleanSpaces = s => (s||'').replace(/\u200f|\u200e/g,'').replace(/\s+/g,' ').trim();
+const cleanRTL = s => (s||'').replace(/[\u200f\u200e]/g,'');
+const unifyChars = s => cleanRTL(s)
+  .replace(/[’׳]/g,"'")
+  .replace(/[“”״]/g,'"')
+  .replace(/[₪]/g,' ₪ ')
+  .replace(/[–—־]/g,'-')
+  .replace(/\s+/g,' ')
+  .trim();
+const fixOCRDigits = s => s
+  .replace(/\bS(?=\d)/g,'5')
+  .replace(/O(?=\d)/g,'0')
+  .replace(/I(?=\d)/g,'1')
+  .replace(/[^ -~\u0590-\u05FF]/g,''); // הסרת תווים לא מדפיסים
 const normMoney = s => {
   if(!s) return null;
   let t = (''+s).replace(/[^\d.,]/g,'').replace(/\./g,'').replace(/,/g,'.');
@@ -190,19 +260,16 @@ const normInt = s => { const n = parseInt((''+s).replace(/[^\d]/g,''),10); retur
 const normDate = s => {
   if(!s) return '';
   const m = (''+s).match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/);
-  if(!m) return cleanSpaces(s);
+  if(!m) return unifyChars(s);
   let [_,d,mo,y]=m; if(y.length===2) y='20'+y;
-  const dd=String(d).padStart(2,'0'), mm=String(mo).padStart(2,'0');
-  return `${y}-${mm}-${dd}`;
+  return `${y.padStart(4,'0')}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 };
-// enum המלצת נאמן
 const normRecommendation = (txt) => {
   if(!txt) return '';
   if(/ביטול\s+הצו/.test(txt)) return 'cancel_opening_order';
   if(/הפטר\s+לאלתר/.test(txt)) return 'grant_discharge_immediately';
   return 'other';
 };
-// איסוף נימוקים מפרק ז'
 const collectReasons = (gText) => {
   if(!gText) return '';
   const keys = ["חוסר תום-לב","פיגורים","אי-הגשת דוחות","אי-המצאת מסמכים","סתירות"];
@@ -210,117 +277,107 @@ const collectReasons = (gText) => {
   return got.join(', ');
 };
 
-// חלוקת טקסט לפרקי חיפוש בסיסיים
+/* =============== חיתוך לפי פרקים =============== */
 function sliceScopes(fullText){
   const t = fullText;
-  // נזהה קטעי "פרק" בסיסיים; ניתן לשפר לפי המסמכים שלך
-  const idx = (label) => {
-    const r = new RegExp(label.replace(/\./g,'\\.').replace(/\s/g,'\\s*'),'m');
+  const find = (pat) => {
+    const r = new RegExp(pat,'m');
     const m = r.exec(t);
     return m?m.index:-1;
   };
-  const iA = idx('פרק\\s*A\\.?\\s*1') >=0 ? idx('פרק\\s*A\\.?\\s*1') : idx('א\\.\\s*1|א\\.?\\s*1');
-  const iB = idx('פרק\\s*ב')>=0?idx('פרק\\s*ב'): -1;
-  const iD = idx('פרק\\s*ד')>=0?idx('פרק\\s*ד'): -1;
-  const iE = idx('פרק\\s*ה')>=0?idx('פרק\\s*ה'): -1;
-  const iF = idx('פרק\\s*ו')>=0?idx('פרק\\s*ו'): -1;
-  const iG = idx('פרק\\s*ז')>=0?idx('פרק\\s*ז'): -1;
+  const iA1 = find("(פרק\\s*A\\.?\\s*1|\\bא\\.?\\s*1\\b)");
+  const iD  = find("פרק\\s*ד");
+  const iE  = find("פרק\\s*ה");
+  const iF  = find("פרק\\s*ו");
+  const iG  = find("פרק\\s*ז");
+
+  const cut = (from, ...nexts) => {
+    const limits = nexts.filter(x=>x>=0);
+    const end = limits.length ? Math.min(...limits) : t.length;
+    return (from>=0) ? t.slice(from, end) : '';
+  };
 
   const scope = {};
-  scope.header = t.slice(0, Math.max(0, iA, iB, iD, iE, iF, iG).filter?0:0); // פותח – אם אין, ישאר ריק
-  scope.a1 = iA>=0 ? t.slice(iA, (iB>iA?iB: (iD>iA?iD:(iE>iA?iE:(iF>iA?iF:(iG>iA?iG:t.length)))))) : '';
-  scope.d = iD>=0 ? t.slice(iD, (iE>iD?iE:(iF>iD?iF:(iG>iD?iG:t.length)))) : '';
-  scope.e = iE>=0 ? t.slice(iE, (iF>iE?iF:(iG>iE?iG:t.length))) : '';
-  scope.f = iF>=0 ? t.slice(iF, (iG>iF?iG:t.length)) : '';
-  scope.g = iG>=0 ? t.slice(iG) : '';
-  scope.a1_or_d = cleanSpaces(scope.a1 + ' ' + scope.d);
+  scope.header = t.slice(0, Math.max(0, iA1, iD, iE, iF, iG) || 0);
+  scope.a1 = cut(iA1, iD, iE, iF, iG);
+  scope.d  = cut(iD, iE, iF, iG);
+  scope.e  = cut(iE, iF, iG);
+  scope.f  = cut(iF, iG);
+  scope.g  = cut(iG);
+  scope.a1_or_d = unifyChars(scope.a1 + ' ' + scope.d);
   scope.any = t;
   return scope;
 }
 
-// חילוץ לפי סכימה
+/* =============== חילוץ לפי סכימה =============== */
 function extractBySchema(fullText, pagesCount){
   const scopes = sliceScopes(fullText);
-  const out = {
-    case:{}, debtor:{}, orders_and_payments:{}, debts_and_claims:{}, assets:{},
-    chapter_g_trustee:{}, document_meta:{ pages_count: pagesCount ?? null }
-  };
-  const foundFlags = {};
-
+  const out = {case:{},debtor:{},orders_and_payments:{},debts_and_claims:{},assets:{},chapter_g_trustee:{},document_meta:{pages_count: pagesCount ?? null}};
   for(const group of FIELD_SCHEMA){
     for(const f of group.fields){
       let val = '';
-      if(f.key === 'pages_count'){ // ממלאים ממטא
-        val = pagesCount ?? null;
-        out[group.section][f.key] = val;
-        continue;
-      }
-      // טקסט יעד לפי scope
+      if(f.key === 'pages_count'){ out[group.section][f.key] = pagesCount ?? null; continue; }
       let pool = scopes[f.scope] || '';
-      if(!pool && f.scope==='header'){ pool = scopes.any.slice(0, 2000); } // גרייס ל-header
+      if(!pool && f.scope==='header'){ pool = scopes.any.slice(0, 2000); }
+      pool = unifyChars(fixOCRDigits(pool));
       const re = f.regex ? new RegExp(f.regex, 'mi') : null;
       if(re){
         const m = pool.match(re);
-        if(m && m[1]) val = cleanSpaces(m[1]);
-        else if(m && !m[1]) val = cleanSpaces(m[0]); // fallback אם אין קבוצה
+        if(m && m[1]) val = unifyChars(m[1]);
+        else if(m && !m[1]) val = unifyChars(m[0]);
       }
-      // נרמול
       if(val){
         if(f.normalize === 'money') val = normMoney(val);
         if(f.normalize === 'int') val = normInt(val);
         if(f.normalize === 'date') val = normDate(val);
-        if(f.normalize === 'recommendation') val = normRecommendation(val);
+        if(f.normalize === 'recommendation') val = normRecommendation(pool);
         if(f.normalize === 'reasonsCollect') val = collectReasons(scopes.g);
       }
-      // סינתזה (לדוגמה: סיכום פרק ז')
       if(f.synthesize === 'summaryG'){
-        // נוסח תמציתי קבוע כפי שסיכמנו אם ההמלצה היא ביטול:
         const rec = normRecommendation(scopes.g);
         if(rec === 'cancel_opening_order'){
           val = "הנאמן מציין חוסר תום-לב מתמשך, מחדלי דיווח ותשלומים, ואי-המצאת מסמכים; לפיכך ממליץ לבטל את הצו לפתיחת ההליכים ולא להעניק הפטר.";
-        }else if(rec === 'grant_discharge_immediately'){
+        } else if(rec === 'grant_discharge_immediately'){
           val = "הנאמן ממליץ על הפטר לאלתר.";
-        }else{
+        } else {
           val = "סיכום הנאמן לא זוהה חד-משמעית מהטקסט.";
         }
       }
-
       out[group.section][f.key] = (val===undefined? '': val);
-      foundFlags[f.key] = !!val;
     }
   }
-  return {out, foundFlags};
+  return out;
 }
 
-// UI – בניית תצוגה לפי קבוצות
-function renderResults(struct, found){
-  sectionsEl.innerHTML = '';
-  for(const groupKey of GROUP_ORDER){
-    const group = FIELD_SCHEMA.find(g => g.section===groupKey);
-    if(!group) continue;
-    const groupDiv = document.createElement('div');
-    groupDiv.innerHTML = `<h3 class="section-title">${group.groupLabel}</h3>`;
-    const grid = document.createElement('div'); grid.className='grid';
-    for(const f of group.fields){
-      const v = struct[groupKey][f.key];
-      const ok = (v!=='' && v!==null && v!==undefined);
-      const card = document.createElement('div'); card.className='field';
-      card.innerHTML = `
-        <b>${f.label}</b>
-        <div>${ok ? `<span class="pill ok">נמצא</span>` : `<span class="pill">לא נמצא</span>`}</div>
-        <div class="small mono" style="margin-top:6px;word-break:break-word;" dir="ltr">${ok ? v : '—'}</div>
-      `;
-      grid.appendChild(card);
-    }
-    groupDiv.appendChild(grid);
-    sectionsEl.appendChild(groupDiv);
+/* =============== UI דו"ח =============== */
+function kvRender(container, obj){
+  container.innerHTML = '';
+  const entries = Object.entries(obj);
+  for(const [k,v] of entries){
+    const def = FIELD_SCHEMA.flatMap(g=>g.fields).find(f=>f.key===k);
+    if(!def) continue;
+    const row = document.createElement('div');
+    row.className = 'kv';
+    const valStr = (v===null||v===''? '—' : v);
+    row.innerHTML = `<div class="key">${def.label}</div><div class="val ${typeof v==='number'?'mono':''}">${valStr}</div>`;
+    container.appendChild(row);
   }
+}
+function renderReport(struct, filename){
+  badgeFile.textContent = 'קובץ: ' + (filename||'—');
+  badgePages.textContent = 'עמודים: ' + (struct.document_meta.pages_count ?? '—');
+  kvRender(kvCase, struct.case);
+  kvRender(kvDebtor, struct.debtor);
+  kvRender(kvDoc, struct.document_meta);
+  kvRender(kvOrders, struct.orders_and_payments);
+  kvRender(kvDebts, struct.debts_and_claims);
+  kvRender(kvAssets, struct.assets);
+  kvRender(kvG, struct.chapter_g_trustee);
   jsonOut.textContent = JSON.stringify(struct, null, 2);
 }
 
-/* ===================== קריאת קובץ & חילוץ ===================== */
-let fileObj = null;
-filenameEl.textContent = 'לא נבחר קובץ';
+/* =============== קובץ וטעינה =============== */
+let fileObj = null, lastStruct = null;
 
 filebox.addEventListener('click', ()=> infile.click());
 filebox.addEventListener('dragover', (e)=>{e.preventDefault(); filebox.style.background='#eef6ff';});
@@ -335,6 +392,7 @@ function handleFilePick(){
   fileObj = infile.files && infile.files[0] ? infile.files[0] : null;
   if(!fileObj){
     filenameEl.textContent = 'לא נבחר קובץ'; fileokEl.style.display='none';
+    btnGotoReport.disabled = true;
     return;
   }
   filenameEl.textContent = fileObj.name;
@@ -343,25 +401,25 @@ function handleFilePick(){
   fileokEl.textContent='הקובץ נטען (מוכן לעיבוד)';
   setStatus('קובץ נבחר. לחץ "חלץ נתונים".','ok');
   pageCountPill.style.display='none';
+  btnGotoReport.disabled = true;
 }
 
 btnClear.addEventListener('click', ()=>{
   infile.value = '';
-  fileObj = null;
+  fileObj = null; lastStruct=null;
   filenameEl.textContent='לא נבחר קובץ';
   fileokEl.style.display='none';
   rawEl.textContent='';
-  sectionsEl.innerHTML='';
-  jsonOut.textContent='{}';
   setProgress(0);
   setStatus('נוקה.','');
   pageCountPill.style.display='none';
+  btnGotoReport.disabled = true;
 });
 
 btnProcess.addEventListener('click', async ()=>{
   if(!fileObj){ setStatus('לא נבחר קובץ.', 'err'); return; }
   try{
-    setProgress(2);
+    setProgress(3);
     setStatus('טוען קובץ…', '');
     fileokEl.style.display='inline-flex'; fileokEl.className='pill'; fileokEl.textContent='טוען…';
 
@@ -378,37 +436,37 @@ btnProcess.addEventListener('click', async ()=>{
       pagesCount = pdf.numPages;
       pageCountPill.style.display='inline-flex';
       pageCountPill.className='pill'; pageCountPill.textContent = `עמודים: ${pagesCount}`;
-      setStatus(`קורא PDF טקסטואלי… (0/${pagesCount})`, '');
+      setStatus(`קורא PDF… (${0}/${pagesCount})`, '');
 
-      // נסיון ראשון: טקסט מובנה
+      // ניסיון טקסט מובנה
       let textBuilt = '';
       for(let i=1;i<=pdf.numPages;i++){
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         const strings = content.items.map(it=>it.str);
         textBuilt += strings.join(' ') + '\n';
-        setProgress( Math.round((i/pdf.numPages)*50) );
-        setStatus(`קורא PDF טקסטואלי… (${i}/${pagesCount})`, '');
+        setProgress( Math.round((i/pdf.numPages)*40) );
+        setStatus(`קורא PDF… (${i}/${pagesCount})`, '');
       }
       const textLen = textBuilt.replace(/\s/g,'').length;
-      if(textLen>100){ // מספיק טקסט → נשתמש
+      if(textLen>150){ // אם יש די טקסט – נשתמש
         fullText = textBuilt;
         setStatus('טקסט PDF נטען בהצלחה.', 'ok');
-        setProgress(60);
       } else {
-        // פולבק: OCR לכל עמוד
-        setStatus('לא זוהה טקסט מובנה. מתחיל OCR (פועל מקומית)…', 'warn');
-        const scale = 1.8;
+        // OCR פולבק
+        setStatus('לא זוהה טקסט. מפעיל OCR (מקומי)…', 'warn');
+        const scale = 2.2;
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-
         for(let i=1;i<=pdf.numPages;i++){
           const page = await pdf.getPage(i);
           const viewport = page.getViewport({scale});
           canvas.width = viewport.width; canvas.height = viewport.height;
           await page.render({canvasContext:ctx, viewport}).promise;
-
+          preprocessCanvas(ctx, canvas); // קדם-עיבוד לתמונה
           const { data: { text } } = await Tesseract.recognize(canvas, 'heb+eng', {
+            tessedit_pageseg_mode: 6,
+            preserve_interword_spaces: 1,
             logger: m => {
               if(m.status==='recognizing text' && m.progress!=null){
                 setStatus(`OCR עמוד ${i}/${pagesCount}… ${Math.round(m.progress*100)}%`, 'warn');
@@ -416,12 +474,12 @@ btnProcess.addEventListener('click', async ()=>{
             }
           });
           fullText += text + '\n';
-          setProgress(60 + Math.round((i/pdf.numPages)*40));
+          setProgress(40 + Math.round((i/pdf.numPages)*55));
         }
         setStatus('OCR הושלם.', 'ok');
       }
     } else if(isImage){
-      // תמונה בודדת = עמוד אחד
+      // תמונה בודדת
       pagesCount = 1;
       pageCountPill.style.display='inline-flex';
       pageCountPill.className='pill'; pageCountPill.textContent = `עמודים: ${pagesCount}`;
@@ -429,16 +487,18 @@ btnProcess.addEventListener('click', async ()=>{
       const img = await fileToImage(fileObj);
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      const scale = fitScale(img.width, img.height, 2000);
+      const scale = fitScale(img.width, img.height, 2200);
       canvas.width = Math.round(img.width*scale);
       canvas.height = Math.round(img.height*scale);
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
-
+      preprocessCanvas(ctx, canvas);
       const { data: { text } } = await Tesseract.recognize(canvas, 'heb+eng', {
+        tessedit_pageseg_mode: 6,
+        preserve_interword_spaces: 1,
         logger: m => {
           if(m.status==='recognizing text' && m.progress!=null){
             setStatus(`OCR… ${Math.round(m.progress*100)}%`, '');
-            setProgress(Math.round(60 + m.progress*40));
+            setProgress(Math.round(40 + m.progress*55));
           }
         }
       });
@@ -449,14 +509,16 @@ btnProcess.addEventListener('click', async ()=>{
       return;
     }
 
-    // תצוגת טקסט
+    // נירמול והצגה
+    fullText = unifyChars(fixOCRDigits(fullText));
     rawEl.textContent = (fullText || '').trim();
-    // חילוץ לפי הסכמה
-    const {out, foundFlags} = extractBySchema(fullText, pagesCount);
-    renderResults(out, foundFlags);
+
+    // חילוץ והצגה במסך דו"ח
+    lastStruct = extractBySchema(fullText, pagesCount);
+    btnGotoReport.disabled = false;
     setProgress(100);
     fileokEl.className='pill ok'; fileokEl.textContent='נטען בהצלחה';
-    setStatus('הסתיים בהצלחה.', 'ok');
+    setStatus('הסתיים בהצלחה. ניתן לעבור למסך הדו״ח.', 'ok');
 
   } catch(err){
     console.error(err);
@@ -466,35 +528,19 @@ btnProcess.addEventListener('click', async ()=>{
   }
 });
 
-// עזר: המרת קובץ לתמונה
-function fileToImage(file){
-  return new Promise((resolve,reject)=>{
-    const fr = new FileReader();
-    fr.onload = () => {
-      const img = new Image();
-      img.onload = ()=> resolve(img);
-      img.onerror = reject;
-      img.src = fr.result;
-    };
-    fr.onerror = reject;
-    fr.readAsDataURL(file);
-  });
-}
-// קנה מידה לתמונה ל-OCR
-function fitScale(w,h,maxSide){
-  const m = Math.max(w,h);
-  return m>maxSide ? maxSide/m : 1.6; // הקטנה/הגדלה קלה לשיפור OCR
-}
-
-/* ===================== כלים: העתק/הורדה ===================== */
-btnCopy.addEventListener('click', ()=>{
-  const txt = jsonOut.textContent || '{}';
-  navigator.clipboard.writeText(txt).then(()=>{
-    setStatus('JSON הועתק ללוח.', 'ok');
-  });
+/* =============== מעבר בין מסכים =============== */
+btnGotoReport.addEventListener('click', ()=>{
+  if(!lastStruct) return;
+  renderReport(lastStruct, fileObj?.name);
+  screenUpload.classList.add('hidden');
+  screenReport.classList.remove('hidden');
 });
-btnDownload.addEventListener('click', ()=>{
-  const blob = new Blob([jsonOut.textContent || '{}'], {type:'application/json;charset=utf-8'});
+btnBack.addEventListener('click', ()=>{
+  screenReport.classList.add('hidden');
+  screenUpload.classList.remove('hidden');
+});
+btnDownloadJSON.addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(lastStruct||{}, null, 2)], {type:'application/json;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'extracted.json';
@@ -502,6 +548,30 @@ btnDownload.addEventListener('click', ()=>{
   URL.revokeObjectURL(a.href);
 });
 
+/* =============== עיבוד תמונה בסיסי ל-OCR =============== */
+function preprocessCanvas(ctx, canvas){
+  const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const d = img.data;
+  // גרייסקייל + threshold + ניקוי רעש עדין
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i], g=d[i+1], b=d[i+2];
+    const gray = (r*0.299 + g*0.587 + b*0.114)|0;
+    const t = gray>175 ? 255 : 0;       // threshold די אגרסיבי למסמכים מודפסים
+    d[i]=d[i+1]=d[i+2]=t;
+  }
+  ctx.putImageData(img,0,0);
+}
+
+/* =============== עזרי קבצים =============== */
+function fileToImage(file){
+  return new Promise((resolve,reject)=>{
+    const fr = new FileReader();
+    fr.onload = () => { const img = new Image(); img.onload = ()=> resolve(img); img.onerror = reject; img.src = fr.result; };
+    fr.onerror = reject;
+    fr.readAsDataURL(file);
+  });
+}
+function fitScale(w,h,maxSide){ const m = Math.max(w,h); return m>maxSide ? maxSide/m : 2.0; }
 </script>
 </body>
 </html>
