@@ -3,134 +3,355 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מחלץ דוחות PDF – שלב 2</title>
+<title>מחלץ דוחות PDF (פרטי) – דו"ח מסוכם</title>
 
+<!-- PDF.js יציבה -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";</script>
+
+<!-- Tesseract.js (OCR מקומי) -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-  body{font-family:Heebo,Arial,sans-serif;background:#f6f7fb;color:#111;margin:0;padding:20px;direction:rtl}
-  .card{background:#fff;border-radius:16px;box-shadow:0 3px 10px rgba(0,0,0,.1);padding:20px;max-width:900px;margin:auto}
-  button{background:#0d6efd;color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
-  button:disabled{opacity:.5;cursor:not-allowed}
-  #progress{height:10px;background:#eee;border-radius:6px;margin-top:10px}
-  #bar{height:100%;background:#0d6efd;width:0%;transition:width .2s}
-  #output{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,monospace;padding:10px;border-radius:10px;margin-top:15px;white-space:pre-wrap;max-height:200px;overflow:auto}
-  #fields{background:#fff;border-radius:10px;padding:15px;margin-top:20px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-  .field{margin:8px 0}
-  .field label{font-weight:600;display:block;color:#333}
-  .field span{background:#f3f4f6;padding:5px 8px;border-radius:6px;display:inline-block;min-width:200px}
+  :root{
+    --bg:#f6f7fb; --card:#fff; --ink:#111; --muted:#6b7280; --accent:#0d6efd;
+    --ok:#16a34a; --err:#dc2626; --radius:16px; --shadow:0 10px 30px rgba(15,23,42,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Heebo,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+  .page{max-width:1200px;margin:26px auto;padding:0 16px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 18px 22px}
+  h1,h2,h3{margin:0 0 10px}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer}
+  .btn.secondary{background:#e5e7eb;color:#111}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;padding:6px 10px;font-size:.85rem;background:#eef2ff}
+  .pill.ok{background:#ecfdf5;color:#065f46}
+  .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+  .bar{height:100%;width:0%;background:var(--accent);transition:width .2s}
+  .status{margin-top:6px;color:var(--muted)}
+  .preview{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,Menlo,Consolas,monospace;border-radius:12px;padding:10px;white-space:pre-wrap;max-height:220px;overflow:auto;direction:ltr}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media (max-width:980px){.grid-3,.grid-2{grid-template-columns:1fr}}
+  .section{border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fff;min-height:140px}
+  .section h3{margin-bottom:8px;border-bottom:1px solid #eef2ff;padding-bottom:6px}
+  .kv{display:grid;grid-template-columns:220px 1fr;gap:8px 12px;align-items:start}
+  .key{font-weight:600}
+  .val{word-break:break-word;white-space:normal}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
 </style>
 </head>
 <body>
-<div class="card">
-  <h2>מחלץ דוחות – שלב שני</h2>
-  <input type="file" id="file" accept=".pdf,image/*">
-  <button id="extractBtn" type="button" disabled>חלץ נתונים</button>
-  <div id="progress"><div id="bar"></div></div>
-  <p id="status"></p>
-  <div id="output"></div>
+<section class="page">
+  <div class="card">
+    <h2>מחלץ דוחות – העלאה וחילוץ</h2>
+    <div class="row">
+      <input type="file" id="infile" accept=".pdf,image/*">
+      <button id="btnRun" class="btn" disabled>חלץ נתונים</button>
+      <button id="btnClear" class="btn secondary">נקה</button>
+      <span id="fileBadge" class="pill">לא נבחר קובץ</span>
+      <span id="pagesBadge" class="pill" style="display:none"></span>
+      <button id="btnPrint" class="btn secondary" style="margin-inline-start:auto" onclick="window.print()">הדפס/שמור PDF</button>
+      <button id="btnJSON" class="btn">הורד JSON</button>
+    </div>
+    <div class="progress" style="margin-top:10px"><div id="bar" class="bar"></div></div>
+    <div id="status" class="status">מוכן.</div>
 
-  <div id="fields" style="display:none">
-    <h3>שדות שנמצאו</h3>
-    <div class="field"><label>שם החייב/ת:</label><span id="debtorName">—</span></div>
-    <div class="field"><label>תעודת זהות:</label><span id="debtorId">—</span></div>
-    <div class="field"><label>בית משפט:</label><span id="courtName">—</span></div>
-    <div class="field"><label>מספר תיק בממונה:</label><span id="commissionerFile">—</span></div>
-    <div class="field"><label>תשלום חודשי (₪):</label><span id="monthlyPay">—</span></div>
-    <div class="field"><label>תאריך צו פתיחת הליכים:</label><span id="openingOrder">—</span></div>
+    <h3 style="margin-top:10px">טקסט שחולץ (תצוגה)</h3>
+    <div id="raw" class="preview"></div>
   </div>
-</div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>דו״ח מסוכם – שדות</h2>
+
+    <div class="grid-3">
+      <div class="section">
+        <h3>פרטי תיק</h3>
+        <div class="kv">
+          <div class="key">בית משפט</div><div class="val" id="v_court">—</div>
+          <div class="key">מס’ הליך (בימ״ש)</div><div class="val mono" id="v_case">—</div>
+          <div class="key">מס’ תיק בממונה</div><div class="val mono" id="v_commissioner">—</div>
+          <div class="key">מס’ עמודים</div><div class="val mono" id="v_pages">—</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>פרטים אישיים</h3>
+        <div class="kv">
+          <div class="key">שם החייב/ת</div><div class="val" id="v_name">—</div>
+          <div class="key">תעודת זהות</div><div class="val mono" id="v_id">—</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>החלטות ותשלומים (א.1)</h3>
+        <div class="kv">
+          <div class="key">תאריך צו פתיחת הליכים</div><div class="val mono" id="v_opening">—</div>
+          <div class="key">תשלום חודשי (₪)</div><div class="val mono" id="v_monthly">—</div>
+          <div class="key">תשלום חודשי – החל מ</div><div class="val mono" id="v_monthly_from">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const fileEl = document.getElementById("file");
-  const btn = document.getElementById("extractBtn");
-  const s = document.getElementById("status");
-  const bar = document.getElementById("bar");
-  const out = document.getElementById("output");
-  const fields = document.getElementById("fields");
+/* ---------- עזרי UI ---------- */
+const infile = document.getElementById('infile');
+const btnRun = document.getElementById('btnRun');
+const btnClear = document.getElementById('btnClear');
+const btnJSON = document.getElementById('btnJSON');
+const fileBadge = document.getElementById('fileBadge');
+const pagesBadge = document.getElementById('pagesBadge');
+const bar = document.getElementById('bar');
+const statusEl = document.getElementById('status');
+const rawEl = document.getElementById('raw');
 
-  const setStatus=(t,c)=>{s.textContent=t;s.style.color=c||"#111"};
-  const cleanText = t => t.replace(/[\r\n]+/g," ")
-                          .replace(/\s{2,}/g," ")
-                          .replace(/[’׳]/g,"'")
-                          .replace(/[“”״]/g,'"')
-                          .replace(/[–—־]/g,"-")
-                          .trim();
+const setStatus = (t, cls) => { statusEl.textContent = t; statusEl.style.color = cls==='ok' ? '#065f46' : (cls==='err' ? '#991b1b' : '#6b7280'); };
+const setProgress = p => bar.style.width = Math.max(0,Math.min(100,p))+'%';
 
-  fileEl.addEventListener('change', ()=>{
-    btn.disabled = !fileEl.files.length;
-    if (fileEl.files.length) setStatus("קובץ נבחר. אפשר ללחוץ 'חלץ נתונים'.","#0a0");
-  });
+/* ---------- ניקוי טקסט ---------- */
+const cleanRTL = s => (s||'').replace(/[\u200f\u200e]/g,'');
+function postClean(v){
+  if(!v) return v;
+  v = (''+v).replace(/[\r\n]+/g,' ');
+  // איחוד ספרות שפוזרו ברווחים/שורות
+  v = v.replace(/(\d)\s+(\d)/g,'$1$2');
+  // מקפים אחידים
+  v = v.replace(/\s*[-–—־]\s*/g,'-');
+  // רווחים רצופים, גרשיים, מירכאות
+  v = v.replace(/[’׳]/g,"'").replace(/[“”״]/g,'"');
+  v = v.replace(/\s{2,}/g,' ');
+  return cleanRTL(v).trim();
+}
+const normDigits = s => s ? (''+s).replace(/\D/g,'') : '';
+const normDate = s => {
+  const m = (''+s).match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/);
+  if(!m) return (s||'').trim();
+  let [_,d,mo,y]=m; if(y.length===2) y='20'+y;
+  return `${y.padStart(2,'0')}/${String(mo).padStart(2,'0')}/${y}`;
+};
 
-  btn.addEventListener('click', async (e)=>{
-    e.preventDefault();
-    if(!fileEl.files[0]){ setStatus("בחר קובץ קודם","#c00"); return; }
+/* ---------- בניית עוגן עברי גמיש ---------- */
+/* למשל "שם החייב" → ש\s*ם\s*ה\s*ח\s*י... */
+function hebLabelPattern(label){
+  const letters = label.split('');
+  const esc = ch => ch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  return letters.map(ch=>{
+    if(/\s/.test(ch)) return '\\s*';
+    return esc(ch)+'\\s*';
+  }).join('');
+}
+function findAfterLabel(text, label, max=140){
+  const pat = new RegExp(hebLabelPattern(label)+'[:\\-–—־]*\\s*([^\\n]{1,'+max+'})','i');
+  const m = text.match(pat);
+  return m ? m[1].trim() : '';
+}
+function findNearby(text, label, valuePattern, win=220){
+  const lab = new RegExp(hebLabelPattern(label),'i');
+  const li = text.search(lab);
+  if(li<0) return '';
+  const seg = text.slice(Math.max(0, li-10), li+win);
+  const m = seg.match(new RegExp(valuePattern,'i'));
+  return m ? (m[1]||m[0]).trim() : '';
+}
 
-    const file = fileEl.files[0];
-    const ext = (file.name.split(".").pop()||"").toLowerCase();
-    const isPDF = ext === "pdf";
-    let text = "";
+/* ---------- חילוץ ---------- */
+function extractFields(fullText, pagesCount){
+  const t = postClean(fullText);
 
-    try{
-      setStatus("מריץ עיבוד..."); bar.style.width="8%";
+  // court
+  let court = findAfterLabel(t, 'בית משפט', 80);
+  if(!court){ // לעתים הכותרת מופיעה בוריאציה
+    const m = t.match(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]{3,80})/i);
+    court = m? m[1].trim() : '';
+  }
 
-      if(isPDF){
-        const ab = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({data:ab}).promise;
-        let pages = "";
-        for(let i=1;i<=pdf.numPages;i++){
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          pages += content.items.map(it=>it.str).join(" ") + "\n";
-          bar.style.width = (i/pdf.numPages*80)+"%";
-        }
-        text = pages;
-      }else{
-        const {data:{text:ocr}} = await Tesseract.recognize(file, 'heb+eng', {
-          tessedit_pageseg_mode: 6,
-          logger: m => { if(m.progress) bar.style.width = (m.progress*80+10)+"%"; }
-        });
-        text = ocr;
-      }
+  // case number 00000-00-00 עם רווחים אפשריים
+  let caseNum = '';
+  {
+    const m = t.match(/([0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9])/);
+    if(m){ caseNum = m[1].replace(/\s+/g,'').replace(/[–—־]/g,'-'); }
+  }
 
-      bar.style.width="100%";
-      setStatus("הסתיים בהצלחה!","#090");
+  // commissioner file
+  let comm = findAfterLabel(t, 'תיק ממונה', 40);
+  if(!comm){
+    const m = t.match(/תיק\s*ממונה[:\-–—־]?\s*([\d\s\-]{3,})/i);
+    comm = m? m[1] : '';
+  }
+  comm = normDigits(comm);
 
-      text = cleanText(text);
-      out.textContent = text.slice(0, 2000);
+  // debtor name / id
+  let name = findAfterLabel(t,'שם החייב',80);
+  if(!name){ const m = t.match(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^,\d:;]{2,80})/i); name = m? m[1].trim() : ''; }
+  name = name.replace(/\s{2,}/g,' ').trim();
 
-      // חילוץ בסיסי
-      extractFields(text);
-    }catch(err){
-      console.error(err);
-      setStatus("שגיאה: " + err.message, "#c00");
+  let id = findAfterLabel(t,'מספר זיהוי',20) || findAfterLabel(t,'ת.ז',20);
+  if(!id){
+    const m = t.match(/(?:מספר\s*זיהוי|ת\.?ז)[:\-–—־]?\s*([\d\s]{7,10})/i);
+    id = m? m[1] : '';
+  }
+  id = normDigits(id);
+
+  // opening order date
+  let opening = findNearby(t,'צו לפתיחת הליכים','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',260);
+  if(!opening){
+    const m = t.match(/(?:ביום|בתאריך)\s*(\d{1,2}[\/\.\-]\d{1,2}[\/\.\-]\d{2,4}).{0,40}?צו\s*לפתיחת\s*הליכים/i);
+    opening = m? m[1] : '';
+  }
+  opening = opening ? normDate(opening) : '';
+
+  // monthly payment amount & from-date
+  let monthly = findNearby(t,'תשלום חודשי','([\\d\\.,]+)',220);
+  if(!monthly){
+    const m = t.match(/תשלום\s*חודשי[^₪]{0,40}₪?\s*([\d\.,]+)/i);
+    monthly = m? m[1] : '';
+  }
+  monthly = monthly ? monthly.replace(/[^\d.,]/g,'') : '';
+
+  let monthlyFrom = findNearby(t,'החל מ','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',200);
+  monthlyFrom = monthlyFrom ? normDate(monthlyFrom) : '';
+
+  // כתיבה לשדות
+  document.getElementById('v_court').textContent = court || '—';
+  document.getElementById('v_case').textContent = caseNum || '—';
+  document.getElementById('v_commissioner').textContent = comm || '—';
+  document.getElementById('v_name').textContent = name || '—';
+  document.getElementById('v_id').textContent = id || '—';
+  document.getElementById('v_opening').textContent = opening || '—';
+  document.getElementById('v_monthly').textContent = monthly || '—';
+  document.getElementById('v_monthly_from').textContent = monthlyFrom || '—';
+
+  document.getElementById('v_pages').textContent = pagesCount ?? '—';
+
+  // JSON להורדה
+  lastStruct = {
+    case: {
+      court_name: court || '',
+      insolvency_case_no: caseNum || '',
+      commissioner_file_no: comm || '',
+      pages_count: pagesCount ?? null
+    },
+    debtor: { debtor_name: name || '', id_number: id || '' },
+    orders_and_payments: {
+      opening_order_date: opening || '',
+      monthly_payment_amount: monthly || '',
+      monthly_payment_from_date: monthlyFrom || ''
     }
-  });
+  };
+}
 
-  function extractFields(t){
-    const get=(re)=>{const m=t.match(re);return m?m[1].trim():"—";}
-    const fixDigits = x => x.replace(/\s+/g,"");
+/* ---------- OCR/קריאה ---------- */
+let fileObj=null, lastStruct=null;
 
-    const debtorName = get(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^\d:,;]+)/i);
-    const debtorId   = fixDigits(get(/(?:מספר\s*זיהוי|ת\.?ז)\s*[:\-–—־]?\s*([\d\s]{5,10})/));
-    const courtName  = get(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]+)/i);
-    const commissionerFile = fixDigits(get(/תיק\s*ממונה\s*[:\-–—־]?\s*([\d\s\-]+)/));
-    const monthlyPay = get(/תשלום\s*חודשי[^₪]*₪?\s*([\d,\.]+)/);
-    const openingOrder = get(/צו\s*לפתיחת\s*הליכים[^0-9]*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4})/);
+infile.addEventListener('change', ()=>{
+  fileObj = infile.files[0] || null;
+  btnRun.disabled = !fileObj;
+  fileBadge.textContent = fileObj ? ('קובץ: ' + fileObj.name) : 'לא נבחר קובץ';
+  pagesBadge.style.display='none';
+  setProgress(0); setStatus('מוכן.');
+  rawEl.textContent='';
+});
 
-    document.getElementById("debtorName").textContent = debtorName || "—";
-    document.getElementById("debtorId").textContent = debtorId || "—";
-    document.getElementById("courtName").textContent = courtName || "—";
-    document.getElementById("commissionerFile").textContent = commissionerFile || "—";
-    document.getElementById("monthlyPay").textContent = monthlyPay || "—";
-    document.getElementById("openingOrder").textContent = openingOrder || "—";
+btnClear.addEventListener('click', ()=>{
+  infile.value=''; infile.dispatchEvent(new Event('change'));
+});
 
-    fields.style.display = "block";
+btnJSON.addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(lastStruct||{}, null, 2)], {type:'application/json;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'extracted.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+btnRun.addEventListener('click', async ()=>{
+  if(!fileObj) return;
+  try{
+    setProgress(3); setStatus('טוען קובץ…');
+    const ext=(fileObj.name.split('.').pop()||'').toLowerCase();
+    const isPDF = ext==='pdf';
+    let pagesCount = 1;
+    let text='';
+
+    if(isPDF){
+      const ab = await fileObj.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data:ab}).promise;
+      pagesCount = pdf.numPages;
+      pagesBadge.style.display='inline-flex';
+      pagesBadge.textContent = `עמודים: ${pagesCount}`;
+      // שלב 1: נסיון טקסט מובנה
+      let built='';
+      for(let i=1;i<=pdf.numPages;i++){
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        built += content.items.map(it=>it.str).join(' ') + '\n';
+        setProgress(10 + Math.round(i/pdf.numPages*35));
+      }
+      // אם אין כמעט עברית → OCR
+      const heb = (built.match(/[\u0590-\u05FF]/g)||[]).length;
+      if(heb < 30){ // כמות עברית נמוכה => כנראה טבלאות/סריקה
+        setStatus('מעט עברית בטקסט. מפעיל OCR (מקומי)…');
+        text = await ocrPdf(ab, pagesCount, p=>setProgress(45+Math.round(p*50)));
+      } else {
+        text = built;
+      }
+    } else {
+      // תמונה בודדת
+      pagesCount = 1;
+      pagesBadge.style.display='inline-flex';
+      pagesBadge.textContent = `עמודים: ${pagesCount}`;
+      setStatus('OCR על תמונה (מקומי)…');
+      const { data: { text: o } } = await Tesseract.recognize(fileObj, 'heb+eng', {
+        tessedit_pageseg_mode: 6,
+        logger: m => { if(m.progress!=null) setProgress(20 + Math.round(m.progress*75)); }
+      });
+      text = o;
+    }
+
+    text = postClean(text);
+    rawEl.textContent = text.slice(0, 5000);
+    setProgress(100); setStatus('הסתיים בהצלחה.','ok');
+    extractFields(text, pagesCount);
+
+  } catch(err){
+    console.error(err);
+    setStatus('שגיאה: '+err.message,'err');
+    setProgress(0);
   }
 });
+
+async function ocrPdf(arrayBuffer, pages, onProg){
+  const pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  let res = '';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: 2.2});
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({canvasContext:ctx, viewport}).promise;
+    preprocessCanvas(ctx, canvas);
+    const { data: { text } } = await Tesseract.recognize(canvas, 'heb+eng', {
+      tessedit_pageseg_mode: 6,
+      logger: m => { if(onProg && m.progress!=null) onProg(((i-1)+m.progress)/pages*100); }
+    });
+    res += text + '\n';
+  }
+  return res;
+}
+
+function preprocessCanvas(ctx, canvas){
+  const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const d = img.data;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i], g=d[i+1], b=d[i+2];
+    const gray = (r*0.299 + g*0.587 + b*0.114)|0;
+    const t = gray > 160 ? 255 : 0; // סף מעט נמוך – טוב למסמכים בהירים
+    d[i]=d[i+1]=d[i+2]=t;
+  }
+  ctx.putImageData(img,0,0);
+}
 </script>
 </body>
 </html>
