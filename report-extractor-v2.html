@@ -3,31 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מחלץ דוחות PDF</title>
+<title>מחלץ דוחות PDF – שלב 2</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";</script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-body{font-family:Heebo,Arial,sans-serif;background:#f6f7fb;color:#111;margin:0;padding:20px;direction:rtl}
-.card{background:#fff;border-radius:16px;box-shadow:0 3px 10px rgba(0,0,0,.1);padding:20px;max-width:900px;margin:auto}
-button{background:#0d6efd;color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
-#progress{height:10px;background:#eee;border-radius:6px;margin-top:10px}
-#bar{height:100%;background:#0d6efd;width:0%;transition:width .2s}
-#output{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,monospace;padding:10px;border-radius:10px;margin-top:15px;white-space:pre-wrap;max-height:200px;overflow:auto}
-#fields{background:#fff;border-radius:10px;padding:15px;margin-top:20px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.field{margin:8px 0}
-.field label{font-weight:600;display:block;color:#333}
-.field span{background:#f3f4f6;padding:5px 8px;border-radius:6px;display:inline-block;min-width:200px}
+  body{font-family:Heebo,Arial,sans-serif;background:#f6f7fb;color:#111;margin:0;padding:20px;direction:rtl}
+  .card{background:#fff;border-radius:16px;box-shadow:0 3px 10px rgba(0,0,0,.1);padding:20px;max-width:900px;margin:auto}
+  button{background:#0d6efd;color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #progress{height:10px;background:#eee;border-radius:6px;margin-top:10px}
+  #bar{height:100%;background:#0d6efd;width:0%;transition:width .2s}
+  #output{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,monospace;padding:10px;border-radius:10px;margin-top:15px;white-space:pre-wrap;max-height:200px;overflow:auto}
+  #fields{background:#fff;border-radius:10px;padding:15px;margin-top:20px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .field{margin:8px 0}
+  .field label{font-weight:600;display:block;color:#333}
+  .field span{background:#f3f4f6;padding:5px 8px;border-radius:6px;display:inline-block;min-width:200px}
 </style>
 </head>
 <body>
-
 <div class="card">
   <h2>מחלץ דוחות – שלב שני</h2>
   <input type="file" id="file" accept=".pdf,image/*">
-  <button id="extractBtn">חלץ נתונים</button>
+  <button id="extractBtn" type="button" disabled>חלץ נתונים</button>
   <div id="progress"><div id="bar"></div></div>
   <p id="status"></p>
   <div id="output"></div>
@@ -44,68 +44,93 @@ button{background:#0d6efd;color:#fff;border:none;padding:10px 16px;border-radius
 </div>
 
 <script>
-const f=document.getElementById("file"),btn=document.getElementById("extractBtn"),
-s=document.getElementById("status"),bar=document.getElementById("bar"),
-out=document.getElementById("output"),fields=document.getElementById("fields");
-const setStatus=(t,c)=>{s.textContent=t;s.style.color=c||"#111"};
+document.addEventListener('DOMContentLoaded', () => {
+  const fileEl = document.getElementById("file");
+  const btn = document.getElementById("extractBtn");
+  const s = document.getElementById("status");
+  const bar = document.getElementById("bar");
+  const out = document.getElementById("output");
+  const fields = document.getElementById("fields");
 
-btn.onclick=async()=>{
-  if(!f.files[0])return setStatus("בחר קובץ קודם","#c00");
-  const file=f.files[0];
-  const ext=file.name.split(".").pop().toLowerCase();
-  const isPDF=ext==="pdf";
-  let text="";
-  try{
-    if(isPDF){
-      setStatus("טוען PDF...");bar.style.width="10%";
-      const ab=await file.arrayBuffer();
-      const pdf=await pdfjsLib.getDocument({data:ab}).promise;
-      let pages="";
-      for(let i=1;i<=pdf.numPages;i++){
-        const page=await pdf.getPage(i);
-        const content=await page.getTextContent();
-        const str=content.items.map(it=>it.str).join(" ");
-        pages+=str+"\n";
-        bar.style.width=(i/pdf.numPages*80)+"%";
+  const setStatus=(t,c)=>{s.textContent=t;s.style.color=c||"#111"};
+  const cleanText = t => t.replace(/[\r\n]+/g," ")
+                          .replace(/\s{2,}/g," ")
+                          .replace(/[’׳]/g,"'")
+                          .replace(/[“”״]/g,'"')
+                          .replace(/[–—־]/g,"-")
+                          .trim();
+
+  fileEl.addEventListener('change', ()=>{
+    btn.disabled = !fileEl.files.length;
+    if (fileEl.files.length) setStatus("קובץ נבחר. אפשר ללחוץ 'חלץ נתונים'.","#0a0");
+  });
+
+  btn.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    if(!fileEl.files[0]){ setStatus("בחר קובץ קודם","#c00"); return; }
+
+    const file = fileEl.files[0];
+    const ext = (file.name.split(".").pop()||"").toLowerCase();
+    const isPDF = ext === "pdf";
+    let text = "";
+
+    try{
+      setStatus("מריץ עיבוד..."); bar.style.width="8%";
+
+      if(isPDF){
+        const ab = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:ab}).promise;
+        let pages = "";
+        for(let i=1;i<=pdf.numPages;i++){
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          pages += content.items.map(it=>it.str).join(" ") + "\n";
+          bar.style.width = (i/pdf.numPages*80)+"%";
+        }
+        text = pages;
+      }else{
+        const {data:{text:ocr}} = await Tesseract.recognize(file, 'heb+eng', {
+          tessedit_pageseg_mode: 6,
+          logger: m => { if(m.progress) bar.style.width = (m.progress*80+10)+"%"; }
+        });
+        text = ocr;
       }
-      text=pages;
-    }else{
-      setStatus("מריץ OCR...");bar.style.width="20%";
-      const {data:{text:ocr}}=await Tesseract.recognize(file,'heb+eng',{
-        logger:m=>{if(m.progress)bar.style.width=(m.progress*80+20)+"%";}
-      });
-      text=ocr;
+
+      bar.style.width="100%";
+      setStatus("הסתיים בהצלחה!","#090");
+
+      text = cleanText(text);
+      out.textContent = text.slice(0, 2000);
+
+      // חילוץ בסיסי
+      extractFields(text);
+    }catch(err){
+      console.error(err);
+      setStatus("שגיאה: " + err.message, "#c00");
     }
-    bar.style.width="100%";setStatus("הסתיים בהצלחה!","#090");
-    text=cleanText(text);
-    out.textContent=text.slice(0,2000).trim();
-    extractFields(text);
-  }catch(e){setStatus("שגיאה: "+e.message,"#c00")}
-};
+  });
 
-// פונקציות ניקוי
-function cleanText(t){
-  return t.replace(/[\r\n]+/g," ")
-          .replace(/\s{2,}/g," ")
-          .replace(/[’׳]/g,"'")
-          .replace(/[“”״]/g,'"')
-          .replace(/[–—־]/g,"-")
-          .trim();
-}
+  function extractFields(t){
+    const get=(re)=>{const m=t.match(re);return m?m[1].trim():"—";}
+    const fixDigits = x => x.replace(/\s+/g,"");
 
-// חילוץ שדות עם ביטויים סלחניים
-function extractFields(t){
-  const get=(re)=>{const m=t.match(re);return m?m[1].trim():"—";}
-  const debtorName=get(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^\d:,;]+)/i);
-  const debtorId=get(/(?:מספר\s*זיהוי|ת\.?ז)\s*[:\-–—־]?\s*([\d\s]{5,10})/);
-  const courtName=get(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]+)/i);
-  const commissionerFile=get(/תיק\s*ממונה\s*[:\-–—־]?\s*([\d\s\-]+)/);
-  const monthlyPay=get(/תשלום\s*חודשי[^₪]*₪?\s*([\d,\.]+)/);
-  const openingOrder=get(/צו\s*לפתיחת\s*הליכים[^0-9]*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4})/);
+    const debtorName = get(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^\d:,;]+)/i);
+    const debtorId   = fixDigits(get(/(?:מספר\s*זיהוי|ת\.?ז)\s*[:\-–—־]?\s*([\d\s]{5,10})/));
+    const courtName  = get(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]+)/i);
+    const commissionerFile = fixDigits(get(/תיק\s*ממונה\s*[:\-–—־]?\s*([\d\s\-]+)/));
+    const monthlyPay = get(/תשלום\s*חודשי[^₪]*₪?\s*([\d,\.]+)/);
+    const openingOrder = get(/צו\s*לפתיחת\s*הליכים[^0-9]*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4})/);
 
-  // ניקוי ספרות עם רווחים
-  const fixDigits=(x)=>x.replace(/\s+/g,"");
-  document.getElementById("debtorName").textContent=debtorName;
-  document.getElementById("debtorId").textContent=fixDigits(debtorId);
-  document.getElementById("courtName").textContent=courtName;
-  document.getEle
+    document.getElementById("debtorName").textContent = debtorName || "—";
+    document.getElementById("debtorId").textContent = debtorId || "—";
+    document.getElementById("courtName").textContent = courtName || "—";
+    document.getElementById("commissionerFile").textContent = commissionerFile || "—";
+    document.getElementById("monthlyPay").textContent = monthlyPay || "—";
+    document.getElementById("openingOrder").textContent = openingOrder || "—";
+
+    fields.style.display = "block";
+  }
+});
+</script>
+</body>
+</html>
