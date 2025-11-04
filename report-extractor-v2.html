@@ -1,101 +1,5 @@
-<!doctype html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>מחלץ דוחות PDF (פרטי) – דו"ח מסוכם</title>
-
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";</script>
-
-<!-- Tesseract.js -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-<style>
-  :root{--bg:#f6f7fb;--card:#fff;--ink:#111;--muted:#6b7280;--accent:#0d6efd;--radius:16px;--shadow:0 10px 30px rgba(15,23,42,.10)}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Heebo,system-ui,-apple-system,Segoe UI,Roboto,Arial}
-  .page{max-width:1200px;margin:26px auto;padding:0 16px}
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 18px 22px}
-  h1,h2,h3{margin:0 0 10px}
-  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-weight:600;cursor:pointer}
-  .btn.secondary{background:#e5e7eb;color:#111}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .pill{display:inline-flex;gap:8px;align-items:center;border-radius:999px;padding:6px 10px;font-size:.85rem;background:#eef2ff}
-  .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
-  .bar{height:100%;width:0%;background:var(--accent);transition:width .15s}
-  .status{margin-top:6px;color:var(--muted)}
-  .preview{background:#0f172a;color:#e2e8f0;font-family:ui-monospace,Menlo,Consolas,monospace;border-radius:12px;padding:10px;white-space:pre-wrap;max-height:220px;overflow:auto;direction:ltr}
-  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media (max-width:980px){.grid-3{grid-template-columns:1fr}}
-  .section{border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:#fff;min-height:140px}
-  .section h3{margin-bottom:8px;border-bottom:1px solid #eef2ff;padding-bottom:6px}
-  .kv{display:grid;grid-template-columns:220px 1fr;gap:8px 12px;align-items:start}
-  .key{font-weight:600}
-  .val{word-break:break-word;white-space:normal}
-  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-</style>
-</head>
-<body>
-<section class="page">
-  <div class="card">
-    <h2>מחלץ דוחות – העלאה וחילוץ</h2>
-    <div class="row">
-      <input type="file" id="infile" accept=".pdf,image/*">
-      <button id="btnRun" class="btn" disabled>חלץ נתונים</button>
-      <button id="btnClear" class="btn secondary" disabled>נקה</button>
-      <span id="fileBadge" class="pill">לא נבחר קובץ</span>
-      <span id="pagesBadge" class="pill" style="display:none"></span>
-     <label class="pill">
-  <input type="checkbox" id="fastMode" checked style="margin-inline-end:6px">
-  מצב מהיר
-</label>
-
-      <button class="btn secondary" style="margin-inline-start:auto" onclick="window.print()">הדפס/שמור PDF</button>
-      <button id="btnJSON" class="btn">הורד JSON</button>
-    </div>
-    <div class="progress" style="margin-top:10px"><div id="bar" class="bar"></div></div>
-    <div id="status" class="status">מוכן.</div>
-
-    <h3 style="margin-top:10px">טקסט שחולץ (תצוגה)</h3>
-    <div id="raw" class="preview"></div>
-  </div>
-
-  <div class="card" style="margin-top:16px">
-    <h2>דו״ח מסוכם – שדות</h2>
-    <div class="grid-3">
-      <div class="section">
-        <h3>פרטי תיק</h3>
-        <div class="kv">
-          <div class="key">בית משפט</div><div class="val" id="v_court">—</div>
-          <div class="key">מס’ הליך (בימ״ש)</div><div class="val mono" id="v_case">—</div>
-          <div class="key">מס’ תיק בממונה</div><div class="val mono" id="v_commissioner">—</div>
-          <div class="key">מס’ עמודים</div><div class="val mono" id="v_pages">—</div>
-        </div>
-      </div>
-      <div class="section">
-        <h3>פרטים אישיים</h3>
-        <div class="kv">
-          <div class="key">שם החייב/ת</div><div class="val" id="v_name">—</div>
-          <div class="key">תעודת זהות</div><div class="val mono" id="v_id">—</div>
-        </div>
-      </div>
-      <div class="section">
-        <h3>החלטות ותשלומים (א.1)</h3>
-        <div class="kv">
-          <div class="key">תאריך צו פתיחת הליכים</div><div class="val mono" id="v_opening">—</div>
-          <div class="key">תשלום חודשי (₪)</div><div class="val mono" id="v_monthly">—</div>
-          <div class="key">תשלום חודשי – החל מ</div><div class="val mono" id="v_monthly_from">—</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <script>
-/* -------- UI -------- */
+/* ===== UI ===== */
 const infile = document.getElementById('infile');
 const btnRun = document.getElementById('btnRun');
 const btnClear = document.getElementById('btnClear');
@@ -105,17 +9,18 @@ const pagesBadge = document.getElementById('pagesBadge');
 const bar = document.getElementById('bar');
 const statusEl = document.getElementById('status');
 const rawEl = document.getElementById('raw');
+const fastMode = document.getElementById('fastMode');
 
 const setStatus = (t, cls) => { statusEl.textContent = t; statusEl.style.color = cls==='ok' ? '#065f46' : (cls==='err' ? '#991b1b' : '#6b7280'); };
 const setProgress = p => bar.style.width = Math.max(0,Math.min(100,p))+'%';
 const tick = () => new Promise(r=>requestAnimationFrame(()=>r()));
 
-/* -------- ניקוי -------- */
+/* ===== ניקוי וטקסט ===== */
 const cleanRTL = s => (s||'').replace(/[\u200f\u200e]/g,'');
 function postClean(v){
   if(!v) return v;
   v = (''+v).replace(/[\r\n]+/g,' ');
-  v = v.replace(/(\d)\s+(\d)/g,'$1$2');      // איחוד ספרות
+  v = v.replace(/(\d)\s+(\d)/g,'$1$2');      // איחוד ספרות מפוצלות
   v = v.replace(/\s*[-–—־]\s*/g,'-');        // מקפים אחידים
   v = v.replace(/[’׳]/g,"'").replace(/[“”״]/g,'"');
   v = v.replace(/\s{2,}/g,' ');
@@ -124,65 +29,63 @@ function postClean(v){
 const normDigits = s => s ? (''+s).replace(/\D/g,'') : '';
 const normDate = s => { const m=(''+s).match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/); if(!m) return (s||'').trim(); let [_,d,mo,y]=m; if(y.length===2) y='20'+y; return `${y.padStart(4,'0')}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`; };
 
-/* -------- עוגנים גמישים -------- */
 function hebLabelPattern(label){const esc=ch=>ch.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');return label.split('').map(ch=>/\s/.test(ch)?'\\s*':esc(ch)+'\\s*').join('');}
 function findAfterLabel(text,label,max=140){const re=new RegExp(hebLabelPattern(label)+'[:\\-–—־]*\\s*([^\\n]{1,'+max+'})','i');const m=text.match(re);return m?m[1].trim():'';}
 function findNearby(text,label,pat,win=220){const lab=new RegExp(hebLabelPattern(label),'i');const i=text.search(lab);if(i<0)return'';const seg=text.slice(Math.max(0,i-10),i+win);const m=seg.match(new RegExp(pat,'i'));return m?(m[1]||m[0]).trim():'';}
 
-/* -------- חילוץ -------- */
+/* ===== חילוץ לשדות ===== */
+let lastStruct = null;
 function extractFields(fullText, pagesCount){
   const t = postClean(fullText);
 
+  // ---- פרטי תיק
   let court = findAfterLabel(t,'בית משפט',80) || (t.match(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]{3,80})/i)||[])[1] || '';
   let caseNum = (t.match(/([0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9])/)||[])[1] || '';
   if(caseNum) caseNum = caseNum.replace(/\s+/g,'').replace(/[–—־]/g,'-');
-
   let comm = findAfterLabel(t,'תיק ממונה',40) || (t.match(/תיק\s*ממונה[:\-–—־]?\s*([\d\s\-]{3,})/i)||[])[1] || '';
   comm = normDigits(comm);
 
+  // ---- פרטים אישיים
   let name = findAfterLabel(t,'שם החייב',80) || (t.match(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^,\d:;]{2,80})/i)||[])[1] || '';
   name = name.replace(/\s{2,}/g,' ').trim();
-
   let id = findAfterLabel(t,'מספר זיהוי',20) || findAfterLabel(t,'ת.ז',20) || (t.match(/(?:מספר\s*זיהוי|ת\.?ז)[:\-–—־]?\s*([\d\s]{7,10})/i)||[])[1] || '';
   id = normDigits(id);
 
+  // ---- תשלומים (א.1)
   let opening = findNearby(t,'צו לפתיחת הליכים','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',260) ||
                 (t.match(/(?:ביום|בתאריך)\s*(\d{1,2}[\/\.\-]\d{1,2}[\/\.\-]\d{2,4}).{0,40}?צו\s*לפתיחת\s*הליכים/i)||[])[1] || '';
   opening = opening ? normDate(opening) : '';
-
   let monthly = findNearby(t,'תשלום חודשי','([\\d\\.,]+)',220) ||
                 (t.match(/תשלום\s*חודשי[^₪]{0,40}₪?\s*([\d\.,]+)/i)||[])[1] || '';
   monthly = monthly ? monthly.replace(/[^\d.,]/g,'') : '';
-
   let monthlyFrom = findNearby(t,'החל מ','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',200) || '';
   monthlyFrom = monthlyFrom ? normDate(monthlyFrom) : '';
 
-  document.getElementById('v_court').textContent = court || '—';
-  document.getElementById('v_case').textContent = caseNum || '—';
-  document.getElementById('v_commissioner').textContent = comm || '—';
-  document.getElementById('v_name').textContent = name || '—';
-  document.getElementById('v_id').textContent = id || '—';
-  document.getElementById('v_opening').textContent = opening || '—';
-  document.getElementById('v_monthly').textContent = monthly || '—';
-  document.getElementById('v_monthly_from').textContent = monthlyFrom || '—';
-  document.getElementById('v_pages').textContent = pagesCount ?? '—';
+  // כתיבה ל-UI
+  byId('v_court',court); byId('v_case',caseNum); byId('v_commissioner',comm);
+  byId('v_name',name); byId('v_id',id);
+  byId('v_opening',opening||'—'); byId('v_monthly',monthly||'—'); byId('v_monthly_from',monthlyFrom||'—');
+  byId('v_pages', pagesCount ?? '—');
 
+  // אובייקט ל-JSON
   lastStruct = {
-    case:{court_name:court||'',insolvency_case_no:caseNum||'',commissioner_file_no:comm||'',pages_count:pagesCount??null},
-    debtor:{debtor_name:name||'',id_number:id||''},
-    orders_and_payments:{opening_order_date:opening||'',monthly_payment_amount:monthly||'',monthly_payment_from_date:monthlyFrom||''}
+    case:{ court_name:court||'', insolvency_case_no:caseNum||'', commissioner_file_no:comm||'', pages_count: pagesCount??null },
+    debtor:{ debtor_name:name||'', id_number:id||'' },
+    orders_and_payments:{ opening_order_date:opening||'', monthly_payment_amount:monthly||'', monthly_payment_from_date:monthlyFrom||'' }
   };
 }
 
-/* -------- קריאה/OCR -------- */
-let fileObj=null, lastStruct=null;
+function byId(id,val){ const el=document.getElementById(id); if(!el) return; el.textContent = (val==null||val==='')?'—':val; }
 
+/* ===== OCR/קריאה ===== */
 infile.addEventListener('change', ()=>{
-  fileObj = infile.files[0] || null;
-  btnRun.disabled = !fileObj; btnClear.disabled = !fileObj;
-  fileBadge.textContent = fileObj ? ('קובץ: ' + fileObj.name) : 'לא נבחר קובץ';
+  const f = infile.files[0] || null;
+  fileObj = f;
+  btnRun.disabled = !f; btnClear.disabled = !f;
+  fileBadge.textContent = f ? ('קובץ: ' + f.name) : 'לא נבחר קובץ';
   pagesBadge.style.display='none';
-  setProgress(0); setStatus('מוכן.'); rawEl.textContent='';
+  setProgress(0); setStatus('מוכן.');
+  if(rawEl) rawEl.textContent='';
 });
 
 btnClear.addEventListener('click', ()=>{
@@ -193,6 +96,8 @@ btnJSON.addEventListener('click', ()=>{
   const blob = new Blob([JSON.stringify(lastStruct||{}, null, 2)], {type:'application/json;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'extracted.json'; a.click(); URL.revokeObjectURL(a.href);
 });
+
+let fileObj=null;
 
 btnRun.addEventListener('click', async ()=>{
   if(!fileObj) return;
@@ -212,44 +117,26 @@ btnRun.addEventListener('click', async ()=>{
       pagesBadge.style.display='inline-flex';
       pagesBadge.textContent = `עמודים: ${pagesCount}`;
 
-      // 1) ניסיון טקסט מובנה
+      // נסיון טקסט מובנה
       let built='';
       for(let i=1;i<=pdf.numPages;i++){
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         built += content.items.map(it=>it.str).join(' ') + '\n';
-        setProgress(10 + Math.round(i/pdf.numPages*30));
+        setProgress(10 + Math.round(i/pdf.numPages*25));
         if(i%2===0) await tick();
       }
       const hebCount = (built.match(/[\u0590-\u05FF]/g)||[]).length;
 
       if(hebCount < 30){
-        // 2) OCR דו-שלבי לכל עמוד: קודם בלי עיבוד, אם קצר → עם threshold
-        setStatus('מעט עברית מזוהה. מפעיל OCR (מקומי)…'); await tick();
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        for(let i=1;i<=pdf.numPages;i++){
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({scale:2.2});
-          canvas.width = viewport.width; canvas.height = viewport.height;
-          await page.render({canvasContext:ctx, viewport}).promise;
-
-          const first = await tesseractOnCanvas(canvas, p=>setProgress(45 + Math.round(((i-1)+p)/pdf.numPages*45)));
-          let pageText = first.trim();
-          // מעט טקסט? ננסה שוב עם סף בינארי
-          if(pageText.replace(/\s/g,'').length < 80){
-            preprocessCanvas(ctx, canvas, 160);
-            const second = await tesseractOnCanvas(canvas, p=>setProgress(45 + Math.round(((i-1)+p)/pdf.numPages*45)));
-            pageText = (second||'').trim();
-          }
-          text += pageText + '\n';
-          await tick();
-        }
+        // OCR מהיר ומקבילי עם עצירה מוקדמת
+        setStatus('מעט עברית מזוהה. מפעיל OCR (מהיר)…'); await tick();
+        text = await ocrPdf(ab, pagesCount, p=>setProgress(40 + Math.round(p*0.55)), {aborted:false});
       } else {
         text = built;
       }
     } else {
-      // תמונה בודדת – גם כאן שני ניסיונות
+      // תמונה — OCR בשני ניסיונות
       pagesCount = 1;
       pagesBadge.style.display='inline-flex';
       pagesBadge.textContent = `עמודים: ${pagesCount}`;
@@ -260,24 +147,22 @@ btnRun.addEventListener('click', async ()=>{
       });
       let pageText = first.data.text || '';
       if(pageText.replace(/\s/g,'').length < 80){
-        // רנדר דרך <img>→canvas→threshold
         const img = await fileToImage(fileObj);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-       const fast = document.getElementById('fastMode')?.checked ?? true;
-const scale = fast ? 2000/Math.max(img.width,img.height) : 2600/Math.max(img.width,img.height);
+        const fast = fastMode?.checked ?? true;
+        const scale = fast ? 2000/Math.max(img.width,img.height) : 2600/Math.max(img.width,img.height);
         canvas.width = Math.round(img.width*scale);
         canvas.height = Math.round(img.height*scale);
         ctx.drawImage(img,0,0,canvas.width,canvas.height);
         preprocessCanvas(ctx, canvas, 160);
-        const second = await tesseractOnCanvas(canvas, p=>setProgress(25 + Math.round(p*70)));
-        pageText = (second||'').trim();
+        pageText = await tesseractOnCanvas(canvas, p=>setProgress(25 + Math.round(p*70)));
       }
       text = pageText;
     }
 
     text = postClean(text);
-    rawEl.textContent = text.slice(0, 6000);
+    if(rawEl) rawEl.textContent = text.slice(0, 6000);
     setProgress(100); setStatus('הסתיים בהצלחה.','ok'); await tick();
     extractFields(text, pagesCount);
 
@@ -290,9 +175,7 @@ const scale = fast ? 2000/Math.max(img.width,img.height) : 2600/Math.max(img.wid
   }
 });
 
-/* ---- OCR helpers ---- */
-<script>
-// קובע אם כבר יש לנו "מספיק" שדות כדי לעצור
+/* ===== OCR utilities (מהיר, קונקרנטי, עצירה מוקדמת) ===== */
 function haveEnough(struct){
   if(!struct) return false;
   const c = struct.case || {}, d = struct.debtor || {}, o = struct.orders_and_payments || {};
@@ -302,7 +185,6 @@ function haveEnough(struct){
   return caseOk && idOk && payOk;
 }
 
-// OCR קנבס עם פרמטרים מצומצמים לתווים שימושיים
 async function tesseractOnCanvas(canvas, onProg){
   const { data:{ text } } = await Tesseract.recognize(canvas, 'heb+eng', {
     tessedit_pageseg_mode: 6,
@@ -312,9 +194,8 @@ async function tesseractOnCanvas(canvas, onProg){
   return text || '';
 }
 
-// OCR ל-PDF עם קונקורנטיות + מצב מהיר + עצירה כש״מספיק״
 async function ocrPdf(arrayBuffer, pages, onProg, token){
-  const fast = document.getElementById('fastMode')?.checked ?? true;
+  const fast = fastMode?.checked ?? true;
   const pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
 
   const CONCURRENCY = fast ? 3 : 1;
@@ -334,12 +215,10 @@ async function ocrPdf(arrayBuffer, pages, onProg, token){
     canvas.width = viewport.width; canvas.height = viewport.height;
     await page.render({canvasContext:ctx, viewport}).promise;
 
-    // ניסיון ראשון ללא סף
     let text = await tesseractOnCanvas(canvas, p=>{
       if(onProg) onProg(((processedCount-1)+p)/pages*100);
     });
 
-    // אם הטקסט דל מאוד — ניסיון שני עם בינאריזציה (threshold)
     if(text.replace(/\s/g,'').length < 80){
       preprocessCanvas(ctx, canvas, 160);
       text = await tesseractOnCanvas(canvas, p=>{
@@ -354,33 +233,28 @@ async function ocrPdf(arrayBuffer, pages, onProg, token){
     const workers = new Array(CONCURRENCY).fill(0).map(async ()=>{
       while(i<=end && !stopped && !(token&&token.aborted)){
         const myIndex = i++;
-        const text = await runPage(myIndex, ++progressPages);
-        collectedText += text;
+        const chunk = await runPage(myIndex, ++progressPages);
+        collectedText += chunk;
 
         // לחלץ תוך כדי, ואם מספיק — לעצור
         extractFields(postClean(collectedText), pages);
         if(haveEnough(lastStruct)) stopped = true;
 
         if(onProg) onProg(45 + Math.round(progressPages/pages*45));
-        await new Promise(r=>requestAnimationFrame(()=>r()));
+        await tick();
       }
     });
     await Promise.all(workers);
   }
 
-  // מעבר ראשון (מהיר)
   await runRange(1, FIRST_PASS);
-  // אם לא מספיק ויש עוד עמודים — משלים
   if(!stopped && FIRST_PASS < pdf.numPages){
     await runRange(FIRST_PASS+1, pdf.numPages);
   }
-
   return collectedText;
 }
-</script>
 
-  return text || '';
-}
+/* עיבוד תמונה: בינאריזציה */
 function preprocessCanvas(ctx, canvas, thresh=160){
   const img = ctx.getImageData(0,0,canvas.width,canvas.height);
   const d = img.data;
@@ -392,6 +266,7 @@ function preprocessCanvas(ctx, canvas, thresh=160){
   }
   ctx.putImageData(img,0,0);
 }
+
 function fileToImage(file){
   return new Promise((resolve,reject)=>{
     const fr=new FileReader();
@@ -400,5 +275,3 @@ function fileToImage(file){
   });
 }
 </script>
-</body>
-</html>
