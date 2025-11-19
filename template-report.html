@@ -4,47 +4,80 @@
   <meta charset="UTF-8" />
   <title>תבנית דו"ח – חדלות פירעון</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      direction: rtl;
-      text-align: right;
-      margin: 20px;
-      background: #fff;
-    }
-
-    .page {
-      max-width: 900px;
-      margin: 0 auto;
-      border: 1px solid #000;
-      padding: 16px;
+    * {
       box-sizing: border-box;
     }
 
-    h1, h2 {
-      margin: 6px 0;
-      font-weight: bold;
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      direction: rtl;
+      text-align: right;
+      margin: 0;
+      background: #e5f6ff;
+    }
+
+    .top-bar {
+      background: #0f766e; /* טורקיז כהה כמו במחשבון */
+      color: #fff;
+      padding: 14px 24px;
+      font-size: 20px;
+      font-weight: 700;
       text-align: center;
     }
 
+    .page {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 20px;
+      background: #f1f5f9;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      text-align: center;
+      color: #0f172a;
+    }
+
     h2 {
-      font-size: 16px;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      text-align: right;
-      border-bottom: 1px solid #000;
-      padding-bottom: 2px;
+      margin: 18px 0 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f766e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    h2::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      border-radius: 999px;
+      background: #0ea5e9;
+    }
+
+    .section-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid #dbeafe;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px 16px;
+      gap: 10px 18px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px 16px;
+      gap: 10px 16px;
     }
 
     .field {
@@ -53,8 +86,9 @@
 
     .label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 2px;
+      font-weight: 600;
+      margin-bottom: 3px;
+      color: #0f172a;
     }
 
     input[type="text"],
@@ -63,9 +97,23 @@
     select,
     textarea {
       width: 100%;
-      box-sizing: border-box;
       font-size: 12px;
-      padding: 2px 4px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 1px solid #cbd5f5;
+      background: #f8fafc;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
+      background: #ffffff;
     }
 
     textarea {
@@ -74,39 +122,75 @@
 
     .small-note {
       font-size: 11px;
-    }
-
-    .section-box {
-      border: 1px solid #000;
-      padding: 8px;
-      margin-top: 4px;
+      color: #64748b;
     }
 
     .inline {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       margin-left: 8px;
+      font-size: 12px;
     }
 
     .center {
       text-align: center;
     }
 
-    /* להדפסה – ניסיון לשמור על דף אחד */
+    /* שדות קצרים מאוד – כמו מס' תיק */
+    .input-short {
+      max-width: 140px;
+    }
+
+    /* שדות בינוניים (למשל מספר תיק בית משפט) */
+    .input-medium {
+      max-width: 220px;
+    }
+
+    /* שדות טקסט תיאוריים – שורה רחבה */
+    .textarea-wide {
+      width: 100%;
+      min-height: 60px;
+    }
+
+    .textarea-tiny {
+      width: 100%;
+      min-height: 40px;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+    }
+
     @media print {
       body {
-        margin: 0;
+        background: #ffffff;
+      }
+      .top-bar {
+        border-bottom: 1px solid #cbd5e1;
+        box-shadow: none;
       }
       .page {
-        border: none;
+        box-shadow: none;
+        background: #ffffff;
         margin: 0;
+        border-radius: 0;
         padding: 10mm;
+        max-width: 100%;
       }
     }
   </style>
 </head>
 <body>
+  <div class="top-bar">
+    תבנית דו"ח ממצאי בדיקה / הצעת נאמן
+  </div>
+
   <div class="page">
-    <h1>תבנית דו"ח ממצאי בדיקה / הצעת נאמן</h1>
+    <h1>דו"ח ממצאי בדיקה – תבנית למילוי</h1>
 
     <!-- פרק א' – פרטים בסיסיים -->
     <h2>פרטים בסיסיים</h2>
@@ -114,11 +198,11 @@
       <div class="grid-2">
         <div class="field">
           <span class="label">מס' תיק ממונה</span>
-          <input type="text" name="file_mamon" />
+          <input type="text" name="file_mamon" class="input-short" maxlength="5" />
         </div>
         <div class="field">
           <span class="label">מס' תיק בית משפט</span>
-          <input type="text" name="file_court" />
+          <input type="text" name="file_court" class="input-medium" />
         </div>
 
         <div class="field">
@@ -151,11 +235,11 @@
       <div class="grid-2">
         <div class="field">
           <span class="label">צו תשלומים שנקבע – סכום חודשי (₪)</span>
-          <input type="number" name="payment_order_amount" step="1" />
+          <input type="number" name="payment_order_amount" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">צו תשלומים – חודש התחלה</span>
-          <input type="text" name="payment_order_from_month" placeholder="למשל: 08/2021" />
+          <input type="text" name="payment_order_from_month" placeholder="למשל: 08/2025" class="input-medium" />
         </div>
 
         <div class="field">
@@ -164,11 +248,11 @@
         </div>
         <div class="field">
           <span class="label">תשלום מדורג – החל מתאריך</span>
-          <input type="text" name="graduated_payment_from" placeholder="למשל: 01/2023" />
+          <input type="text" name="graduated_payment_from" placeholder="למשל: 01/2026" class="input-medium" />
         </div>
       </div>
 
-      <div class="field" style="margin-top:8px;">
+      <div class="field" style="margin-top:10px;">
         <span class="label">מסירה לנושים</span>
         <div class="small-note">
           <label class="inline">
@@ -176,7 +260,8 @@
             מסירה בוצעה לנושים
           </label>
         </div>
-        <textarea name="creditors_no_claim" rows="2" placeholder="רשימת נושים שלא הוגשה עבורם תביעת חוב / מסירה"></textarea>
+        <textarea name="creditors_no_claim" class="textarea-wide" rows="2"
+          placeholder="רשימת נושים שלא הוגשה עבורם תביעת חוב / מסירה"></textarea>
       </div>
     </div>
 
@@ -197,15 +282,15 @@
         </div>
         <div class="field">
           <span class="label">מספר ילדים</span>
-          <input type="number" name="children_total" min="0" />
+          <input type="number" name="children_total" min="0" class="input-short" />
         </div>
         <div class="field">
           <span class="label">מתוכם קטינים</span>
-          <input type="number" name="children_minors" min="0" />
+          <input type="number" name="children_minors" min="0" class="input-short" />
         </div>
       </div>
 
-      <div class="grid-2" style="margin-top:8px;">
+      <div class="grid-2" style="margin-top:10px;">
         <div class="field">
           <span class="label">מגורים</span>
           <select name="residence_type">
@@ -222,10 +307,10 @@
         </div>
       </div>
 
-      <div class="grid-2" style="margin-top:8px;">
+      <div class="grid-2" style="margin-top:10px;">
         <div class="field">
           <span class="label">דמי שכירות (₪)</span>
-          <input type="number" name="rent_amount" step="1" />
+          <input type="number" name="rent_amount" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">הערות קצרות לעניין המגורים</span>
@@ -249,7 +334,7 @@
         </div>
         <div class="field">
           <span class="label">מועד התחלה</span>
-          <input type="text" name="debtor_work_from" placeholder="למשל: 12/2021" />
+          <input type="text" name="debtor_work_from" placeholder="למשל: 12/2024" class="input-medium" />
         </div>
 
         <div class="field">
@@ -258,12 +343,12 @@
         </div>
         <div class="field">
           <span class="label">שכר ממוצע (נטו, ₪)</span>
-          <input type="number" name="debtor_salary" step="1" />
+          <input type="number" name="debtor_salary" step="1" class="input-medium" />
         </div>
         <div></div>
       </div>
 
-      <div class="small-note" style="margin-top:8px;"><strong>בן/בת הזוג</strong></div>
+      <div class="small-note" style="margin-top:10px;"><strong>בן/בת הזוג</strong></div>
       <div class="grid-3">
         <div class="field">
           <span class="label">מקום עבודה</span>
@@ -275,7 +360,7 @@
         </div>
         <div class="field">
           <span class="label">מועד התחלה</span>
-          <input type="text" name="spouse_work_from" />
+          <input type="text" name="spouse_work_from" class="input-medium" />
         </div>
 
         <div class="field">
@@ -284,14 +369,15 @@
         </div>
         <div class="field">
           <span class="label">שכר ממוצע (נטו, ₪)</span>
-          <input type="number" name="spouse_salary" step="1" />
+          <input type="number" name="spouse_salary" step="1" class="input-medium" />
         </div>
         <div></div>
       </div>
 
-      <div class="field" style="margin-top:8px;">
+      <div class="field" style="margin-top:10px;">
         <span class="label">פוטנציאל השתכרות לדעת הנאמן</span>
-        <textarea name="earning_potential" rows="2" placeholder="הערכת פוטנציאל השתכרות ותמצית הנימוקים"></textarea>
+        <textarea name="earning_potential" class="textarea-wide" rows="2"
+          placeholder="הערכת פוטנציאל השתכרות ותמצית הנימוקים"></textarea>
       </div>
     </div>
 
@@ -300,10 +386,11 @@
     <div class="section-box">
       <div class="field">
         <span class="label">מצב רפואי – פירוט תמציתי</span>
-        <textarea name="medical_status" rows="2" placeholder="מצב רפואי רלוונטי בקצרה"></textarea>
+        <textarea name="medical_status" class="textarea-wide" rows="2"
+          placeholder="מצב רפואי רלוונטי בקצרה"></textarea>
       </div>
 
-      <div class="grid-2" style="margin-top:8px;">
+      <div class="grid-2" style="margin-top:10px;">
         <div class="field">
           <span class="label">אישור מל"ל על נכות / אי כושר</span>
           <select name="btl_disability">
@@ -320,9 +407,10 @@
         </div>
       </div>
 
-      <div class="field" style="margin-top:8px;">
+      <div class="field" style="margin-top:10px;">
         <span class="label">הוצאות ממוצעות</span>
-        <textarea name="avg_expenses" rows="2" placeholder="סך הוצאות ממוצע ונימוק קצר לגבי סבירות ההוצאות"></textarea>
+        <textarea name="avg_expenses" class="textarea-wide" rows="2"
+          placeholder="סך הוצאות ממוצע ונימוק קצר לגבי סבירות ההוצאות"></textarea>
       </div>
     </div>
 
@@ -331,22 +419,26 @@
     <div class="section-box">
       <div class="field">
         <span class="label">נסיבות יצירת החובות</span>
-        <textarea name="debts_circumstances" rows="2" placeholder="תמציתי מאוד – שורה שתיים"></textarea>
+        <textarea name="debts_circumstances" class="textarea-wide" rows="2"
+          placeholder="תמציתי מאוד – שורה שתיים"></textarea>
       </div>
 
-      <div class="field" style="margin-top:6px;">
+      <div class="field" style="margin-top:8px;">
         <span class="label">התנהלות החייב</span>
-        <textarea name="debtor_conduct" rows="2" placeholder="התנהלות כללית, תום לב, שיתוף פעולה וכד'."></textarea>
+        <textarea name="debtor_conduct" class="textarea-wide" rows="2"
+          placeholder="התנהלות כללית, תום לב, שיתוף פעולה וכד'."></textarea>
       </div>
 
-      <div class="grid-2" style="margin-top:6px;">
+      <div class="grid-2" style="margin-top:8px;">
         <div class="field">
           <span class="label">דו"חות חודשיים ומסמכים חסרים</span>
-          <textarea name="monthly_reports" rows="2" placeholder="האם מגיש, מה חסר, דרישות השלמה"></textarea>
+          <textarea name="monthly_reports" class="textarea-wide" rows="2"
+            placeholder="האם מגיש, מה חסר, דרישות השלמה"></textarea>
         </div>
         <div class="field">
           <span class="label">הוצאות ותשלומים חודשיים</span>
-          <textarea name="monthly_payments_behavior" rows="2" placeholder="עמידה בתשלומים, פיגורים, סבירות ההוצאות"></textarea>
+          <textarea name="monthly_payments_behavior" class="textarea-wide" rows="2"
+            placeholder="עמידה בתשלומים, פיגורים, סבירות ההוצאות"></textarea>
         </div>
       </div>
     </div>
@@ -357,7 +449,7 @@
       <div class="grid-3">
         <div class="field">
           <span class="label">חובות מוצהרים – מס' נושים</span>
-          <input type="number" name="declared_creditors_count" min="0" />
+          <input type="number" name="declared_creditors_count" min="0" class="input-short" />
         </div>
         <div class="field">
           <span class="label">חובות מוצהרים – סך הכל (₪)</span>
@@ -365,7 +457,7 @@
         </div>
         <div class="field">
           <span class="label">חובות בפועל – מס' נושים</span>
-          <input type="number" name="actual_creditors_count" min="0" />
+          <input type="number" name="actual_creditors_count" min="0" class="input-short" />
         </div>
 
         <div class="field">
@@ -378,31 +470,34 @@
         </div>
         <div class="field">
           <span class="label">מספר תביעות חוב שנבדקו</span>
-          <input type="number" name="claims_checked_count" min="0" />
+          <input type="number" name="claims_checked_count" min="0" class="input-short" />
         </div>
       </div>
 
-      <div class="grid-2" style="margin-top:8px;">
+      <div class="grid-2" style="margin-top:10px;">
         <div class="field">
           <span class="label">נכסי מקרקעין</span>
-          <textarea name="assets_real_estate" rows="2" placeholder="עיר בלבד, סוג דירה, שווי משוער (אם יש)"></textarea>
+          <textarea name="assets_real_estate" class="textarea-wide" rows="2"
+            placeholder="עיר בלבד, סוג דירה, שווי משוער (אם יש)"></textarea>
         </div>
         <div class="field">
           <span class="label">נכסים נזילים</span>
-          <textarea name="assets_liquid" rows="2" placeholder="פירוט קצר מאוד (קופות, חסכונות וכו')"></textarea>
+          <textarea name="assets_liquid" class="textarea-wide" rows="2"
+            placeholder="פירוט קצר מאוד (קופות, חסכונות וכו')"></textarea>
         </div>
       </div>
     </div>
 
-    <!-- פרק ח' – מסקנת הנאמן והצעת הנאמן -->
+    <!-- פרק ח' – מסקנת הנאמן והצעתו -->
     <h2>מסקנת הנאמן והצעתו</h2>
     <div class="section-box">
       <div class="field">
         <span class="label">מסקנת הנאמן</span>
-        <textarea name="trustee_conclusion" rows="2" placeholder="מסקנת הנאמן – שורה שתיים"></textarea>
+        <textarea name="trustee_conclusion" class="textarea-wide" rows="2"
+          placeholder="מסקנת הנאמן – שורה שתיים"></textarea>
       </div>
 
-      <div class="grid-3" style="margin-top:8px;">
+      <div class="grid-3" style="margin-top:10px;">
         <div class="field">
           <span class="label">הצעת הנאמן</span>
           <select name="trustee_recommendation">
@@ -414,18 +509,18 @@
         </div>
         <div class="field">
           <span class="label">צו שיקום – סכום חודשי (₪)</span>
-          <input type="number" name="trustee_rehab_amount" step="1" />
+          <input type="number" name="trustee_rehab_amount" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">צו שיקום – משך (חודשים)</span>
-          <input type="number" name="trustee_rehab_months" min="0" />
+          <input type="number" name="trustee_rehab_months" min="0" class="input-short" />
         </div>
       </div>
 
-      <div class="grid-2" style="margin-top:8px;">
+      <div class="grid-2" style="margin-top:10px;">
         <div class="field">
           <span class="label">צו שיקום – סכום כולל (₪)</span>
-          <input type="number" name="trustee_rehab_total" step="1" />
+          <input type="number" name="trustee_rehab_total" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">הסדר בנוגע לפיגורים (אם יש)</span>
@@ -433,9 +528,9 @@
         </div>
       </div>
 
-      <div class="field" style="margin-top:8px;">
+      <div class="field" style="margin-top:10px;">
         <span class="label">הכשרה כלכלית</span>
-        <select name="trustee_training">
+        <select name="trustee_training" class="input-medium">
           <option value="">— בחר/י —</option>
           <option value="yes">מומלצת</option>
           <option value="no">לא מומלצת</option>
@@ -443,7 +538,7 @@
       </div>
     </div>
 
-    <!-- פרק ט' – לשימוש הממונה (להשאיר ריק למילוי לאחר מכן) -->
+    <!-- פרק ט' – המלצת הממונה -->
     <h2>המלצת הממונה (למילוי בשלב מאוחר יותר)</h2>
     <div class="section-box">
       <div class="grid-3">
@@ -458,20 +553,20 @@
         </div>
         <div class="field">
           <span class="label">צו שיקום – סכום חודשי (₪)</span>
-          <input type="number" name="commissioner_rehab_amount" step="1" />
+          <input type="number" name="commissioner_rehab_amount" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">צו שיקום – משך (חודשים)</span>
-          <input type="number" name="commissioner_rehab_months" min="0" />
+          <input type="number" name="commissioner_rehab_months" min="0" class="input-short" />
         </div>
 
         <div class="field">
           <span class="label">צו שיקום – סכום כולל (₪)</span>
-          <input type="number" name="commissioner_rehab_total" step="1" />
+          <input type="number" name="commissioner_rehab_total" step="1" class="input-medium" />
         </div>
         <div class="field">
           <span class="label">הכשרה כלכלית</span>
-          <select name="commissioner_training">
+          <select name="commissioner_training" class="input-medium">
             <option value="">— בחר/י —</option>
             <option value="yes">כן</option>
             <option value="no">לא</option>
@@ -480,14 +575,16 @@
         <div></div>
       </div>
 
-      <div class="field" style="margin-top:8px;">
+      <div class="field" style="margin-top:10px;">
         <span class="label">נימוקים (תמציתי מאוד)</span>
-        <textarea name="commissioner_reasoning" rows="2" placeholder="שורה ממש קצרה"></textarea>
+        <textarea name="commissioner_reasoning" class="textarea-wide textarea-tiny"
+          placeholder="שורה ממש קצרה"></textarea>
       </div>
     </div>
 
-    <div class="center small-note" style="margin-top:10px;">
-      תאריך מילוי: <input type="date" name="fill_date" style="width:auto;" />
+    <div class="footer-note">
+      תאריך מילוי:
+      <input type="date" name="fill_date" style="width:auto; padding:4px 6px; border-radius:999px; border:1px solid #cbd5f5; background:#f8fafc;" />
     </div>
   </div>
 </body>
