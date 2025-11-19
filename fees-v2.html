@@ -1,25 +1,277 @@
-<!doctype html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>מחשבון שכר טרחה – גרסת עבודה v2</title>
-  <meta name="robots" content="noindex, nofollow">
-  <style>
-    body { font-family: Heebo, Arial, sans-serif; margin:0; padding-top:60px }
-    #banner{
-      position:fixed; top:0; inset-inline:0;
-      background:#e2d9f3; border-bottom:1px solid #d4c2f0; color:#3d247a;
-      padding:10px; text-align:center; font-weight:bold; z-index:9999;
+<script>
+/* ===== UI ===== */
+const infile = document.getElementById('infile');
+const btnRun = document.getElementById('btnRun');
+const btnClear = document.getElementById('btnClear');
+const btnJSON = document.getElementById('btnJSON');
+const fileBadge = document.getElementById('fileBadge');
+const pagesBadge = document.getElementById('pagesBadge');
+const bar = document.getElementById('bar');
+const statusEl = document.getElementById('status');
+const rawEl = document.getElementById('raw');
+const fastMode = document.getElementById('fastMode');
+
+const setStatus = (t, cls) => { statusEl.textContent = t; statusEl.style.color = cls==='ok' ? '#065f46' : (cls==='err' ? '#991b1b' : '#6b7280'); };
+const setProgress = p => bar.style.width = Math.max(0,Math.min(100,p))+'%';
+const tick = () => new Promise(r=>requestAnimationFrame(()=>r()));
+
+/* ===== ניקוי וטקסט ===== */
+const cleanRTL = s => (s||'').replace(/[\u200f\u200e]/g,'');
+function postClean(v){
+  if(!v) return v;
+  v = (''+v).replace(/[\r\n]+/g,' ');
+  v = v.replace(/(\d)\s+(\d)/g,'$1$2');      // איחוד ספרות מפוצלות
+  v = v.replace(/\s*[-–—־]\s*/g,'-');        // מקפים אחידים
+  v = v.replace(/[’׳]/g,"'").replace(/[“”״]/g,'"');
+  v = v.replace(/\s{2,}/g,' ');
+  return cleanRTL(v).trim();
+}
+const normDigits = s => s ? (''+s).replace(/\D/g,'') : '';
+const normDate = s => { const m=(''+s).match(/(\d{1,2})[\/\.\-](\d{1,2})[\/\.\-](\d{2,4})/); if(!m) return (s||'').trim(); let [_,d,mo,y]=m; if(y.length===2) y='20'+y; return `${y.padStart(4,'0')}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`; };
+
+function hebLabelPattern(label){const esc=ch=>ch.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&');return label.split('').map(ch=>/\s/.test(ch)?'\\s*':esc(ch)+'\\s*').join('');}
+function findAfterLabel(text,label,max=140){const re=new RegExp(hebLabelPattern(label)+'[:\\-–—־]*\\s*([^\\n]{1,'+max+'})','i');const m=text.match(re);return m?m[1].trim():'';}
+function findNearby(text,label,pat,win=220){const lab=new RegExp(hebLabelPattern(label),'i');const i=text.search(lab);if(i<0)return'';const seg=text.slice(Math.max(0,i-10),i+win);const m=seg.match(new RegExp(pat,'i'));return m?(m[1]||m[0]).trim():'';}
+
+/* ===== חילוץ לשדות ===== */
+let lastStruct = null;
+function extractFields(fullText, pagesCount){
+  const t = postClean(fullText);
+
+  // ---- פרטי תיק
+  let court = findAfterLabel(t,'בית משפט',80) || (t.match(/בית\s*משפט[:\-–—־]?\s*([^\d:,;]{3,80})/i)||[])[1] || '';
+  let caseNum = (t.match(/([0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9]\s*[-–—־]\s*[0-9]\s*[0-9])/)||[])[1] || '';
+  if(caseNum) caseNum = caseNum.replace(/\s+/g,'').replace(/[–—־]/g,'-');
+  let comm = findAfterLabel(t,'תיק ממונה',40) || (t.match(/תיק\s*ממונה[:\-–—־]?\s*([\d\s\-]{3,})/i)||[])[1] || '';
+  comm = normDigits(comm);
+
+  // ---- פרטים אישיים
+  let name = findAfterLabel(t,'שם החייב',80) || (t.match(/שם\s*החייב(?:\/ת)?[:\-–—־]?\s*([^,\d:;]{2,80})/i)||[])[1] || '';
+  name = name.replace(/\s{2,}/g,' ').trim();
+  let id = findAfterLabel(t,'מספר זיהוי',20) || findAfterLabel(t,'ת.ז',20) || (t.match(/(?:מספר\s*זיהוי|ת\.?ז)[:\-–—־]?\s*([\d\s]{7,10})/i)||[])[1] || '';
+  id = normDigits(id);
+
+  // ---- תשלומים (א.1)
+  let opening = findNearby(t,'צו לפתיחת הליכים','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',260) ||
+                (t.match(/(?:ביום|בתאריך)\s*(\d{1,2}[\/\.\-]\d{1,2}[\/\.\-]\d{2,4}).{0,40}?צו\s*לפתיחת\s*הליכים/i)||[])[1] || '';
+  opening = opening ? normDate(opening) : '';
+  let monthly = findNearby(t,'תשלום חודשי','([\\d\\.,]+)',220) ||
+                (t.match(/תשלום\s*חודשי[^₪]{0,40}₪?\s*([\d\.,]+)/i)||[])[1] || '';
+  monthly = monthly ? monthly.replace(/[^\d.,]/g,'') : '';
+  let monthlyFrom = findNearby(t,'החל מ','(\\d{1,2}[\\/\\.\\-]\\d{1,2}[\\/\\.\\-]\\d{2,4})',200) || '';
+  monthlyFrom = monthlyFrom ? normDate(monthlyFrom) : '';
+
+  // כתיבה ל-UI
+  byId('v_court',court); byId('v_case',caseNum); byId('v_commissioner',comm);
+  byId('v_name',name); byId('v_id',id);
+  byId('v_opening',opening||'—'); byId('v_monthly',monthly||'—'); byId('v_monthly_from',monthlyFrom||'—');
+  byId('v_pages', pagesCount ?? '—');
+
+  // אובייקט ל-JSON
+  lastStruct = {
+    case:{ court_name:court||'', insolvency_case_no:caseNum||'', commissioner_file_no:comm||'', pages_count: pagesCount??null },
+    debtor:{ debtor_name:name||'', id_number:id||'' },
+    orders_and_payments:{ opening_order_date:opening||'', monthly_payment_amount:monthly||'', monthly_payment_from_date:monthlyFrom||'' }
+  };
+}
+
+function byId(id,val){ const el=document.getElementById(id); if(!el) return; el.textContent = (val==null||val==='')?'—':val; }
+
+/* ===== OCR/קריאה ===== */
+infile.addEventListener('change', ()=>{
+  const f = infile.files[0] || null;
+  fileObj = f;
+  btnRun.disabled = !f; btnClear.disabled = !f;
+  fileBadge.textContent = f ? ('קובץ: ' + f.name) : 'לא נבחר קובץ';
+  pagesBadge.style.display='none';
+  setProgress(0); setStatus('מוכן.');
+  if(rawEl) rawEl.textContent='';
+});
+
+btnClear.addEventListener('click', ()=>{
+  infile.value=''; infile.dispatchEvent(new Event('change'));
+});
+
+btnJSON.addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(lastStruct||{}, null, 2)], {type:'application/json;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'extracted.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+let fileObj=null;
+
+btnRun.addEventListener('click', async ()=>{
+  if(!fileObj) return;
+  btnRun.disabled = true; btnClear.disabled = true;
+
+  try{
+    setProgress(3); setStatus('טוען קובץ…'); await tick();
+
+    const ext=(fileObj.name.split('.').pop()||'').toLowerCase();
+    const isPDF = ext==='pdf';
+    let pagesCount = 1, text='';
+
+    if(isPDF){
+      const ab = await fileObj.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data:ab}).promise;
+      pagesCount = pdf.numPages;
+      pagesBadge.style.display='inline-flex';
+      pagesBadge.textContent = `עמודים: ${pagesCount}`;
+
+      // נסיון טקסט מובנה
+      let built='';
+      for(let i=1;i<=pdf.numPages;i++){
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        built += content.items.map(it=>it.str).join(' ') + '\n';
+        setProgress(10 + Math.round(i/pdf.numPages*25));
+        if(i%2===0) await tick();
+      }
+      const hebCount = (built.match(/[\u0590-\u05FF]/g)||[]).length;
+
+      if(hebCount < 30){
+        // OCR מהיר ומקבילי עם עצירה מוקדמת
+        setStatus('מעט עברית מזוהה. מפעיל OCR (מהיר)…'); await tick();
+        text = await ocrPdf(ab, pagesCount, p=>setProgress(40 + Math.round(p*0.55)), {aborted:false});
+      } else {
+        text = built;
+      }
+    } else {
+      // תמונה — OCR בשני ניסיונות
+      pagesCount = 1;
+      pagesBadge.style.display='inline-flex';
+      pagesBadge.textContent = `עמודים: ${pagesCount}`;
+      setStatus('OCR על תמונה (מקומי)…'); await tick();
+      const first = await Tesseract.recognize(fileObj, 'heb+eng', {
+        tessedit_pageseg_mode: 6,
+        logger: m => { if(m.progress!=null) setProgress(20 + Math.round(m.progress*75)); }
+      });
+      let pageText = first.data.text || '';
+      if(pageText.replace(/\s/g,'').length < 80){
+        const img = await fileToImage(fileObj);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const fast = fastMode?.checked ?? true;
+        const scale = fast ? 2000/Math.max(img.width,img.height) : 2600/Math.max(img.width,img.height);
+        canvas.width = Math.round(img.width*scale);
+        canvas.height = Math.round(img.height*scale);
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        preprocessCanvas(ctx, canvas, 160);
+        pageText = await tesseractOnCanvas(canvas, p=>setProgress(25 + Math.round(p*70)));
+      }
+      text = pageText;
     }
-    .content{padding:20px}
-  </style>
-</head>
-<body>
-  <div id="banner">🟣 שכר טרחה – גרסת עבודה v2 (בדיקה)</div>
-  <div class="content">
-    <h1>שכר טרחה – v2</h1>
-    <!-- קוד הניסוי שלך -->
-  </div>
-</body>
-</html>
+
+    text = postClean(text);
+    if(rawEl) rawEl.textContent = text.slice(0, 6000);
+    setProgress(100); setStatus('הסתיים בהצלחה.','ok'); await tick();
+    extractFields(text, pagesCount);
+
+  } catch(err){
+    console.error(err);
+    setStatus('שגיאה: '+err.message,'err');
+    setProgress(0);
+  } finally{
+    btnRun.disabled = !fileObj; btnClear.disabled = !fileObj;
+  }
+});
+
+/* ===== OCR utilities (מהיר, קונקרנטי, עצירה מוקדמת) ===== */
+function haveEnough(struct){
+  if(!struct) return false;
+  const c = struct.case || {}, d = struct.debtor || {}, o = struct.orders_and_payments || {};
+  const caseOk = !!(c.court_name || c.insolvency_case_no || c.commissioner_file_no);
+  const idOk   = !!d.id_number;
+  const payOk  = !!(o.opening_order_date || o.monthly_payment_amount);
+  return caseOk && idOk && payOk;
+}
+
+async function tesseractOnCanvas(canvas, onProg){
+  const { data:{ text } } = await Tesseract.recognize(canvas, 'heb+eng', {
+    tessedit_pageseg_mode: 6,
+    tessedit_char_whitelist: "אבגדהוזחטיכלמנסעפצקרשת ןםךףץ0123456789./-:,₪\"'",
+    logger: m => { if(onProg && m.progress!=null) onProg(m.progress); }
+  });
+  return text || '';
+}
+
+async function ocrPdf(arrayBuffer, pages, onProg, token){
+  const fast = fastMode?.checked ?? true;
+  const pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+
+  const CONCURRENCY = fast ? 3 : 1;
+  const SCALE       = fast ? 1.6 : 2.2;
+  const FIRST_PASS  = fast ? Math.min(pdf.numPages, 6) : pdf.numPages;
+
+  let collectedText = '';
+  let progressPages = 0;
+  let stopped       = false;
+
+  const runPage = async (i, processedCount) => {
+    if(token?.aborted || stopped) return '';
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: SCALE});
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({canvasContext:ctx, viewport}).promise;
+
+    let text = await tesseractOnCanvas(canvas, p=>{
+      if(onProg) onProg(((processedCount-1)+p)/pages*100);
+    });
+
+    if(text.replace(/\s/g,'').length < 80){
+      preprocessCanvas(ctx, canvas, 160);
+      text = await tesseractOnCanvas(canvas, p=>{
+        if(onProg) onProg(((processedCount-1)+p)/pages*100);
+      });
+    }
+    return text + '\n';
+  };
+
+  async function runRange(start, end){
+    let i = start;
+    const workers = new Array(CONCURRENCY).fill(0).map(async ()=>{
+      while(i<=end && !stopped && !(token&&token.aborted)){
+        const myIndex = i++;
+        const chunk = await runPage(myIndex, ++progressPages);
+        collectedText += chunk;
+
+        // לחלץ תוך כדי, ואם מספיק — לעצור
+        extractFields(postClean(collectedText), pages);
+        if(haveEnough(lastStruct)) stopped = true;
+
+        if(onProg) onProg(45 + Math.round(progressPages/pages*45));
+        await tick();
+      }
+    });
+    await Promise.all(workers);
+  }
+
+  await runRange(1, FIRST_PASS);
+  if(!stopped && FIRST_PASS < pdf.numPages){
+    await runRange(FIRST_PASS+1, pdf.numPages);
+  }
+  return collectedText;
+}
+
+/* עיבוד תמונה: בינאריזציה */
+function preprocessCanvas(ctx, canvas, thresh=160){
+  const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const d = img.data;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i], g=d[i+1], b=d[i+2];
+    const gray = (r*0.299 + g*0.587 + b*0.114)|0;
+    const t = gray > thresh ? 255 : 0;
+    d[i]=d[i+1]=d[i+2]=t;
+  }
+  ctx.putImageData(img,0,0);
+}
+
+function fileToImage(file){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=fr.result;};
+    fr.onerror=reject; fr.readAsDataURL(file);
+  });
+}
+</script>
