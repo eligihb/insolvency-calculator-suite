@@ -422,5 +422,73 @@
         </div>
       </div>
 
-      <div class="grid-2" style="margin-
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="field">
+          <span class="label">צו שיקום – סכום כולל (₪)</span>
+          <input type="number" name="trustee_rehab_total" step="1" />
+        </div>
+        <div class="field">
+          <span class="label">הסדר בנוגע לפיגורים (אם יש)</span>
+          <input type="text" name="arrears_arrangement" />
+        </div>
+      </div>
 
+      <div class="field" style="margin-top:8px;">
+        <span class="label">הכשרה כלכלית</span>
+        <select name="trustee_training">
+          <option value="">— בחר/י —</option>
+          <option value="yes">מומלצת</option>
+          <option value="no">לא מומלצת</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- פרק ט' – לשימוש הממונה (להשאיר ריק למילוי לאחר מכן) -->
+    <h2>המלצת הממונה (למילוי בשלב מאוחר יותר)</h2>
+    <div class="section-box">
+      <div class="grid-3">
+        <div class="field">
+          <span class="label">המלצת הממונה</span>
+          <select name="commissioner_recommendation">
+            <option value="">— בחר/י —</option>
+            <option value="cancel">ביטול ההליך</option>
+            <option value="reject">דחיית הבקשה</option>
+            <option value="rehab_order">צו לשיקום כלכלי</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="label">צו שיקום – סכום חודשי (₪)</span>
+          <input type="number" name="commissioner_rehab_amount" step="1" />
+        </div>
+        <div class="field">
+          <span class="label">צו שיקום – משך (חודשים)</span>
+          <input type="number" name="commissioner_rehab_months" min="0" />
+        </div>
+
+        <div class="field">
+          <span class="label">צו שיקום – סכום כולל (₪)</span>
+          <input type="number" name="commissioner_rehab_total" step="1" />
+        </div>
+        <div class="field">
+          <span class="label">הכשרה כלכלית</span>
+          <select name="commissioner_training">
+            <option value="">— בחר/י —</option>
+            <option value="yes">כן</option>
+            <option value="no">לא</option>
+          </select>
+        </div>
+        <div></div>
+      </div>
+
+      <div class="field" style="margin-top:8px;">
+        <span class="label">נימוקים (תמציתי מאוד)</span>
+        <textarea name="commissioner_reasoning" rows="2" placeholder="שורה ממש קצרה"></textarea>
+      </div>
+    </div>
+
+    <div class="center small-note" style="margin-top:10px;">
+      תאריך מילוי: <input type="date" name="fill_date" style="width:auto;" />
+    </div>
+  </div>
+</body>
+</html>
