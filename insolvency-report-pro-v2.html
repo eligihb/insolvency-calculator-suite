@@ -150,18 +150,17 @@
     .btn-shot    { background: #0f766e; color: #fff; }
     .btn-reset   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
 
-    /* תת-כותרת קצבאות */
+    /* קצבאות */
     .allowances-title-row {
-      justify-content: center;
+      justify-content: flex-start;
     }
     .allowance-title {
       color: #15803d;
       font-weight: 700;
-      text-align: center;
-      width: 100%;
+      text-align: right;
+      width: auto;
     }
 
-    /* שדה בעיות רפואיות – לרוחב העמודה */
     .medical-notes-row input {
       width: 100%;
     }
@@ -177,7 +176,7 @@
       width: 100%;
       border: 0;
       border-radius: 12px;
-      height: 480px; /* גובה מתון שיישב בדף אחד */
+      height: 380px; /* מוקטן כדי לא לזלוג לדף הבא */
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
       background: #ffffff;
     }
@@ -186,8 +185,12 @@
     #familyIncomeTotal { color: #15803d; }
     #familyExpensesTotal { color: #b91c1c; }
 
-    /* דוחות חודשיים - לא הוגשו כלל באדום */
-    .reports-not-submitted {
+    /* דוחות חודשיים – צבע לפי סימון */
+    .status-ok {
+      color: #15803d;
+      font-weight: 700;
+    }
+    .status-bad {
       color: #b91c1c;
       font-weight: 700;
     }
@@ -288,7 +291,7 @@
               תשלום מדורג:
               <input type="text" class="short currency-input" placeholder="אם יש">
               מיום:
-              <input type="date" class="short">
+              <input type="date" class="medium">
             </div>
             <div class="row">
               מסירה לנושים:
@@ -310,7 +313,7 @@
             <div class="row allowances-title-row">
               <span class="allowance-title">קצבאות</span>
             </div>
-            <div class="row" style="justify-content:center;flex-wrap:wrap;">
+            <div class="row" style="justify-content:flex-start;flex-wrap:wrap;">
               <label><input type="checkbox"> קצבת ילד</label>
               <label><input type="checkbox"> נכה</label>
               <label><input type="checkbox"> הבטחת הכנסה</label>
@@ -366,9 +369,15 @@
 
             <div class="small-text">דו"חות חודשיים:</div>
             <div class="row">
-              <label><input type="radio" name="reports_status"> הוגשו</label>
-              <label><input type="radio" name="reports_status"> הוגשו חלקית</label>
-              <label class="reports-not-submitted"><input type="radio" name="reports_status"> לא הוגשו כלל</label>
+              <label class="reports-status-full">
+                <input type="radio" name="reports_status" value="full"> הוגשו
+              </label>
+              <label class="reports-status-partial">
+                <input type="radio" name="reports_status" value="partial"> הוגשו חלקית
+              </label>
+              <label class="reports-status-none">
+                <input type="radio" name="reports_status" value="none"> לא הוגשו כלל
+              </label>
             </div>
 
             <div class="row">
@@ -560,7 +569,6 @@
           <!-- מחשבון צו תשלומים -->
           <div class="calc-frame-card">
             <div class="sub-title">מחשבון צו תשלומים</div>
-            <!-- שים את הקובץ של המחשבון באותו תיקייה בשם הזה -->
             <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
           </div>
         </div>
@@ -591,7 +599,7 @@
     setupPercentField('disabilityPercent');
     setupPercentField('incapacityPercent');
 
-    // עיצוב סכומי כסף: 1,234 ₪ בתוך השדה
+    // עיצוב סכומי כסף
     function attachCurrencyFormatting() {
       const inputs = document.querySelectorAll(".currency-input");
       inputs.forEach(input => {
@@ -655,10 +663,37 @@
       update();
     }
 
+    // דו"חות חודשיים – צבע לפי סימון
+    function setupReportsStatusColors() {
+      const radios = document.querySelectorAll('input[name="reports_status"]');
+      if (!radios.length) return;
+
+      function update() {
+        const fullLabel = document.querySelector('.reports-status-full');
+        const noneLabel = document.querySelector('.reports-status-none');
+        if (fullLabel) fullLabel.classList.remove('status-ok','status-bad');
+        if (noneLabel) noneLabel.classList.remove('status-ok','status-bad');
+
+        const checked = document.querySelector('input[name="reports_status"]:checked');
+        if (!checked) return;
+
+        if (checked.value === 'full' && fullLabel) {
+          fullLabel.classList.add('status-ok');
+        }
+        if (checked.value === 'none' && noneLabel) {
+          noneLabel.classList.add('status-bad');
+        }
+      }
+
+      radios.forEach(r => r.addEventListener('change', update));
+      update();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       attachCurrencyFormatting();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
+      setupReportsStatusColors();
     });
   </script>
 </body>
