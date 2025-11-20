@@ -5,140 +5,100 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>מחשבון חדלות פירעון – דף עבודה (DEV)</title>
 
-  <!-- CSS כללי -->
   <link rel="stylesheet" href="./assets/css/base.css?v=1">
 
   <style>
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:18px;
-      max-width:1100px;
-      margin:0 auto;
+    /* גריד ממורכז – 3 כרטיסים בשורה, 2 מתחת, הכל באמצע */
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
-    .card{
-      background:#fff;
-      border:1px solid #ddd;
-      border-radius:12px;
-      padding:18px;
-      box-shadow:0 2px 6px rgba(0,0,0,.06);
+
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+      width: 300px; /* רוחב קבוע לכל כרטיס כדי שהשורות יהיו מסודרות */
     }
-    .card h2{
-      margin:0 0 12px;
-      text-align:center;
-      font-size:20px;
+
+    .card h2 {
+      margin: 0 0 12px;
+      text-align: center;
+      font-size: 20px;
     }
-    .btn{
-      display:block;
-      margin:8px 0;
-      padding:12px 14px;
-      border-radius:10px;
-      color:#fff;
-      text-decoration:none;
-      font-weight:700;
-      text-align:center;
-      transition:.15s;
+
+    .btn {
+      display: block;
+      margin: 8px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      text-align: center;
+      transition: .15s;
     }
-    .btn:hover{opacity:.88}
-    .stable{background:#28a745} /* ירוק יציב */
-    .work{background:#dc3545}   /* אדום עבודה */
-    .badge{font-weight:700;margin-inline-start:6px;opacity:.9}
-    .muted{opacity:.7;font-size:14px;text-align:center;margin-top:6px}
+    .btn:hover { opacity:.88; }
+
+    .stable { background:#28a745; } /* יציב – ירוק */
+    .work   { background:#dc3545; } /* עבודה – אדום */
   </style>
 </head>
+
 <body>
   <h1>מחשבון חדלות פירעון – דף עבודה (DEV)</h1>
 
   <div class="grid">
 
-    <!-- צו תשלומים -->
+    <!-- 1. צו תשלומים -->
     <div class="card">
       <h2>צו תשלומים</h2>
-      <a class="btn stable" href="payments-stable.html">
-        🟢 יציב <span class="badge">stable</span>
-      </a>
-      <a class="btn work" href="payments-a1.html">
-        🟡 גרסת A1 <span class="badge">A1</span>
-      </a>
-      <a class="btn work" href="payments-v1.html">
-        🔴 עבודה v1 <span class="badge">v1</span>
-      </a>
-      <a class="btn work" href="payments-v2.html">
-        🔴 עבודה v2 <span class="badge">v2</span>
-      </a>
-      <div class="muted">קישורי עבודה לאינדקס: noindex</div>
+      <a class="btn stable" href="payments-stable.html">יציב (stable)</a>
+      <a class="btn work"   href="payments-a1.html">גרסת A1</a>
+      <a class="btn work"   href="payments-v1.html">גרסת עבודה v1</a>
+      <a class="btn work"   href="payments-v2.html">גרסת עבודה v2</a>
     </div>
 
-    <!-- צו שיקום -->
+    <!-- 2. צו שיקום -->
     <div class="card">
       <h2>צו שיקום</h2>
-      <a class="btn stable" href="rehab-stable.html">
-        🟢 יציב <span class="badge">stable</span>
-      </a>
-      <a class="btn work" href="rehab-a1.html">
-        🟡 גרסת A1 <span class="badge">A1</span>
-      </a>
-      <a class="btn work" href="rehab-v1.html">
-        🔴 עבודה v1 <span class="badge">v1</span>
-      </a>
-      <a class="btn work" href="rehab-v2.html">
-        🔴 עבודה v2 <span class="badge">v2</span>
-      </a>
-      <div class="muted">קישורי עבודה לאינדקס: noindex</div>
+      <a class="btn stable" href="rehab-stable.html">יציב (stable)</a>
+      <a class="btn work"   href="rehab-a1.html">גרסת A1</a>
+      <a class="btn work"   href="rehab-v1.html">גרסת עבודה v1</a>
+      <a class="btn work"   href="rehab-v2.html">גרסת עבודה v2</a>
     </div>
 
-    <!-- שכר טרחה -->
+    <!-- 3. שכר טרחה -->
     <div class="card">
       <h2>שכר טרחה</h2>
-      <a class="btn stable" href="fees-stable.html">
-        🟢 יציב <span class="badge">stable</span>
-      </a>
-      <a class="btn work" href="fees-a1.html">
-        🟡 גרסת A1 <span class="badge">A1</span>
-      </a>
-      <a class="btn work" href="fees-v1.html">
-        🔴 עבודה v1 <span class="badge">v1</span>
-      </a>
-      <a class="btn work" href="fees-v2.html">
-        🔴 עבודה v2 <span class="badge">v2</span>
-      </a>
-      <div class="muted">קישורי עבודה לאינדקס: noindex</div>
+      <a class="btn stable" href="fees-stable.html">יציב (stable)</a>
+      <a class="btn work"   href="fees-a1.html">גרסת A1</a>
+      <a class="btn work"   href="fees-v1.html">גרסת עבודה v1</a>
+      <a class="btn work"   href="fees-v2.html">גרסת עבודה v2</a>
     </div>
 
-    <!-- נושא חדש 1 – בדיקת זכאות לפתיחת הליך (פלייסהולדר) -->
+    <!-- 4. בדיקת זכאות לפתיחת הליך (פלייסהולדר) -->
     <div class="card">
       <h2>בדיקת זכאות לפתיחת הליך</h2>
-      <a class="btn stable">
-        🟢 יציב <span class="badge">stable</span>
-      </a>
-      <a class="btn work">
-        🟡 גרסת A1 <span class="badge">A1</span>
-      </a>
-      <a class="btn work">
-        🔴 עבודה v1 <span class="badge">v1</span>
-      </a>
-      <a class="btn work">
-        🔴 עבודה v2 <span class="badge">v2</span>
-      </a>
-      <div class="muted">כרגע פלייסהולדר – נוסיף קבצים כשיהיו מוכנים</div>
+      <a class="btn stable">יציב (stable)</a>
+      <a class="btn work">גרסת A1</a>
+      <a class="btn work">גרסת עבודה v1</a>
+      <a class="btn work">גרסת עבודה v2</a>
     </div>
 
-    <!-- נושא חדש 2 – חלוקת דיבידנד לנושים (פלייסהולדר) -->
+    <!-- 5. חלוקת דיבידנד לנושים (פלייסהולדר) -->
     <div class="card">
       <h2>חלוקת דיבידנד לנושים</h2>
-      <a class="btn stable">
-        🟢 יציב <span class="badge">stable</span>
-      </a>
-      <a class="btn work">
-        🟡 גרסת A1 <span class="badge">A1</span>
-      </a>
-      <a class="btn work">
-        🔴 עבודה v1 <span class="badge">v1</span>
-      </a>
-      <a class="btn work">
-        🔴 עבודה v2 <span class="badge">v2</span>
-      </a>
-      <div class="muted">כרגע פלייסהולדר – נוסיף קבצים כשיהיו מוכנים</div>
+      <a class="btn stable">יציב (stable)</a>
+      <a class="btn work">גרסת A1</a>
+      <a class="btn work">גרסת עבודה v1</a>
+      <a class="btn work">גרסת עבודה v2</a>
     </div>
 
   </div>
