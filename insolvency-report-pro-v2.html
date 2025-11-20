@@ -60,13 +60,24 @@
       text-align: right;
     }
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
+    .name-row {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.name-row label {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap; /* הטקסט לא נשבר באמצע */
+}
+
+.name-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 
     label {
       font-size: 11px;
@@ -226,12 +237,16 @@
               <input type="text" class="medium" placeholder="123456-12-25">
             </div>
 
-            <div class="row">
-              שם החייב/ת:
-              <input type="text" class="medium">
-              שם הנאמן:
-              <input type="text" class="medium">
-            </div>
+            <div class="row name-row">
+  <label>
+    שם החייב/ת:
+    <input type="text" class="name-input">
+  </label>
+  <label>
+    שם הנאמן:
+    <input type="text" class="name-input">
+  </label>
+</div>
 
             <div class="row">
               תאריך צו:
