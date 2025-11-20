@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>דו"ח סיכום לדיון צו שיקום כלכלי</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      direction: rtl;
+      text-align: right;
+      margin: 0;
+      background: #e5f6ff;
+      font-size: 12px;
+    }
+
+    .top-bar {
+      background: #0f766e;
+      color: #fff;
+      padding: 10px 18px;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 12px auto;
+      padding: 10px;
+    }
+
+    .card {
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid #dbeafe;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      text-align: center;
+      margin: 0 0 4px;
+      padding-bottom: 2px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .sub-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f766e;
+      margin: 4px 0 2px;
+      text-align: right;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    label {
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    textarea {
+      font-size: 11px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      border: 1px solid #cbd5f5;
+      background: #ffffff;
+      min-width: 0;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .short   { width: 70px; }
+    .tiny    { width: 45px; }
+    .medium  { width: 120px; }
+    .wide    { width: 220px; }
+    .flex-1  { flex: 1 1 0; }
+
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+      align-items: center;
+    }
+
+    .small-text {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px dashed #e2e8f0;
+      margin: 4px 0;
+    }
+
+    .layout-main {
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr; /* שמאל צר יותר, ימין רחב */
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .badge-declared,
+    .badge-actual {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+
+    .badge-declared {
+      background: #e0f2fe;
+      color: #0f172a;
+    }
+
+    .badge-actual {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .red-label {
+      color: #b91c1c;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #475569;
+      margin-top: 6px;
+    }
+
+    .buttons-row {
+      margin: 6px 0 8px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-print   { background: #0ea5e9; color: #fff; }
+    .btn-email   { background: #6366f1; color: #fff; }
+    .btn-reset   { background: #e11d48; color: #fff; }
+
+    @media print {
+      body { background: #ffffff; font-size: 11px; }
+      .top-bar { border-bottom: 1px solid #cbd5e1; box-shadow: none; }
+      .page { max-width: 100%; margin: 0; padding: 4mm; }
+      .card { box-shadow: none; }
+      .buttons-row { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    דו"ח סיכום לדיון צו שיקום כלכלי
+  </div>
+
+  <form id="reportForm">
+    <div class="page">
+
+      <!-- כפתורים בראש העמוד -->
+      <div class="buttons-row">
+        <button type="button" class="btn btn-print" onclick="window.print()">הדפסה</button>
+        <button type="button" class="btn btn-email" onclick="sendEmail()">שליחה במייל</button>
+        <button type="button" class="btn btn-reset" onclick="document.getElementById('reportForm').reset()">איפוס</button>
+      </div>
+
+      <!-- כרטיס עליון – פרטי תיק + צו תשלומים -->
+      <div class="card">
+        <div class="section-title">פרטי תיק + צו תשלומים</div>
+
+        <div class="row" style="justify-content: space-between;">
+          <!-- צד ימין: פרטי תיק -->
+          <div style="flex: 1 1 0; min-width: 260px;">
+            <div class="row">
+              תיק ממונה:
+              <input type="text" class="tiny" maxlength="5">
+              תיק ביהמ"ש:
+              <input type="text" class="short">
+            </div>
+
+            <div class="row">
+              שם החייב/ת:
+              <input type="text" class="wide">
+            </div>
+
+            <div class="row">
+              שם הנאמן:
+              <input type="text" class="wide">
+            </div>
+
+            <div class="row">
+              תאריך צו:
+              <input type="date" class="medium">
+              הוגש לבקשת:
+              <label><input type="radio" name="order_by"> חייב</label>
+              <label><input type="radio" name="order_by"> נושה</label>
+            </div>
+
+            <div class="row">
+              מקום שיפוט:
+              <input type="text" class="medium">
+              תאריך דיון:
+              <input type="date" class="medium">
+              שעת דיון:
+              <input type="time" class="short">
+            </div>
+          </div>
+
+          <!-- צד שמאל: צו תשלומים -->
+          <div style="flex: 1 1 0; min-width: 260px;">
+            <div class="sub-title">צו תשלומים</div>
+            <div class="row">
+              תשלום חודשי (₪):
+              <input type="text" class="short currency-input">
+              מיום:
+              <input type="date" class="medium">
+            </div>
+            <div class="row">
+              תשלום מדורג:
+              <input type="text" class="medium" placeholder="אם יש">
+              מיום:
+              <input type="date" class="medium">
+            </div>
+            <div class="row">
+              מסירה לנושים:
+              <label><input type="checkbox"> בוצעה</label>
+              לא נמסר ל:
+              <input type="text" class="wide">
+            </div>
+            <div class="row">
+              <span class="red-label">הסדר פיגורים (אם יש):</span>
+              <input type="text" class="wide" placeholder="תמציתי">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- שתי עמודות – שמאל: התנהלות/חובות/נכסים/סיכום, ימין: פרטים אישיים/הכנסות/רפואה -->
+      <div class="layout-main">
+
+        <!-- עמודה שמאלית -->
+        <div>
+
+          <!-- כרטיס התנהלות, חובות ונכסים -->
+          <div class="card">
+            <div class="section-title">התנהלות החייב, חובות ונכסים</div>
+
+            <!-- התנהלות החייב -->
+            <div class="sub-title">התנהלות החייב</div>
+
+            <div class="small-text">דו"חות חודשיים:</div>
+            <div class="checkbox-row">
+              <label><input type="radio" name="reports_status"> הוגשו</label>
+              <label><input type="radio" name="reports_status"> הוגשו חלקית</label>
+              <label><input type="radio" name="reports_status"> לא הוגשו כלל</label>
+            </div>
+
+            <div class="row">
+              הערות דו"חות:
+              <input type="text" class="flex-1">
+            </div>
+
+            <div class="sub-title" style="margin-top:4px;">מסמכים</div>
+            <div class="row">
+              מסמכים חסרים:
+              <label><input type="radio" name="missing_docs"> כן</label>
+              <label><input type="radio" name="missing_docs"> לא</label>
+            </div>
+
+            <div class="sub-title" style="margin-top:4px;">תשלומים</div>
+            <div class="row">
+              סך פיגורים (₪):
+              <input type="text" class="short currency-input">
+            </div>
+
+            <hr>
+
+            <!-- חובות ותביעות חוב -->
+            <div class="sub-title">חובות ותביעות חוב</div>
+
+            <div class="row">
+              מס' נושים:
+              <input type="number" class="tiny">
+              סכום כולל (₪):
+              <input type="text" class="short currency-input">
+              דין קדימה (₪):
+              <input type="text" class="short currency-input">
+            </div>
+
+            <div class="row">
+              תביעות חוב נבדקו:
+              <label><input type="radio" name="claims_checked"> כן</label>
+              <label><input type="radio" name="claims_checked"> לא</label>
+            </div>
+
+            <div class="row">
+              חובות ללא הפטר:
+              <input type="text" class="flex-1">
+            </div>
+
+            <hr>
+
+            <!-- נכסים -->
+            <div class="sub-title">נכסים</div>
+
+            <div class="row">
+              <label><input type="checkbox"> דירת מגורים</label>
+              <label><input type="checkbox"> נכס</label>
+              <label><input type="checkbox"> זכויות</label>
+            </div>
+
+            <div class="row">
+              הערכת שווי (₪):
+              <input type="text" class="short currency-input">
+            </div>
+          </div>
+
+          <!-- כרטיס סיכום והמלצות -->
+          <div class="card">
+            <div class="section-title">סיכום והמלצות</div>
+
+            <div class="sub-title">סיכום הנאמן</div>
+            <div class="row">
+              <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
+            </div>
+
+            <div class="sub-title">המלצת נאמן</div>
+            <div class="row">
+              סכום חודשי (₪):
+              <input type="text" class="short currency-input">
+              משך (חודשים):
+              <input type="number" class="tiny">
+              סכום כולל (₪):
+              <input type="text" class="short currency-input">
+            </div>
+
+            <div class="sub-title">סיכום הממונה</div>
+            <div class="row">
+              <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
+            </div>
+
+            <div class="sub-title">המלצת הממונה</div>
+            <div class="row">
+              סכום חודשי (₪):
+              <input type="text" class="short currency-input">
+              משך (חודשים):
+              <input type="number" class="tiny">
+              סכום כולל (₪):
+              <input type="text" class="short currency-input">
+            </div>
+
+            <div class="row">
+              נימוקים להמלצת הממונה:
+              <textarea rows="2" class="flex-1" placeholder="נימוקים קצרים"></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- עמודה ימנית -->
+        <div class="card">
+          <div class="section-title">פרטים אישיים, הכנסות ומצב רפואי</div>
+
+          <!-- פרטים אישיים -->
+          <div class="sub-title">פרטים אישיים</div>
+
+          <div class="checkbox-row">
+            מצב משפחתי:
+            <label><input type="checkbox"> רווק</label>
+            <label><input type="checkbox"> נשוי</label>
+            <label><input type="checkbox"> גרוש</label>
+            <label><input type="checkbox"> אלמן</label>
+          </div>
+
+          <div class="row">
+            ילדים קטינים:
+            <input type="number" class="tiny">
+          </div>
+
+          <div class="row">
+            תשלום מזונות:
+            <label><input type="radio" name="alimony"> כן</label>
+            <label><input type="radio" name="alimony"> לא</label>
+            סכום (₪):
+            <input type="text" class="short currency-input">
+          </div>
+
+          <hr>
+
+          <!-- הכנסות החייב -->
+          <div class="sub-title">הכנסות החייב</div>
+
+          <div class="row">
+            מקצוע:
+            <input type="text" class="medium">
+            מקום עבודה:
+            <input type="text" class="medium">
+            תחילת עבודה:
+            <input type="month" class="short">
+          </div>
+
+          <div class="row">
+            היקף משרה:
+            <input type="text" class="short" placeholder="מלא / חלקי">
+            שכר נטו (₪):
+            <input type="text" class="short currency-input">
+          </div>
+
+          <div class="row">
+            <label><input type="checkbox"> החייב אינו עובד</label>
+          </div>
+
+          <hr>
+
+          <!-- הכנסות בן/בת הזוג -->
+          <div class="sub-title">הכנסות בן/בת הזוג</div>
+
+          <div class="row">
+            מקצוע:
+            <input type="text" class="medium">
+            מקום עבודה:
+            <input type="text" class="medium">
+            תחילת עבודה:
+            <input type="month" class="short">
+          </div>
+
+          <div class="row">
+            היקף משרה:
+            <input type="text" class="short" placeholder="מלא / חלקי">
+            שכר נטו (₪):
+            <input type="text" class="short currency-input">
+          </div>
+
+          <hr>
+
+          <!-- פוטנציאל השתכרות -->
+          <div class="sub-title">פוטנציאל השתכרות</div>
+
+          <div class="row">
+            פוטנציאל השתכרות (₪):
+            <input type="text" class="short currency-input">
+          </div>
+          <div class="row">
+            הערות:
+            <input type="text" class="flex-1">
+          </div>
+
+          <hr>
+
+          <!-- סך הכנסות והוצאות -->
+          <div class="sub-title">סך הכנסות והוצאות</div>
+
+          <div class="row">
+            סך הכנסות לתא המשפחתי (₪):
+            <input type="text" class="short currency-input">
+          </div>
+          <div class="row">
+            סך הוצאות לתא המשפחתי (₪):
+            <input type="text" class="short currency-input">
+          </div>
+
+          <hr>
+
+          <!-- מצב רפואי -->
+          <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
+
+          <div class="checkbox-row">
+            <label><input type="checkbox"> נכות</label>
+            אחוזים:
+            <input type="number" class="tiny">
+          </div>
+
+          <div class="checkbox-row">
+            <label><input type="checkbox"> אי־כושר</label>
+            אחוזים:
+            <input type="number" class="tiny">
+            <label><input type="checkbox"> זמני</label>
+            עד:
+            <input type="date" class="medium">
+          </div>
+
+          <div class="row">
+            בעיות רפואיות (תמציתי):
+            <input type="text" class="flex-1">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="footer">
+        נבנה על ידי אליאב יחיאל
+      </div>
+    </div>
+  </form>
+
+  <script>
+    // עיצוב סכומי כסף: 1,234 ₪ בתוך השדה
+    function attachCurrencyFormatting() {
+      const inputs = document.querySelectorAll(".currency-input");
+      inputs.forEach(input => {
+        input.addEventListener("focus", () => {
+          const raw = input.value.replace(/[^\d.]/g, "");
+          input.value = raw;
+        });
+        input.addEventListener("blur", () => {
+          let v = input.value.replace(/[^\d.]/g, "");
+          if (!v) {
+            input.value = "";
+            return;
+          }
+          const num = parseFloat(v.replace(/,/g, ""));
+          if (!isNaN(num)) {
+            input.value = num.toLocaleString("he-IL", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2
+            }) + " ₪";
+          }
+        });
+      });
+    }
+
+    function sendEmail() {
+      const subject = encodeURIComponent('דו"ח סיכום לדיון צו שיקום כלכלי');
+      const body = encodeURIComponent('מצורף דו"ח סיכום לדיון צו שיקום כלכלי.\n\n(ניתן לצרף קובץ PDF לאחר הדפסה או שמירה.)');
+      window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+    }
+
+    // להפעיל את פורמט המטבע אחרי טעינת הדף
+    document.addEventListener("DOMContentLoaded", attachCurrencyFormatting);
+  </script>
+</body>
+</html>
