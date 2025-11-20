@@ -1,1 +1,29 @@
-
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>מחשבון צו שיקום – גרסת ניסיון</title>
+  <style>
+    html,body{margin:0;height:100%}
+    .banner{
+      position:fixed; inset-inline:0; top:0;
+      background:#0b1d2a; color:#fff; text-align:center;
+      padding:10px 14px; font:600 13px/1.5 system-ui;
+      z-index:9999; box-shadow:0 2px 16px rgba(0,0,0,.2)
+    }
+    /* ממלאים את כל המסך מתחת לפס */
+    .frame{
+      position:fixed; left:0; right:0; top:44px; bottom:0;
+      width:100%; height:calc(100vh - 44px); border:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">⚠️ גרסת ניסיון – לא לשימוש מול לקוחות</div>
+  <!-- חשוב: עדכן/י את השם כאן לקובץ היציב שקיים בפועל -->
+<iframe class="frame" src="./payments-a1.html" title="גרסת ניסיון – צו תשלומים"></iframe>
+  <!-- אם לא נטען, יוצג קישור נפילה: -->
+  <noscript><p style="text-align:center"><a href="./rehab.html">למעבר לגרסה היציבה לחץ כאן</a></p></noscript>
+</body>
+</html>
