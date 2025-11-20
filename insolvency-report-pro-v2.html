@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם לדיון צו שיקום- חייב/ת</title>
+  <title>דו"ח מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- לסקרין–שוט בדו"ח עצמו (אם תרצה להשתמש אחר כך) -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -60,24 +60,13 @@
       text-align: right;
     }
 
-    .name-row {
-  flex-wrap: nowrap;
-  justify-content: space-between;
-}
-
-.name-row label {
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap; /* הטקסט לא נשבר באמצע */
-}
-
-.name-input {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
 
     label {
       font-size: 11px;
@@ -202,34 +191,7 @@
       .card { box-shadow: none; }
       .buttons-inline { display: none; }
     }
-</style>
-  /* שורת שמות – שתי עמודות קבועות */
-.name-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-/* “סט” של כותרת מעל שדה */
-.name-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-/* כותרת השדה – תמיד מעל ומודגשת */
-.name-label {
-  font-size: 11px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-/* שדה – תופס את כל רוחב הסט */
-.name-input {
-  width: 100%;
-}
-
+  </style>
 </head>
 <body>
   <div class="top-bar">
@@ -261,21 +223,17 @@
               תיק ממונה:
               <input type="text" class="tiny" maxlength="5">
               תיק ביהמ"ש:
-              <input type="text" class="medium" placeholder="123456-00-00">
+              <input type="text" class="medium" placeholder="123456-12-25">
             </div>
 
-          <div class="name-row">
-  <div class="name-stack">
-    <div class="name-label">שם החייב/ת</div>
-    <input type="text" class="name-input">
-  </div>
+            <div class="row">
+              שם החייב/ת:
+              <input type="text" class="medium">
+              שם הנאמן:
+              <input type="text" class="medium">
+            </div>
 
-  <div class="name-stack">
-    <div class="name-label">שם הנאמן</div>
-    <input type="text" class="name-input">
-  </div>
-</div>
-
+            <div class="row">
               תאריך צו:
               <input type="date" class="short">
               הוגש לבקשת:
