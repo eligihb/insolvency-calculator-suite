@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם לדיון צו שיקום</title>
+  <title>דו"ח מסכם לדיון צו שיקום- חייב/ת</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
@@ -165,6 +165,14 @@
       width: 100%;
     }
 
+    /* מסגור עמודת צו תשלומים + מצב רפואי */
+    .order-box {
+      border: 2px solid #0f766e;
+      border-radius: 12px;
+      padding: 6px 8px;
+      background: #ecfeff;
+    }
+
     /* כרטיס מחשבון – לא להתפצל בין דפים */
     .calc-frame-card {
       margin-top: 6px;
@@ -208,6 +216,32 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+    }
+
+    /* מסמכים ותשלומים – מרווח לסך פיגורים */
+    .docs-row .arrears-label {
+      margin-inline-start: 12px;
+    }
+
+    /* גריד להמלצות (סכום/משך/סכום כולל) */
+    .recom-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .recom-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .recom-item label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .recom-item input {
+      width: 100%;
     }
 
     @media print {
@@ -280,49 +314,51 @@
             </div>
           </div>
 
-          <!-- עמודה אמצע: צו תשלומים + מצב רפואי -->
+          <!-- עמודה אמצע: צו תשלומים + מצב רפואי במסגרת -->
           <div>
-            <div class="sub-title">צו תשלומים</div>
-            <div class="row">
-              תשלום חודשי:
-              <input type="text" class="short currency-input">
-            </div>
-            <div class="row">
-              תשלום מדורג:
-              <input type="text" class="short currency-input" placeholder="אם יש">
-              מיום:
-              <input type="date" class="medium">
-            </div>
-            <div class="row">
-              מסירה לנושים:
-              <label><input type="radio" name="notices"> כן</label>
-              <label><input type="radio" name="notices"> לא</label>
-            </div>
+            <div class="order-box">
+              <div class="sub-title">צו תשלומים</div>
+              <div class="row">
+                תשלום חודשי:
+                <input type="text" class="short currency-input">
+              </div>
+              <div class="row">
+                תשלום מדורג:
+                <input type="text" class="short currency-input" placeholder="אם יש">
+                מיום:
+                <input type="date" class="short">
+              </div>
+              <div class="row">
+                מסירה לנושים:
+                <label><input type="radio" name="notices"> כן</label>
+                <label><input type="radio" name="notices"> לא</label>
+              </div>
 
-            <hr>
+              <hr>
 
-            <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
+              <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
 
-            <div class="row">
-              נכות:
-              <input type="text" class="short percent-field" id="disabilityPercent" maxlength="3" placeholder="0%">
-              אי כושר:
-              <input type="text" class="short percent-field" id="incapacityPercent" maxlength="3" placeholder="0%">
-            </div>
+              <div class="row">
+                נכות:
+                <input type="text" class="short percent-field" id="disabilityPercent" maxlength="3" placeholder="0%">
+                אי כושר:
+                <input type="text" class="short percent-field" id="incapacityPercent" maxlength="3" placeholder="0%">
+              </div>
 
-            <div class="row allowances-title-row">
-              <span class="allowance-title">קצבאות</span>
-            </div>
-            <div class="row" style="justify-content:flex-start;flex-wrap:wrap;">
-              <label><input type="checkbox"> קצבת ילד</label>
-              <label><input type="checkbox"> נכה</label>
-              <label><input type="checkbox"> הבטחת הכנסה</label>
-              <label><input type="checkbox"> סיוע שכ"ד</label>
-            </div>
+              <div class="row allowances-title-row">
+                <span class="allowance-title">קצבאות</span>
+              </div>
+              <div class="row" style="justify-content:flex-start;flex-wrap:wrap;">
+                <label><input type="checkbox"> קצבת ילד</label>
+                <label><input type="checkbox"> נכה</label>
+                <label><input type="checkbox"> הבטחת הכנסה</label>
+                <label><input type="checkbox"> סיוע שכ"ד</label>
+              </div>
 
-            <div class="row medical-notes-row">
-              בעיות רפואיות (תמציתי):
-              <input type="text" class="flex-1">
+              <div class="row medical-notes-row">
+                בעיות רפואיות (תמציתי):
+                <input type="text" class="flex-1">
+              </div>
             </div>
           </div>
 
@@ -386,11 +422,11 @@
             </div>
 
             <div class="sub-title" style="margin-top:4px;">מסמכים ותשלומים</div>
-            <div class="row">
-              מסמכים חסרים:
+            <div class="row docs-row">
+              <span>מסמכים חסרים:</span>
               <label><input type="radio" name="missing_docs"> כן</label>
               <label><input type="radio" name="missing_docs"> לא</label>
-              סך פיגורים:
+              <span class="arrears-label">סך פיגורים:</span>
               <input type="text" class="short currency-input">
             </div>
 
@@ -455,40 +491,60 @@
           <div class="card">
             <div class="section-title">סיכום והמלצות</div>
 
-            <div class="sub-title">סיכום הנאמן</div>
+            <!-- סיכום הנאמן -->
+            <div class="row" style="justify-content:space-between;align-items:center;">
+              <div class="sub-title" style="margin-bottom:0;">סיכום הנאמן</div>
+              <label><input type="checkbox"> הכשרה כלכלית</label>
+            </div>
             <div class="row">
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
             </div>
 
-            <div class="sub-title">המלצת נאמן</div>
-            <div class="row">
-              <label><input type="checkbox"> הכשרה כלכלית</label>
+            <!-- המלצת נאמן -->
+            <div class="row" style="justify-content:flex-start;align-items:center;">
+              <div class="sub-title" style="margin-bottom:0;">המלצת נאמן</div>
             </div>
-            <div class="row" style="flex-wrap:wrap;">
-              סכום חודשי:
-              <input type="text" class="short currency-input">
-              משך (חודשים):
-              <input type="number" class="tiny" min="0" max="99">
-              סכום כולל:
-              <input type="text" class="short currency-input">
+            <div class="recom-grid">
+              <div class="recom-item">
+                <label>סכום חודשי</label>
+                <input type="text" class="currency-input">
+              </div>
+              <div class="recom-item">
+                <label>משך</label>
+                <input type="number" class="tiny" min="0" max="99">
+              </div>
+              <div class="recom-item">
+                <label>סכום כולל</label>
+                <input type="text" class="currency-input">
+              </div>
             </div>
 
-            <div class="sub-title">סיכום הממונה</div>
+            <!-- סיכום הממונה -->
+            <div class="row" style="justify-content:space-between;align-items:center;">
+              <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
+              <label><input type="checkbox"> הכשרה כלכלית</label>
+            </div>
             <div class="row">
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
             </div>
 
-            <div class="sub-title">המלצת הממונה</div>
-            <div class="row">
-              <label><input type="checkbox"> הכשרה כלכלית</label>
+            <!-- המלצת הממונה -->
+            <div class="row" style="justify-content:flex-start;align-items:center;">
+              <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
             </div>
-            <div class="row" style="flex-wrap:wrap;">
-              סכום חודשי:
-              <input type="text" class="short currency-input">
-              משך (חודשים):
-              <input type="number" class="tiny" min="0" max="99">
-              סכום כולל:
-              <input type="text" class="short currency-input">
+            <div class="recom-grid">
+              <div class="recom-item">
+                <label>סכום חודשי</label>
+                <input type="text" class="currency-input">
+              </div>
+              <div class="recom-item">
+                <label>משך</label>
+                <input type="number" class="tiny" min="0" max="99">
+              </div>
+              <div class="recom-item">
+                <label>סכום כולל</label>
+                <input type="text" class="currency-input">
+              </div>
             </div>
 
             <div class="row">
