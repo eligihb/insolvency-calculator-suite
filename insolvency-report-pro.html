@@ -47,8 +47,15 @@
       font-size: 13px;
       font-weight: 700;
       color: #0f172a;
-      text-align: center;
-      margin: 0 0 4px;
+      text-align: right;
+      margin: 0;
+    }
+
+    .section-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
       padding-bottom: 2px;
       border-bottom: 1px solid #e2e8f0;
     }
@@ -99,7 +106,8 @@
 
     .short   { width: 80px; }
     .tiny    { width: 50px; }
-    .medium  { width: 140px; } /* מעט רחב יותר לתאריכים */
+    .mini    { width: 30px; }  /* ספרה אחת */
+    .medium  { width: 120px; } /* מותאם לשדה תאריך */
     .wide    { width: 220px; }
     .flex-1  { flex: 1 1 0; }
 
@@ -133,7 +141,7 @@
       gap: 6px;
       flex-wrap: wrap;
       justify-content: flex-start;
-      margin-bottom: 4px;
+      margin-bottom: 0;
     }
 
     .btn {
@@ -172,6 +180,15 @@
       border-radius: 12px;
       padding: 6px 8px;
       background: #ecfeff;
+    }
+
+    /* בלוק מודגש למקום שיפוט+דיון */
+    .hearing-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 4px 6px;
+      background: #eff6ff;
+      margin-top: 2px;
     }
 
     /* כרטיס מחשבון – לא להתפצל בין דפים */
@@ -218,6 +235,10 @@
       align-items: center;
       gap: 4px;
     }
+    .pair-label-multiline {
+      display: inline-block;
+      line-height: 1.1;
+    }
 
     /* מסמכים ותשלומים – מרווח לסך פיגורים */
     .docs-row .arrears-label {
@@ -230,6 +251,7 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-bottom: 4px;
+      align-items: flex-start;
     }
     .recom-item {
       display: flex;
@@ -298,15 +320,14 @@
 
       <!-- כרטיס עליון – פרטי תיק + צו תשלומים + פרטים אישיים + מצב רפואי -->
       <div class="card">
-        <div class="section-title">פרטי תיק וצו תשלומים</div>
-
-        <div class="row" style="margin-bottom:6px;">
-          <div class="buttons-inline" style="margin-bottom:0;">
+        <div class="section-header-flex">
+          <div class="section-title">פרטי תיק וצו תשלומים</div>
+          <div class="buttons-inline">
             <button type="button" class="btn btn-print" onclick="window.print()">🖨 הדפסה / PDF</button>
             <button type="button" class="btn btn-email" onclick="sendEmail()">✉ שליחה במייל</button>
             <button type="button" class="btn btn-shot" onclick="screenshotReport()">📸 צילום מסך</button>
             <button type="button" class="btn btn-reset" onclick="document.getElementById('reportForm').reset()">↺ איפוס</button>
-            <button type="button" class="btn btn-restore" onclick="restoreFormState()">🔁 שחזור נתונים</button>
+            <button type="button" class="btn btn-restore" onclick="restoreFormState()">🔁 שחזור</button>
           </div>
         </div>
 
@@ -333,20 +354,22 @@
             <div class="row">
               תאריך צו:
               <input type="date" class="medium">
-              הוגש לבקשת:
+              לבקשת:
               <label><input type="radio" name="order_by"> חייב</label>
               <label><input type="radio" name="order_by"> נושה</label>
             </div>
 
-            <div class="row">
-              מקום שיפוט:
-              <input type="text" class="short">
-              תאריך דיון:
-              <input type="date" class="medium">
-            </div>
-            <div class="row">
-              שעת דיון:
-              <input type="time" class="short" step="300">
+            <div class="hearing-box">
+              <div class="row">
+                מקום שיפוט:
+                <input type="text" class="short">
+                תאריך דיון:
+                <input type="date" class="medium">
+              </div>
+              <div class="row">
+                שעת דיון:
+                <input type="time" class="short" step="300">
+              </div>
             </div>
           </div>
 
@@ -386,13 +409,9 @@
 
             <div class="row">
               ילדים קטינים:
-              <input type="number" class="tiny" min="0" max="99">
-            </div>
-
-            <div class="row">
+              <input type="number" class="mini" min="0" max="9">
               תשלום מזונות:
               <label><input type="checkbox" id="hasAlimony"> כן</label>
-              סכום:
               <input type="text" class="short currency-input">
             </div>
 
@@ -433,7 +452,9 @@
 
           <!-- כרטיס התנהלות, חובות ונכסים -->
           <div class="card">
-            <div class="section-title">התנהלות החייב, חובות ונכסים</div>
+            <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+              התנהלות החייב, חובות ונכסים
+            </div>
 
             <!-- התנהלות החייב -->
             <div class="sub-title">התנהלות החייב</div>
@@ -472,7 +493,7 @@
 
             <div class="row" style="flex-wrap:wrap;">
               <span class="pair">
-                מס' נושים:
+                <span class="pair-label-multiline">מס' נושים</span>
                 <input type="number" class="tiny" min="0" max="99">
               </span>
               <span class="pair">
@@ -518,13 +539,15 @@
 
             <div class="row">
               הערכת שווי:
-              <input type="text" class="medium currency-input">
+              <input type="text" class="short currency-input">
             </div>
           </div>
 
           <!-- כרטיס סיכום והמלצות -->
           <div class="card">
-            <div class="section-title">סיכום והמלצות</div>
+            <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+              סיכום והמלצות
+            </div>
 
             <!-- סיכום הנאמן -->
             <div class="row" style="justify-content:space-between;align-items:center;">
@@ -543,7 +566,7 @@
               <div class="recom-grid">
                 <div class="recom-item">
                   <label>סכום חודשי</label>
-                  <input type="text" id="trusteeMonthly" class="currency-input" maxlength="6">
+                  <input type="text" id="trusteeMonthly" class="currency-input short" maxlength="6">
                 </div>
                 <div class="recom-item">
                   <label>משך</label>
@@ -551,7 +574,7 @@
                 </div>
                 <div class="recom-item">
                   <label>סכום כולל</label>
-                  <input type="text" id="trusteeTotal" class="currency-input recom-total" readonly>
+                  <input type="text" id="trusteeTotal" class="currency-input short recom-total" readonly>
                 </div>
               </div>
             </div>
@@ -573,7 +596,7 @@
               <div class="recom-grid">
                 <div class="recom-item">
                   <label>סכום חודשי</label>
-                  <input type="text" id="commMonthly" class="currency-input" maxlength="6">
+                  <input type="text" id="commMonthly" class="currency-input short" maxlength="6">
                 </div>
                 <div class="recom-item">
                   <label>משך</label>
@@ -581,7 +604,7 @@
                 </div>
                 <div class="recom-item">
                   <label>סכום כולל</label>
-                  <input type="text" id="commTotal" class="currency-input recom-total" readonly>
+                  <input type="text" id="commTotal" class="currency-input short recom-total" readonly>
                 </div>
               </div>
             </div>
@@ -596,7 +619,9 @@
 
         <!-- עמודה ימנית: הכנסות + מחשבון -->
         <div class="card" style="display:flex;flex-direction:column;">
-          <div class="section-title">הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים</div>
+          <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+            הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים
+          </div>
 
           <!-- הכנסות החייב -->
           <div class="sub-title">הכנסות החייב</div>
@@ -664,7 +689,6 @@
           <!-- מחשבון צו תשלומים -->
           <div class="calc-frame-card">
             <div class="sub-title">מחשבון צו תשלומים</div>
-            <!-- וודא שהקובץ הזה נמצא באותה תיקייה -->
             <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
           </div>
         </div>
@@ -865,7 +889,6 @@
         }
       });
 
-      // לעדכן צבעי דו"חות, סטטוס "לא עובד" וסכומים כוללים אחרי שחזור
       setupReportsStatusColors();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
@@ -897,19 +920,27 @@
       setupReportsStatusColors();
       setupScrollTopButton();
 
-      // שמירת מצב הטופס בכל שינוי
+      // שמירת מצב הטופס בכל שינוי + עדכון סכומים כוללים
       const form = document.getElementById('reportForm');
       if (form) {
         form.addEventListener('input', (e) => {
-          if (e.target && (e.target.id === 'trusteeMonthly' || e.target.id === 'trusteeDuration' ||
-                           e.target.id === 'commMonthly' || e.target.id === 'commDuration')) {
+          if (e.target && (
+            e.target.id === 'trusteeMonthly' ||
+            e.target.id === 'trusteeDuration' ||
+            e.target.id === 'commMonthly' ||
+            e.target.id === 'commDuration'
+          )) {
             updateRecommendationTotals();
           }
           saveFormState();
         });
         form.addEventListener('change', (e) => {
-          if (e.target && (e.target.id === 'trusteeMonthly' || e.target.id === 'trusteeDuration' ||
-                           e.target.id === 'commMonthly' || e.target.id === 'commDuration')) {
+          if (e.target && (
+            e.target.id === 'trusteeMonthly' ||
+            e.target.id === 'trusteeDuration' ||
+            e.target.id === 'commMonthly' ||
+            e.target.id === 'commDuration'
+          )) {
             updateRecommendationTotals();
           }
           saveFormState();
