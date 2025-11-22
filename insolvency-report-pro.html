@@ -53,8 +53,9 @@
 
     .section-header-flex {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;   /* כותרת+כפתורים במרכז */
       align-items: center;
+      gap: 12px;
       margin-bottom: 4px;
       padding-bottom: 2px;
       border-bottom: 1px solid #e2e8f0;
@@ -74,6 +75,10 @@
       align-items: center;
       gap: 6px;
       margin-bottom: 4px;
+    }
+
+    .no-wrap {
+      flex-wrap: nowrap; /* לא מאפשר שבירה לשורה חדשה */
     }
 
     label {
@@ -108,7 +113,7 @@
     .tiny    { width: 50px; }
     .mini    { width: 30px; }  /* ספרה אחת */
     .medium  { width: 120px; } /* מותאם לשדה תאריך */
-    .wide    { width: 220px; }
+    .xshort  { width: 60px; }  /* סכומים קטנים / שדות צרים יותר */
     .flex-1  { flex: 1 1 0; }
 
     .small-text {
@@ -140,7 +145,7 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      justify-content: flex-start;
+      justify-content: center;
       margin-bottom: 0;
     }
 
@@ -264,12 +269,19 @@
       margin-bottom: 2px;
     }
     .recom-item input {
-      width: 100%;
+      width: auto;        /* נותן לשדות להיות צרים לפי המחלקה */
+      max-width: 100%;
     }
 
     .recom-total {
       background: #fef9c3;
       font-weight: 700;
+    }
+
+    /* בלוק ממונה מודגש בצבע אחר */
+    .order-box-comm {
+      border-color: #6366f1;
+      background: #eef2ff;
     }
 
     /* חץ לראש הדף */
@@ -360,14 +372,15 @@
             </div>
 
             <div class="hearing-box">
-              <div class="row">
+              <div class="row no-wrap">
                 מקום שיפוט:
-                <input type="text" class="short">
+                <input type="text" class="tiny">
                 תאריך דיון:
                 <input type="date" class="medium">
-             
+              </div>
+              <div class="row">
                 שעת דיון:
-                <input type="time" class="xshort" step="300">
+                <input type="time" class="short" step="300">
               </div>
             </div>
           </div>
@@ -376,13 +389,13 @@
           <div>
             <div class="order-box">
               <div class="sub-title">צו תשלומים</div>
-              <div class="row">
+              <div class="row no-wrap">
                 תשלום חודשי:
-                <input type="text" class="xshort currency-input">
+                <input type="text" class="xshort currency-input" maxlength="4">
               </div>
-              <div class="row">
+              <div class="row no-wrap">
                 תשלום מדורג:
-                <input type="text" class="xshort currency-input" placeholder="אם יש">
+                <input type="text" class="xshort currency-input" maxlength="4" placeholder="אם יש">
                 מיום:
                 <input type="date" class="medium">
               </div>
@@ -565,7 +578,7 @@
               <div class="recom-grid">
                 <div class="recom-item">
                   <label>סכום חודשי</label>
-                  <input type="text" id="trusteeMonthly" class="currency-input short" maxlength="6">
+                  <input type="text" id="trusteeMonthly" class="currency-input xshort" maxlength="6">
                 </div>
                 <div class="recom-item">
                   <label>משך</label>
@@ -573,7 +586,7 @@
                 </div>
                 <div class="recom-item">
                   <label>סכום כולל</label>
-                  <input type="text" id="trusteeTotal" class="currency-input short recom-total" readonly>
+                  <input type="text" id="trusteeTotal" class="currency-input xshort recom-total" readonly>
                 </div>
               </div>
             </div>
@@ -591,11 +604,11 @@
             <div class="row" style="justify-content:flex-start;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
             </div>
-            <div class="order-box" style="margin-top:2px;">
+            <div class="order-box order-box-comm" style="margin-top:2px;">
               <div class="recom-grid">
                 <div class="recom-item">
                   <label>סכום חודשי</label>
-                  <input type="text" id="commMonthly" class="currency-input short" maxlength="6">
+                  <input type="text" id="commMonthly" class="currency-input xshort" maxlength="6">
                 </div>
                 <div class="recom-item">
                   <label>משך</label>
@@ -603,7 +616,7 @@
                 </div>
                 <div class="recom-item">
                   <label>סכום כולל</label>
-                  <input type="text" id="commTotal" class="currency-input short recom-total" readonly>
+                  <input type="text" id="commTotal" class="currency-input xshort recom-total" readonly>
                 </div>
               </div>
             </div>
@@ -640,15 +653,13 @@
             שכר נטו:
             <input type="text" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-          </div>
-
-          <!-- פוטנציאל השתכרות -->
-          <div class="sub-title">פוטנציאל השתכרות</div>
-          <div class="row" id="earningPotentialRow">
             פוטנציאל השתכרות:
             <input type="text" id="earningPotential" class="short currency-input">
+          </div>
+
+          <div class="row" id="earningPotentialRow">
             הערות:
-            <input type="text" id="earningPotentialNotes" class="flex-1">
+            <input type="text" id="earningPotentialNotes" class="short">
           </div>
 
           <hr>
