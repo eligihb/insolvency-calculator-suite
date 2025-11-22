@@ -243,6 +243,20 @@
     .pair-label-multiline {
       display: inline-block;
       line-height: 1.1;
+          .debts-row {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .pair-label-multiline {
+      display: inline-block;
+      max-width: 60px;   /* מאפשר גלישת טקסט לשורה שנייה */
+      line-height: 1.1;
+      white-space: normal;
+      text-align: right;
+    }
+
     }
 
     /* מסמכים ותשלומים – מרווח לסך פיגורים */
@@ -503,20 +517,22 @@
             <!-- חובות -->
             <div class="sub-title">חובות</div>
 
-            <div class="row" style="flex-wrap:wrap;">
-              <span class="pair">
-                <span class="pair-label-multiline">מס' נושים</span>
-                <input type="number" class="tiny" min="0" max="99">
-              </span>
-              <span class="pair">
-                סכום כולל:
-                <input type="text" class="short currency-input">
-              </span>
-              <span class="pair">
-                דין קדימה:
-                <input type="text" class="short currency-input">
-              </span>
-            </div>
+           <div class="row debts-row">
+  <span class="pair">
+    <span class="pair-label-multiline">מס' נושים</span>
+    <input type="number" class="tiny" min="0" max="99">
+  </span>
+
+  <span class="pair">
+    <span class="pair-label-multiline">סכום כולל</span>
+    <input type="text" class="short currency-input">
+  </span>
+
+  <span class="pair">
+    <span class="pair-label-multiline">דין קדימה</span>
+    <input type="text" class="short currency-input">
+  </span>
+</div>
 
             <div class="row">
               תביעות חוב נבדקו:
