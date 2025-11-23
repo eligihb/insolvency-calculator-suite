@@ -11,7 +11,13 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-:root{
+.scale-container {
+  transform: scale(0.82); /* אפשר לשחק למשל 0.75–0.90 */
+  transform-origin: top center;
+  width: 122%;  /* מפצה על ההקטנה כדי שהרוחב לא יתכווץ */
+}
+
+  :root{
   --primary:#005f73; --secondary:#0a9396; --bg:#f4f7f9; --panel:#fff;
   --text:#1f2937; --label:#4b5563; --border:#dbe3ea; --accent:#ee9b00;
   --danger:#ae2012; --blue:#0a58ff; --muted:#6b7280;
