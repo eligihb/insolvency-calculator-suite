@@ -12,10 +12,23 @@
 
 <style>
 .scale-container {
-  transform: scale(0.75);
+  transform: none;          /* בלי scale – אין בריחה לצדדים */
   transform-origin: top center;
   width: 100%;
+  max-width: 100%;
 }
+
+/* לוודא שלא תישאר גלילה אופקית במקרה */
+body {
+  overflow-x: hidden;
+}
+
+/* שהמחשבון לא ינסה להיות רחב יותר מהעמודה */
+.calculator{
+  width: 100%;
+  max-width: 100%;
+}
+
 
 body {
   overflow-x: hidden;
