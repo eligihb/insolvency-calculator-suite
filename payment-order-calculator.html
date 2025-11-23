@@ -88,6 +88,18 @@ header h1{
   text-align:center
 }
 
+/* כותרת תוצאות עם איפוס בצד שמאל */
+.section-title.section-title-results{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.section-title.section-title-results span{
+  flex:1;
+  text-align:right;
+}
+
 .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .result-card{background:#fff;border:1px solid #dbe9ea;border-radius:10px;padding:6px;text-align:center}
 .result-card .k{color:var(--muted);font-weight:500;font-size:.85rem}
@@ -218,6 +230,23 @@ header h1{
 
 .sticky-mobile{display:none}
 
+/* כפתור איפוס */
+.reset-btn{
+  background:#ffe0e0;
+  color:#a30000;
+  border:1px solid #ffbaba;
+  border-radius:10px;
+  padding:4px 10px;
+  font-weight:700;
+  font-size:.78rem;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+.reset-btn:hover{
+  background:#ffcccc;
+}
+
 @media (max-width:768px){
   .calculator{max-width:100%}
   header h1{font-size:.95rem}
@@ -240,23 +269,6 @@ header h1{
 
 .shot-scale{transform:scale(.96);transform-origin:top center}
 </style>
-.reset-btn{
-  background:#ffe0e0;
-  color:#a30000;
-  border:1px solid #ffbaba;
-  border-radius:10px;
-  padding:4px 10px;
-  font-weight:700;
-  font-size:.78rem;
-  cursor:pointer;
-  white-space:nowrap;
-  box-shadow:0 1px 2px rgba(0,0,0,.15);
-}
-
-.reset-btn:hover{
-  background:#ffcccc;
-}
-
 </head>
 <body>
 <div class="scale-container">
@@ -280,8 +292,7 @@ header h1{
               <button class="chip family-type" data-type="יחיד/ נשוי חי בנפרד">
                 יחיד&#8239;/&#8239;נשוי (חי בנפרד)
               </button>
-              <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
-               <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
+             <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
   רווק/גרוש<br>אלמן
 </button>
 
@@ -373,7 +384,10 @@ header h1{
 
       <!-- תוצאות (מימין) -->
       <div class="results-col">
-        <div class="section-title">תוצאות החישוב</div>
+        <div class="section-title section-title-results">
+          <span>תוצאות החישוב</span>
+          <button class="reset-btn" id="btnReset">איפוס</button>
+        </div>
 
         <div class="result-grid">
           <div class="result-card"><div class="k">סך הכנסות</div><div class="v" id="totalIncomeResult">₪ 0</div></div>
@@ -620,6 +634,8 @@ setGender('חייב');
 els.debtorPayCard.classList.add('solo-pay');
 updateChildrenLabel();
 calc();
+
+/* כפתור איפוס */
 E('btnReset').onclick = ()=>{
   // איפוס מספר ילדים
   childrenCount = 0;
@@ -646,7 +662,6 @@ E('btnReset').onclick = ()=>{
 
   calc();
 };
-
 </script>
 </body>
 </html>
