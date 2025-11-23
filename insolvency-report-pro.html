@@ -53,7 +53,7 @@
 
     .section-header-flex {
       display: flex;
-      justify-content: center;   /* כותרת+כפתורים במרכז */
+      justify-content: center;
       align-items: center;
       gap: 12px;
       margin-bottom: 4px;
@@ -78,7 +78,7 @@
     }
 
     .no-wrap {
-      flex-wrap: nowrap; /* לא מאפשר שבירה לשורה חדשה */
+      flex-wrap: nowrap;
     }
 
     label {
@@ -207,7 +207,7 @@
       width: 100%;
       border: 0;
       border-radius: 12px;
-      height: 380px;
+      height: 340px;  /* כאן אתה יכול לשחק לגובה */
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
       background: #ffffff;
     }
@@ -240,10 +240,10 @@
       align-items: center;
       gap: 4px;
     }
-    .pair-label-multiline {
-      display: inline-block;
-      line-height: 1.1;
-          .debts-row {
+.earning-potential {
+  margin-inline-start: 12px; /* רווח קטן מהצ'קבוקס */
+}
+    .debts-row {
       flex-wrap: nowrap;
       justify-content: flex-start;
       gap: 10px;
@@ -251,12 +251,10 @@
 
     .pair-label-multiline {
       display: inline-block;
-      max-width: 60px;   /* מאפשר גלישת טקסט לשורה שנייה */
+      max-width: 60px;
       line-height: 1.1;
       white-space: normal;
       text-align: right;
-    }
-
     }
 
     /* מסמכים ותשלומים – מרווח לסך פיגורים */
@@ -283,7 +281,7 @@
       margin-bottom: 2px;
     }
     .recom-item input {
-      width: auto;        /* נותן לשדות להיות צרים לפי המחלקה */
+      width: auto;
       max-width: 100%;
     }
 
@@ -322,16 +320,17 @@
 
       body { background: #ffffff; font-size: 11px; }
       .top-bar { border-bottom: 1px solid #cbd5e1; box-shadow: none; }
+
       .page {
         max-width: 100%;
         margin: 0;
         padding: 4mm;
-        transform: scale(0.86);
+        transform: none;              /* בלי הקטנה – שיתפרס לרוחב */
         transform-origin: top center;
       }
+
       .card { box-shadow: none; }
       .buttons-inline { display: none; }
-      .calc-frame-card { display: none; } /* לא מדפיסים מחשבון */
       .scroll-top-btn { display: none !important; }
     }
   </style>
@@ -344,8 +343,8 @@
   <form id="reportForm">
     <div class="page">
 
-      <!-- כרטיס עליון – פרטי תיק + צו תשלומים + פרטים אישיים + מצב רפואי -->
-      <div class="card">
+      <!-- כותרת + כפתורים -->
+      <div class="card card-case-header">
         <div class="section-header-flex">
           <div class="section-title">פרטי תיק וצו תשלומים</div>
           <div class="buttons-inline">
@@ -365,7 +364,7 @@
 
             <div class="row">
               תיק ממונה:
-              <input type="text" class="short" maxlength="5">
+              <input type="text" class="short" maxlength="6">
               תיק ביהמ"ש:
               <input type="text" class="short" placeholder="123456-12-25">
             </div>
@@ -394,22 +393,22 @@
               </div>
               <div class="row">
                 שעת דיון:
-                <input type="time" class="short" step="300">
+                <input type="time" class="short" step="300" min="07:00" max="17:00">
               </div>
             </div>
           </div>
 
-          <!-- עמודה אמצע: צו תשלומים בלבד במסגרת -->
+          <!-- עמודה אמצע: צו תשלומים -->
           <div>
             <div class="order-box">
               <div class="sub-title">צו תשלומים</div>
               <div class="row no-wrap">
                 תשלום חודשי:
-                <input type="text" class="xshort currency-input" maxlength="4">
+                <input type="text" class="short currency-input" maxlength="6">
               </div>
               <div class="row no-wrap">
                 תשלום מדורג:
-                <input type="text" class="xshort currency-input" maxlength="4" placeholder="אם יש">
+                <input type="text" class="short currency-input" maxlength="6" placeholder="אם יש">
                 מיום:
                 <input type="date" class="medium">
               </div>
@@ -427,18 +426,18 @@
 
             <div class="row" style="flex-wrap:wrap;">
               מצב משפחתי:
-              <label><input type="radio" name="family_status"> רווק</label>
-              <label><input type="radio" name="family_status"> נשוי</label>
-              <label><input type="radio" name="family_status"> גרוש</label>
-              <label><input type="radio" name="family_status"> אלמן</label>
+              <label><input type="radio" name="family_status" value="single"> רווק</label>
+              <label><input type="radio" name="family_status" value="married"> נשוי</label>
+              <label><input type="radio" name="family_status" value="divorced"> גרוש</label>
+              <label><input type="radio" name="family_status" value="widowed"> אלמן</label>
             </div>
 
             <div class="row">
               ילדים קטינים:
-              <input type="number" class="mini" min="0" max="9">
+              <input type="number" id="minorChildrenInput" class="mini" min="0" max="9">
               תשלום מזונות:
               <label><input type="checkbox" id="hasAlimony"> כן</label>
-              <input type="text" class="short currency-input">
+              <input type="text" id="alimonyAmountInput" class="short currency-input">
             </div>
 
             <hr>
@@ -476,7 +475,7 @@
         <!-- עמודה שמאלית -->
         <div>
 
-          <!-- כרטיס התנהלות, חובות ונכסים -->
+          <!-- התנהלות, חובות ונכסים -->
           <div class="card">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               התנהלות החייב, חובות ונכסים
@@ -517,22 +516,22 @@
             <!-- חובות -->
             <div class="sub-title">חובות</div>
 
-           <div class="row debts-row">
-  <span class="pair">
-    <span class="pair-label-multiline">מס' נושים</span>
-    <input type="number" class="tiny" min="0" max="99">
-  </span>
+            <div class="row debts-row">
+              <span class="pair">
+                <span class="pair-label-multiline">מס' נושים</span>
+                <input type="number" class="tiny" min="0" max="99">
+              </span>
 
-  <span class="pair">
-    <span class="pair-label-multiline">סכום כולל</span>
-    <input type="text" class="short currency-input">
-  </span>
+              <span class="pair">
+                <span class="pair-label-multiline">סכום כולל</span>
+                <input type="text" class="short currency-input">
+              </span>
 
-  <span class="pair">
-    <span class="pair-label-multiline">דין קדימה</span>
-    <input type="text" class="short currency-input">
-  </span>
-</div>
+              <span class="pair">
+                <span class="pair-label-multiline">דין קדימה</span>
+                <input type="text" class="short currency-input">
+              </span>
+            </div>
 
             <div class="row">
               תביעות חוב נבדקו:
@@ -571,7 +570,7 @@
             </div>
           </div>
 
-          <!-- כרטיס סיכום והמלצות -->
+          <!-- סיכום והמלצות -->
           <div class="card">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               סיכום והמלצות
@@ -667,15 +666,17 @@
 
           <div class="row not-working-toggle-row" id="debtorIncomeRow">
             שכר נטו:
-            <input type="text" class="short currency-input">
+            <input type="text" id="debtorNetInput" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            פוטנציאל השתכרות:
-            <input type="text" id="earningPotential" class="short currency-input">
+            <span class="pair earning-potential">
+              <span class="pair-label-multiline">פוטנציאל השתכרות</span>
+              <input type="text" id="earningPotential" class="short currency-input">
+            </span>
           </div>
 
           <div class="row" id="earningPotentialRow">
             הערות:
-            <input type="text" id="earningPotentialNotes" class="short">
+           <input type="text" id="earningPotentialNotes" class="short">
           </div>
 
           <hr>
@@ -696,7 +697,7 @@
 
           <div class="row not-working-toggle-row" id="spouseIncomeRow">
             שכר נטו:
-            <input type="text" class="short currency-input">
+            <input type="text" id="spouseNetInput" class="short currency-input">
             <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
           </div>
 
@@ -772,7 +773,6 @@
         });
       });
     }
-
     function sendEmail() {
       const subject = encodeURIComponent('דו"ח מסכם לדיון צו שיקום');
       const body = encodeURIComponent(
@@ -838,7 +838,7 @@
       update();
     }
 
-    // חישוב סכומים כוללים בהמלצות
+    // ----------------- חישובי סכומים כוללים בהמלצות -----------------
     function parseNumberFromCurrency(val) {
       if (!val) return 0;
       const clean = String(val).replace(/[^\d.]/g,'');
@@ -856,8 +856,8 @@
       const ct = document.getElementById('commTotal');
 
       if (tm && td && tt) {
-        const m = parseNumberFromCurrency(tm.value);
-        const d = parseInt(td.value || '0', 10) || 0;
+        const m  = parseNumberFromCurrency(tm.value);
+        const d  = parseInt(td.value || '0', 10) || 0;
         const total = m * d;
         tt.value = total ? total.toLocaleString('he-IL', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' ₪' : '';
       }
@@ -870,6 +870,134 @@
       }
     }
 
+      // ----------------- סנכרון נתונים אל המחשבון -----------------
+    function syncToCalculator() {
+      const frame = document.querySelector('.calc-frame-card iframe');
+      if (!frame || !frame.contentWindow) return;
+
+      let cdoc;
+      try {
+        cdoc = frame.contentWindow.document;
+      } catch (e) {
+        console.warn('לא ניתן לגשת למחשבון בתוך ה-iframe.', e);
+        return;
+      }
+
+      // ---------- קריאת נתונים מהטופס הראשי ----------
+
+      // מצב משפחתי בטופס
+      const familyRadio = document.querySelector('input[name="family_status"]:checked');
+      const familyVal   = familyRadio ? familyRadio.value : ''; // single / married / divorced / widowed
+
+      // ילדים קטינים
+      const kidsCount = parseInt(
+        document.getElementById('minorChildrenInput')?.value || '0',
+        10
+      ) || 0;
+
+      // שכר נטו חייב
+      const debtorIncome = parseNumberFromCurrency(
+        document.getElementById('debtorNetInput')?.value || ''
+      );
+
+      // שכר נטו בן/בת הזוג
+      const spouseIncome = parseNumberFromCurrency(
+        document.getElementById('spouseNetInput')?.value || ''
+      );
+
+      // מזונות (מהטופס)
+      const hasAlimonyEl = document.getElementById('hasAlimony');
+      const hasAlimony = hasAlimonyEl ? hasAlimonyEl.checked : false;
+      const alimonyAmount = parseNumberFromCurrency(
+        document.getElementById('alimonyAmountInput')?.value || ''
+      );
+
+      // ---------- הכנסות במחשבון ----------
+
+      // הכנסת החייב → salaryDebtor
+      const salaryDebtorEl = cdoc.getElementById('salaryDebtor');
+      if (salaryDebtorEl) {
+        salaryDebtorEl.value = debtorIncome || '';
+        salaryDebtorEl.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      // הכנסת בן/בת הזוג → salaryPartner
+      const salaryPartnerEl = cdoc.getElementById('salaryPartner');
+      if (salaryPartnerEl) {
+        salaryPartnerEl.value = spouseIncome || '';
+        salaryPartnerEl.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      // ---------- סטטוס משפחתי במחשבון ----------
+
+      // מהטופס:
+      // married  → זוג
+      // single/divorced/widowed → רווק/גרוש/אלמן
+      let statusBtnId = null;
+      if (familyVal === 'married') {
+        statusBtnId = 'statusCoupleBtn';
+      } else if (
+        familyVal === 'single' ||
+        familyVal === 'divorced' ||
+        familyVal === 'widowed'
+      ) {
+        statusBtnId = 'statusSingleBtn';
+      }
+
+      if (statusBtnId) {
+        const statusBtn = cdoc.getElementById(statusBtnId);
+        if (statusBtn) {
+          statusBtn.click(); // מפעיל את הלוגיקה הקיימת של הסטטוס
+        }
+      }
+
+      // ---------- ילדים קטינים → "הוסף ילד" במחשבון ----------
+
+      const addChildBtn =
+        cdoc.getElementById('addChildBtn') ||
+        cdoc.getElementById('btnAddChild');
+
+      const countLabel = cdoc.getElementById('childrenCountLabel');
+
+      if (addChildBtn && countLabel) {
+        let current = 0;
+        const m = countLabel.textContent.match(/\d+/);
+        if (m) current = parseInt(m[0], 10) || 0;
+
+        // אם צריך יותר ילדים – נוסיף
+        if (kidsCount > current) {
+          for (let i = current; i < kidsCount; i++) {
+            addChildBtn.click();
+          }
+        }
+
+        // אם צריך פחות – ננסה למחוק (אם יש כפתורי מחיקה)
+        if (kidsCount < current) {
+          const removeBtns = cdoc.querySelectorAll(
+            '.btn-remove-child, [data-action="remove-child"]'
+          );
+          let toRemove = current - kidsCount;
+          for (let i = 0; i < removeBtns.length && toRemove > 0; i++) {
+            removeBtns[i].click();
+            toRemove--;
+          }
+        }
+      }
+
+      // ---------- מזונות במחשבון ----------
+      const alimonyField = cdoc.getElementById('alimonyExpenses');
+
+      if (alimonyField) {
+        if (hasAlimony && alimonyAmount) {
+          alimonyField.value = alimonyAmount;
+        } else {
+          alimonyField.value = '';
+        }
+
+        alimonyField.dispatchEvent(new Event('input',  { bubbles: true }));
+        alimonyField.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }  // ← שים לב: זה הסוגר של syncToCalculator
     // שמירת מצב הטופס
     function saveFormState() {
       const form = document.getElementById('reportForm');
@@ -886,11 +1014,8 @@
       });
       try {
         localStorage.setItem('insolvencyReportFormV2', JSON.stringify(data));
-      } catch (e) {
-        // מתעלמים משגיאות localStorage
-      }
+      } catch (e) {}
     }
-
     function restoreFormState() {
       const form = document.getElementById('reportForm');
       if (!form) return;
@@ -920,6 +1045,7 @@
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
       updateRecommendationTotals();
       attachCurrencyFormatting();
+      syncToCalculator();
       alert('הנתונים שוחזרו מהגרסה האחרונה שנשמרה.');
     }
 
@@ -939,6 +1065,7 @@
       });
     }
 
+    // ----------------- INIT -----------------
     document.addEventListener("DOMContentLoaded", () => {
       attachCurrencyFormatting();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
@@ -946,7 +1073,6 @@
       setupReportsStatusColors();
       setupScrollTopButton();
 
-      // שמירת מצב הטופס בכל שינוי + עדכון סכומים כוללים
       const form = document.getElementById('reportForm');
       if (form) {
         form.addEventListener('input', (e) => {
@@ -959,7 +1085,9 @@
             updateRecommendationTotals();
           }
           saveFormState();
+          syncToCalculator();
         });
+
         form.addEventListener('change', (e) => {
           if (e.target && (
             e.target.id === 'trusteeMonthly' ||
@@ -970,7 +1098,14 @@
             updateRecommendationTotals();
           }
           saveFormState();
+          syncToCalculator();
         });
+      }
+
+      // סנכרון ראשוני כשהמחשבון נטען
+      const frame = document.querySelector('.calc-frame-card iframe');
+      if (frame) {
+        frame.addEventListener('load', syncToCalculator);
       }
     });
   </script>
