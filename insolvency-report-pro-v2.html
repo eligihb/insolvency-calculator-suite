@@ -43,6 +43,12 @@
       break-inside: avoid;
     }
 
+    .card-case-header {
+      margin-right: 0;
+      margin-left: auto;  /* דוחף אותו ליותר ימין בתוך ה-page */
+      max-width: 1020px;
+    }
+
     .section-title {
       font-size: 13px;
       font-weight: 700;
@@ -114,6 +120,7 @@
     .mini    { width: 30px; }  /* ספרה אחת */
     .medium  { width: 120px; } /* מותאם לשדה תאריך */
     .xshort  { width: 60px; }  /* סכומים קטנים / שדות צרים יותר */
+    .amount-5 { width: 90px; text-align: center; } /* 5 ספרות נראות טוב */
     .flex-1  { flex: 1 1 0; }
 
     .small-text {
@@ -207,7 +214,7 @@
       width: 100%;
       border: 0;
       border-radius: 12px;
-      height: 380px;
+      height: 340px;  /* מעט יותר נמוך כדי שיתאים לדף אחד */
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
       background: #ffffff;
     }
@@ -240,10 +247,8 @@
       align-items: center;
       gap: 4px;
     }
-    .pair-label-multiline {
-      display: inline-block;
-      line-height: 1.1;
-          .debts-row {
+
+    .debts-row {
       flex-wrap: nowrap;
       justify-content: flex-start;
       gap: 10px;
@@ -255,8 +260,6 @@
       line-height: 1.1;
       white-space: normal;
       text-align: right;
-    }
-
     }
 
     /* מסמכים ותשלומים – מרווח לסך פיגורים */
@@ -326,13 +329,13 @@
         max-width: 100%;
         margin: 0;
         padding: 4mm;
-        transform: scale(0.86);
+        transform: scale(0.8);        /* כיווץ נוסף כדי שייכנס לדף אחד */
         transform-origin: top center;
       }
       .card { box-shadow: none; }
       .buttons-inline { display: none; }
-      .calc-frame-card { display: none; } /* לא מדפיסים מחשבון */
       .scroll-top-btn { display: none !important; }
+      /* המחשבון נשאר, לא מסתירים אותו */
     }
   </style>
 </head>
@@ -344,8 +347,8 @@
   <form id="reportForm">
     <div class="page">
 
-      <!-- כרטיס עליון – פרטי תיק + צו תשלומים + פרטים אישיים + מצב רפואי -->
-      <div class="card">
+      <!-- כרטיס עליון: פרטי תיק + צו תשלומים + כפתורים -->
+      <div class="card card-case-header">
         <div class="section-header-flex">
           <div class="section-title">פרטי תיק וצו תשלומים</div>
           <div class="buttons-inline">
@@ -405,11 +408,11 @@
               <div class="sub-title">צו תשלומים</div>
               <div class="row no-wrap">
                 תשלום חודשי:
-                <input type="text" class="short currency-input" maxlength="4">
+                <input type="text" class="amount-5 currency-input" maxlength="5">
               </div>
               <div class="row no-wrap">
                 תשלום מדורג:
-                <input type="text" class="xshort currency-input" maxlength="4" placeholder="אם יש">
+                <input type="text" class="amount-5 currency-input" maxlength="5" placeholder="אם יש">
                 מיום:
                 <input type="date" class="medium">
               </div>
@@ -517,22 +520,22 @@
             <!-- חובות -->
             <div class="sub-title">חובות</div>
 
-           <div class="row debts-row">
-  <span class="pair">
-    <span class="pair-label-multiline">מס' נושים</span>
-    <input type="number" class="tiny" min="0" max="99">
-  </span>
+            <div class="row debts-row">
+              <span class="pair">
+                <span class="pair-label-multiline">מס' נושים</span>
+                <input type="number" class="tiny" min="0" max="99">
+              </span>
 
-  <span class="pair">
-    <span class="pair-label-multiline">סכום כולל</span>
-    <input type="text" class="short currency-input">
-  </span>
+              <span class="pair">
+                <span class="pair-label-multiline">סכום כולל</span>
+                <input type="text" class="short currency-input">
+              </span>
 
-  <span class="pair">
-    <span class="pair-label-multiline">דין קדימה</span>
-    <input type="text" class="short currency-input">
-  </span>
-</div>
+              <span class="pair">
+                <span class="pair-label-multiline">דין קדימה</span>
+                <input type="text" class="short currency-input">
+              </span>
+            </div>
 
             <div class="row">
               תביעות חוב נבדקו:
@@ -669,8 +672,10 @@
             שכר נטו:
             <input type="text" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            פוטנציאל השתכרות:
-            <input type="text" id="earningPotential" class="short currency-input">
+            <span style="margin-inline-start: 10px; display:inline-flex; align-items:center; gap:4px;">
+              פוטנציאל השתכרות:
+              <input type="text" id="earningPotential" class="short currency-input">
+            </span>
           </div>
 
           <div class="row" id="earningPotentialRow">
