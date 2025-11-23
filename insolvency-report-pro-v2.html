@@ -988,27 +988,58 @@
         }
       }
 
-      // ---------- תשלום מזונות → שדה מזונות במחשבון (אם קיים) ----------
+         // ---------- תשלום מזונות במחשבון (סכום או בחירה נפתחת) ----------
+      (function handleAlimony() {
+        // 1. קודם ננסה להזין סכום לשדה חופשי (אם יש במחשבון כזה)
+        const alimonyTargets = [
+          'calcAlimonyExpense',
+          'alimonyExpenses',
+          'alimonyExpense',
+          'alimonyInput',
+          'alimony'
+        ];
 
-      const alimonyTargets = [
-        'calcAlimonyExpense',
-        'alimonyExpenses',
-        'alimonyExpense',
-        'alimonyInput',
-        'alimony'
-      ];
+        let updatedAmount = false;
 
-      alimonyTargets.forEach((id) => {
-        const el = cdoc.getElementById(id);
-        if (!el) return;
-        if (hasAlimony && alimonyAmount) {
-          el.value = alimonyAmount;
-        } else {
-          el.value = '';
+        alimonyTargets.forEach((id) => {
+          const el = cdoc.getElementById(id);
+          if (!el) return;
+
+          if (hasAlimony && alimonyAmount) {
+            el.value = alimonyAmount;
+          } else {
+            el.value = '';
+          }
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          updatedAmount = true;
+        });
+
+        // 2. אם אין שדה סכום, או אם המחשבון עובד עם תיבה נפתחת של סוג מזונות
+        const alimonySelect = cdoc.querySelector(
+          'select#alimonyType, select[name="alimonyType"], select[data-role="alimony-type"]'
+        );
+
+        if (alimonySelect) {
+          let optionToSelect = null;
+
+          if (hasAlimony && alimonyAmount) {
+            // מחפשים אופציה שמכילה "מלא" / full, ואם אין – האופציה האחרונה
+            optionToSelect = Array.from(alimonySelect.options).find((opt) =>
+              /מלא|full/i.test(opt.textContent)
+            ) || alimonySelect.options[alimonySelect.options.length - 1];
+          } else {
+            // אין מזונות: נחפש "אין" / "ללא" / 0, ואם אין – האופציה הראשונה
+            optionToSelect = Array.from(alimonySelect.options).find((opt) =>
+              /אין|ללא|0/.test(opt.textContent)
+            ) || alimonySelect.options[0];
+          }
+
+          if (optionToSelect) {
+            alimonySelect.value = optionToSelect.value;
+            alimonySelect.dispatchEvent(new Event('change', { bubbles: true }));
+          }
         }
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      });
-    }
+      })();
     // שמירת מצב הטופס
     function saveFormState() {
       const form = document.getElementById('reportForm');
