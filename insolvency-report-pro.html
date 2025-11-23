@@ -869,77 +869,86 @@
 
     // ----- חישוב סה"כ תשלומים מצו התשלומים -----
 
-    function fullMonthsBetween(start, end) {
-      if (!(start instanceof Date) || !(end instanceof Date)) return 0;
-      if (isNaN(start) || isNaN(end) || end <= start) return 0;
+function fullMonthsBetween(start, end) {
+  if (!(start instanceof Date) || !(end instanceof Date)) return 0;
+  if (isNaN(start) || isNaN(end) || end <= start) return 0;
 
-      let months = (end.getFullYear() - start.getFullYear()) * 12 +
-                   (end.getMonth() - start.getMonth());
+  let months = (end.getFullYear() - start.getFullYear()) * 12 +
+               (end.getMonth() - start.getMonth());
 
-      if (end.getDate() < start.getDate()) {
-        months -= 1;
-      }
-      return Math.max(months, 0);
+  // אם היום בחודש קטן מיום התחלה – החודש האחרון לא נחשב כחודש מלא
+  if (end.getDate() < start.getDate()) {
+    months -= 1;
+  }
+  return Math.max(months, 0);
+}
+
+function calculatePaymentsTotals() {
+  const orderDateInput   = document.getElementById('orderDate');
+  const monthlyInput     = document.getElementById('monthlyPayment');
+  const gradedInput      = document.getElementById('gradedPayment');
+  const gradedDateInput  = document.getElementById('gradedFromDate');
+  const totalDateInput   = document.getElementById('paymentsTotalDate');
+  const totalAmountInput = document.getElementById('paymentsTotalAmount');
+
+  if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
+
+  const today = new Date();
+  // סה"כ נכון ליום – תאריך היום
+  totalDateInput.value = today.toLocaleDateString('he-IL');
+
+  if (!orderDateInput.value) {
+    totalAmountInput.value = '';
+    return;
+  }
+
+  const orderDate = new Date(orderDateInput.value);
+  if (isNaN(orderDate)) {
+    totalAmountInput.value = '';
+    return;
+  }
+
+  const monthlyAmount = parseNumberFromCurrency(monthlyInput.value);
+  const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
+  const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
+
+  // תשלומים חודשיים רגילים – החל מחודש אחרי תאריך הצו
+  const startMonthly = new Date(orderDate.getTime());
+  startMonthly.setMonth(startMonthly.getMonth() + 1);
+
+  let total = 0;
+
+  if (!gradedAmount || !gradedDateVal) {
+    // אין מדורג – כל התקופה לפי תשלום חודשי רגיל
+    const mAll = fullMonthsBetween(startMonthly, today);
+    total = mAll * monthlyAmount;
+
+  } else {
+    // יש תשלום מדורג
+    const gradedDate = new Date(gradedDateVal);
+
+    if (isNaN(gradedDate)) {
+      const mAll = fullMonthsBetween(startMonthly, today);
+      total = mAll * monthlyAmount;
+    } else {
+      // עד המדורג – חודשי רגיל
+      const monthsBefore = fullMonthsBetween(startMonthly, gradedDate);
+      // מהמדורג ואילך – מדורג (בלי לחכות 30 יום)
+      const monthsAfter  = fullMonthsBetween(gradedDate, today);
+
+      total = monthsBefore * monthlyAmount + monthsAfter * gradedAmount;
     }
+  }
 
-    function calculatePaymentsTotals() {
-      const orderDateInput     = document.getElementById('orderDate');
-      const monthlyInput       = document.getElementById('monthlyPayment');
-      const gradedInput        = document.getElementById('gradedPayment');
-      const gradedDateInput    = document.getElementById('gradedFromDate');
-      const totalDateInput     = document.getElementById('paymentsTotalDate');
-      const totalAmountInput   = document.getElementById('paymentsTotalAmount');
-
-      if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
-
-      const today = new Date();
-      totalDateInput.value = today.toLocaleDateString('he-IL');
-
-      if (!orderDateInput.value) {
-        totalAmountInput.value = '';
-        return;
-      }
-
-      const orderDate = new Date(orderDateInput.value);
-      if (isNaN(orderDate)) {
-        totalAmountInput.value = '';
-        return;
-      }
-
-      const monthlyAmount  = parseNumberFromCurrency(monthlyInput.value);
-      const gradedAmount   = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
-      const gradedDateVal  = gradedDateInput ? gradedDateInput.value : '';
-
-      const startRegular = new Date(orderDate.getTime());
-      startRegular.setMonth(startRegular.getMonth() + 1);
-
-      let total = 0;
-
-      if (!gradedAmount || !gradedDateVal) {
-        const mAll = fullMonthsBetween(startRegular, today);
-        total = mAll * monthlyAmount;
-      } else {
-        const gradedDate = new Date(gradedDateVal);
-        if (isNaN(gradedDate)) {
-          const mAll = fullMonthsBetween(startRegular, today);
-          total = mAll * monthlyAmount;
-        } else {
-          const mBefore = fullMonthsBetween(startRegular, gradedDate);
-          const mAfter  = fullMonthsBetween(gradedDate, today);
-          total = mBefore * monthlyAmount + mAfter * gradedAmount;
-        }
-      }
-
-      if (!total) {
-        totalAmountInput.value = '';
-      } else {
-        totalAmountInput.value = total.toLocaleString('he-IL', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }) + ' ₪';
-      }
-    }
-
+  if (!total) {
+    totalAmountInput.value = '';
+  } else {
+    totalAmountInput.value = total.toLocaleString('he-IL', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }) + ' ₪';
+  }
+}
     function saveFormState() {
       const form = document.getElementById('reportForm');
       if (!form) return;
