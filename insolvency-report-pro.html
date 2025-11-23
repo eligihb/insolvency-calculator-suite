@@ -398,13 +398,14 @@
             </div>
           </div>
 
-  <!-- עמודה אמצע: צו תשלומים -->
-<div>
-  <div class="order-box">
-    <div class="sub-title">צו תשלומים</div>
-    <div class="row no-wrap">
-      תשלום חודשי:
-      <input type="text" class="short currency-input" maxlength="6" id="monthlyAmount">
+ <div class="card">
+  <div class="section-title">צו תשלומים</div>
+
+  <!-- כאן שדות צו תשלומים -->
+  <div class="row">
+    <div class="input-group">
+      <label>תשלום חודשי</label>
+      <input type="text" class="short currency-input" maxlength="6" id="monthlyAmount" placeholder="הזן סכום חודשי">
     </div>
     <div class="row no-wrap">
       תשלום מדורג:
@@ -422,12 +423,14 @@
     <div class="row">
       <div class="input-group">
         <label>סה"כ נכון ליום:</label>
-        <span id="currentDate" style="font-weight: bold; color: #0a9396;">היום: </span>
+        <span id="currentDate" style="font-weight: bold; color: #0a9396;"></span> <!-- תאריך נוכחי -->
       </div>
     </div>
+
     <div class="row">
       <div class="input-group">
         <label>סה"כ נכון ליום (₪):</label>
+        <!-- שדה סכום, ללא "ש"ח" עם פסיקים -->
         <input type="text" class="readonly currency-input" id="totalAmount" readonly>
       </div>
     </div>
@@ -435,7 +438,7 @@
 </div>
 
 <script>
-  // הצגת התאריך הנוכחי באופן אוטומטי
+  // הצגת התאריך הנוכחי
   document.getElementById('currentDate').textContent = `היום: ${new Date().toLocaleDateString('he-IL')}`;
 
   // פונקציה לחישוב הסכום הכולל
@@ -464,7 +467,7 @@
       totalAmount += staggeredMonths * staggeredAmount;
     }
 
-    // הצגת התוצאה
+    // הצגת התוצאה (ללא "ש"ח", רק סכום עם פסיקים)
     document.getElementById('totalAmount').value = totalAmount.toLocaleString('he-IL');
   }
 
