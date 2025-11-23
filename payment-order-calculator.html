@@ -294,15 +294,17 @@ header{
           <div class="input-group">
             <label>סטטוס משפחתי</label>
             <div class="toggles-line" id="familyTypeGroup">
-              <button class="chip family-type active" data-type="זוג">
-                זוג
-              </button>
-              <button class="chip family-type" data-type="יחיד/ נשוי חי בנפרד">
-                יחיד&#8239;/&#8239;נשוי (חי בנפרד)
-              </button>
-              <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
-                רווק/גרוש<br>אלמן
-              </button>
+          <button id="statusCoupleBtn" class="chip family-type" data-type="זוג">
+    זוג
+</button>
+
+<button id="statusSingleSeparateBtn" class="chip family-type" data-type="יחיד">
+    יחיד / נשוי חי בנפרד
+</button>
+
+<button id="statusSingleBtn" class="chip family-type" data-type="רווק">
+    רווק / גרוש / אלמן
+</button>
             </div>
             <div class="toggles-line kids-line" style="margin-top:6px">
               <button class="chip chip-add" type="button" id="addChildBtn">
