@@ -437,7 +437,7 @@
 
            <div class="row">
   ילדים קטינים:
-  <input type="number" id="minorChildrenCount" class="mini" min="0" max="9">
+  <input type="number" id="minorChildrenCount" class="short" min="0" max="11">
   תשלום מזונות:
   <label><input type="checkbox" id="hasAlimony"> כן</label>
   <input type="text" id="alimonyAmount" class="short currency-input">
@@ -1000,13 +1000,19 @@ function syncCalculatorFromForm() {
     salaryPartner.dispatchEvent(new w.Event('input', {bubbles:true}));
   }
 
-  // ילדים – childrenCount הגלובלי של המחשבון
-  if (typeof w.childrenCount === 'number') {
+  // ילדים – עדכון childrenCount בתוך המחשבון (מוגדר שם עם let, לא על window)
+  try {
     const n = Math.max(0, Math.min(10, kidsCount));
-    w.childrenCount = n;
-    if (typeof w.updateChildrenLabel === 'function') w.updateChildrenLabel();
+    if (typeof w.eval === 'function') {
+      // מעדכנים את המשתנה הגלובלי באייפריים
+      w.eval('childrenCount = ' + n + ';');
+      if (typeof w.updateChildrenLabel === 'function') {
+        w.updateChildrenLabel();
+      }
+    }
+  } catch (e) {
+    // אם מסיבה כלשהי אין גישה – מתעלמים
   }
-
   // מזונות – רק אם מסומן בטופס
   const alimonyInput = doc.getElementById('alimonyExpenses');
   if (alimonyInput) {
