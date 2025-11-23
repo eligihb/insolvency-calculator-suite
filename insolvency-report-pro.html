@@ -355,7 +355,7 @@
               תיק ממונה:
               <input type="text" class="short" maxlength="5">
               תיק ביהמ"ש:
-              <input type="text" class="short" placeholder="">
+              <input type="text" class="short" placeholder="123456-12-25">
             </div>
 
             <div class="row">
@@ -399,7 +399,7 @@
 
               <div class="row no-wrap">
                 תשלום מדורג:
-                <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="">
+                <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="אם יש">
                 מיום:
                 <input type="date" id="gradedFromDate" class="medium">
               </div>
@@ -429,18 +429,18 @@
 
             <div class="row" style="flex-wrap:wrap;">
               מצב משפחתי:
-              <label><input type="radio" name="family_status"> רווק</label>
-              <label><input type="radio" name="family_status"> נשוי</label>
-              <label><input type="radio" name="family_status"> גרוש</label>
-              <label><input type="radio" name="family_status"> אלמן</label>
+              <label><input type="radio" name="family_status" value="רווק"> רווק</label>
+              <label><input type="radio" name="family_status" value="נשוי"> נשוי</label>
+              <label><input type="radio" name="family_status" value="גרוש"> גרוש</label>
+              <label><input type="radio" name="family_status" value="אלמן"> אלמן</label>
             </div>
 
             <div class="row">
               ילדים קטינים:
-              <input type="number" class="short" min="0" max="20">
+              <input type="number" id="minorChildrenCount" class="mini" min="0" max="9">
               תשלום מזונות:
               <label><input type="checkbox" id="hasAlimony"> כן</label>
-              <input type="text" class="short currency-input">
+              <input type="text" id="alimonyAmount" class="short currency-input">
             </div>
 
             <hr>
@@ -519,7 +519,7 @@
             <!-- חובות -->
             <div class="sub-title">חובות</div>
 
-           <div class="row debts-row">
+            <div class="row debts-row">
               <span class="pair">
                 <span class="pair-label-multiline">מס' נושים</span>
                 <input type="number" class="tiny" min="0" max="99">
@@ -669,7 +669,7 @@
 
           <div class="row not-working-toggle-row" id="debtorIncomeRow">
             שכר נטו:
-            <input type="text" class="short currency-input">
+            <input type="text" id="debtorNetIncome" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
             פוטנציאל השתכרות:
             <input type="text" id="earningPotential" class="short currency-input">
@@ -698,7 +698,7 @@
 
           <div class="row not-working-toggle-row" id="spouseIncomeRow">
             שכר נטו:
-            <input type="text" class="short currency-input">
+            <input type="text" id="spouseNetIncome" class="short currency-input">
             <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
           </div>
 
@@ -749,7 +749,7 @@
     setupPercentField('disabilityPercent');
     setupPercentField('incapacityPercent');
 
-    // עיצוב סכומי כסף
+    // עיצוב סכומי כסף בכל הטופס
     function attachCurrencyFormatting() {
       const inputs = document.querySelectorAll(".currency-input");
       inputs.forEach(input => {
@@ -783,6 +783,7 @@
       window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
     }
 
+    // צילום מסך של הדו"ח
     function screenshotReport() {
       const root = document.querySelector('.page');
       if (!root) return;
@@ -796,6 +797,7 @@
         .catch(() => alert('שגיאה ביצירת צילום המסך'));
     }
 
+    // "אינו עובד" – צביעה באדום
     function setupNotWorkingToggle(checkboxId, rowId) {
       const chk = document.getElementById(checkboxId);
       const row = document.getElementById(rowId);
@@ -811,6 +813,7 @@
       update();
     }
 
+    // דו"חות חודשיים – צבע לפי סימון
     function setupReportsStatusColors() {
       const radios = document.querySelectorAll('input[name="reports_status"]');
       if (!radios.length) return;
@@ -836,6 +839,7 @@
       update();
     }
 
+    // עזר: המרת טקסט סכום למספר
     function parseNumberFromCurrency(val) {
       if (!val) return 0;
       const clean = String(val).replace(/[^\d.]/g,'');
@@ -843,6 +847,7 @@
       return isNaN(num) ? 0 : num;
     }
 
+    // חישוב סכומים כוללים בהמלצות (נאמן/ממונה)
     function updateRecommendationTotals() {
       const tm = document.getElementById('trusteeMonthly');
       const td = document.getElementById('trusteeDuration');
@@ -869,124 +874,196 @@
 
     // ----- חישוב סה"כ תשלומים מצו התשלומים -----
 
-function fullMonthsBetween(start, end) {
-  if (!(start instanceof Date) || !(end instanceof Date)) return 0;
-  if (isNaN(start) || isNaN(end) || end <= start) return 0;
+    function calculatePaymentsTotals() {
+      const orderDateInput   = document.getElementById('orderDate');
+      const monthlyInput     = document.getElementById('monthlyPayment');
+      const gradedInput      = document.getElementById('gradedPayment');
+      const gradedDateInput  = document.getElementById('gradedFromDate');
+      const totalDateInput   = document.getElementById('paymentsTotalDate');
+      const totalAmountInput = document.getElementById('paymentsTotalAmount');
 
-  let months = (end.getFullYear() - start.getFullYear()) * 12 +
-               (end.getMonth() - start.getMonth());
+      if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
 
-  // אם היום בחודש קטן מיום התחלה – החודש האחרון לא נחשב כחודש מלא
-  if (end.getDate() < start.getDate()) {
-    months -= 1;
-  }
-  return Math.max(months, 0);
-}
+      const today = new Date();
+      // סה"כ נכון ליום – תאריך היום
+      totalDateInput.value = today.toLocaleDateString('he-IL');
 
-function calculatePaymentsTotals() {
-  const orderDateInput   = document.getElementById('orderDate');
-  const monthlyInput     = document.getElementById('monthlyPayment');
-  const gradedInput      = document.getElementById('gradedPayment');
-  const gradedDateInput  = document.getElementById('gradedFromDate');
-  const totalDateInput   = document.getElementById('paymentsTotalDate');
-  const totalAmountInput = document.getElementById('paymentsTotalAmount');
+      if (!orderDateInput.value) {
+        totalAmountInput.value = '';
+        return;
+      }
 
-  if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
+      const orderDate = new Date(orderDateInput.value);
+      if (isNaN(orderDate)) {
+        totalAmountInput.value = '';
+        return;
+      }
 
-  const today = new Date();
-  // סה"כ נכון ליום – תאריך היום
-  totalDateInput.value = today.toLocaleDateString('he-IL');
+      const monthlyAmount = parseNumberFromCurrency(monthlyInput.value);
+      const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
+      const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
 
-  if (!orderDateInput.value) {
-    totalAmountInput.value = '';
-    return;
-  }
+      // פונקציית עזר – חודשים קלנדריים כולל שני הצדדים (חודש-חודש)
+      function monthsInclusive(startYear, startMonth, endYear, endMonth) {
+        const s = startYear * 12 + startMonth;
+        const e = endYear   * 12 + endMonth;
+        const diff = e - s + 1;
+        return Math.max(diff, 0);
+      }
 
-  const orderDate = new Date(orderDateInput.value);
-  if (isNaN(orderDate)) {
-    totalAmountInput.value = '';
-    return;
-  }
+      // החודש הראשון לתשלום חודשי: החודש שאחרי חודש הצו
+      let firstYear  = orderDate.getFullYear();
+      let firstMonth = orderDate.getMonth() + 1; // החודש הבא
+      if (firstMonth > 11) { // אם הצו בדצמבר
+        firstMonth = 0;
+        firstYear += 1;
+      }
 
-  const monthlyAmount = parseNumberFromCurrency(monthlyInput.value);
-  const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
-  const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
+      const todayYear  = today.getFullYear();
+      const todayMonth = today.getMonth();
 
-  // פונקציה עזר – כמה חודשים קלנדריים (כולל שני הצדדים)
-  function monthsInclusive(startYear, startMonth, endYear, endMonth) {
-    const s = startYear * 12 + startMonth;
-    const e = endYear   * 12 + endMonth;
-    const diff = e - s + 1;
-    return Math.max(diff, 0);
-  }
+      let total = 0;
 
-  // החודש הראשון לתשלום חודשי: החודש שאחרי חודש הצו
-  let firstYear  = orderDate.getFullYear();
-  let firstMonth = orderDate.getMonth() + 1; // החודש הבא
-  if (firstMonth === 12) { // אם הצו בדצמבר → החודש הבא הוא ינואר שנה הבאה
-    firstMonth = 0;
-    firstYear += 1;
-  }
+      if (!gradedAmount || !gradedDateVal) {
+        // אין מדורג – כל התקופה לפי תשלום חודשי רגיל
+        const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
+        total = mAll * monthlyAmount;
 
-  const todayYear  = today.getFullYear();
-  const todayMonth = today.getMonth();
+      } else {
+        // יש תשלום מדורג
+        const gradedDate = new Date(gradedDateVal);
 
-  let total = 0;
+        if (isNaN(gradedDate)) {
+          const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
+          total = mAll * monthlyAmount;
+        } else {
+          const gYear  = gradedDate.getFullYear();
+          const gMonth = gradedDate.getMonth(); // החודש בו מתחיל המדורג
 
-  if (!gradedAmount || !gradedDateVal) {
-    // אין מדורג – כל התקופה לפי תשלום חודשי רגיל, בחודשים קלנדריים
-    const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
-    total = mAll * monthlyAmount;
+          // חודשים לפני המדורג: מהחודש שאחרי הצו ועד החודש שלפני המדורג
+          const monthsBefore = monthsInclusive(
+            firstYear,
+            firstMonth,
+            gYear,
+            gMonth - 1
+          );
 
-  } else {
-    // יש תשלום מדורג
-    const gradedDate = new Date(gradedDateVal);
+          // חודשים במדורג: מהחודש של המדורג ועד היום
+          const monthsAfter = monthsInclusive(
+            gYear,
+            gMonth,
+            todayYear,
+            todayMonth
+          );
 
-    if (isNaN(gradedDate)) {
-      const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
-      total = mAll * monthlyAmount;
-    } else {
-      const gYear  = gradedDate.getFullYear();
-      const gMonth = gradedDate.getMonth(); // החודש שבו המדורג נכנס לתוקף
+          total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
+        }
+      }
 
-      // חודשים לפני המדורג: מהחודש שאחרי הצו ועד החודש שלפני המדורג
-      const monthsBefore = monthsInclusive(
-        firstYear,
-        firstMonth,
-        gYear,
-        gMonth - 1
-      );
-
-      // חודשים אחרי/כולל המדורג: מהחודש של המדורג ועד היום
-      const monthsAfter = monthsInclusive(
-        gYear,
-        gMonth,
-        todayYear,
-        todayMonth
-      );
-
-      total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
+      if (!total) {
+        totalAmountInput.value = '';
+      } else {
+        totalAmountInput.value = total.toLocaleString('he-IL', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
+        }) + ' ₪';
+      }
     }
-  }
 
-  if (!total) {
-    totalAmountInput.value = '';
-  } else {
-    totalAmountInput.value = total.toLocaleString('he-IL', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }) + ' ₪';
-  }
-}
-  if (!total) {
-    totalAmountInput.value = '';
-  } else {
-    totalAmountInput.value = total.toLocaleString('he-IL', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }) + ' ₪';
-  }
-}
+    // ----- סנכרון טופס ← מחשבון באייפריים -----
+
+    let calcFrame = null;
+    let calcReady = false;
+
+    function syncCalculatorFromForm() {
+      if (!calcReady || !calcFrame || !calcFrame.contentWindow) return;
+
+      const w   = calcFrame.contentWindow;
+      const doc = w.document;
+      if (!doc) return;
+
+      const debtorIncomeEl = document.getElementById('debtorNetIncome');
+      const spouseIncomeEl = document.getElementById('spouseNetIncome');
+      const kidsEl         = document.getElementById('minorChildrenCount');
+      const alimonyChk     = document.getElementById('hasAlimony');
+      const alimonyAmtEl   = document.getElementById('alimonyAmount');
+
+      const debtorNet  = debtorIncomeEl ? parseNumberFromCurrency(debtorIncomeEl.value) : 0;
+      const spouseNet  = spouseIncomeEl ? parseNumberFromCurrency(spouseIncomeEl.value) : 0;
+      const kidsCount  = kidsEl ? (parseInt(kidsEl.value || '0', 10) || 0) : 0;
+      const hasAlimony = alimonyChk ? alimonyChk.checked : false;
+      const alimonyAmt = alimonyAmtEl ? parseNumberFromCurrency(alimonyAmtEl.value) : 0;
+
+      // שכר חייב
+      const salaryDebtor = doc.getElementById('salaryDebtor');
+      if (salaryDebtor) {
+        salaryDebtor.value = debtorNet || '';
+        salaryDebtor.dispatchEvent(new w.Event('input', {bubbles:true}));
+      }
+
+      // שכר בן/בת זוג
+      const salaryPartner = doc.getElementById('salaryPartner');
+      if (salaryPartner) {
+        salaryPartner.value = spouseNet || '';
+        salaryPartner.dispatchEvent(new w.Event('input', {bubbles:true}));
+      }
+
+      // ילדים – childrenCount הגלובלי של המחשבון
+      if (typeof w.childrenCount === 'number') {
+        const n = Math.max(0, Math.min(10, kidsCount));
+        w.childrenCount = n;
+        if (typeof w.updateChildrenLabel === 'function') w.updateChildrenLabel();
+        if (typeof w.calc === 'function') w.calc();
+      }
+
+      // מזונות – רק אם מסומן בטופס
+      const alimonyInput = doc.getElementById('alimonyExpenses');
+      if (alimonyInput) {
+        if (hasAlimony && alimonyAmt > 0) {
+          alimonyInput.value = alimonyAmt;
+        } else {
+          alimonyInput.value = '';
+        }
+        alimonyInput.dispatchEvent(new w.Event('input', {bubbles:true}));
+      }
+
+      // מצב משפחתי → סטטוס במחשבון
+      const familyRadios = document.querySelectorAll('input[name="family_status"]');
+      let familyValue = '';
+      familyRadios.forEach(r => { if (r.checked) familyValue = r.value; });
+
+      let targetType = null; // "יחיד" / "זוג" / "רווק"
+      if (familyValue === 'נשוי') {
+        targetType = 'זוג';
+      } else if (familyValue === 'רווק' || familyValue === 'גרוש' || familyValue === 'אלמן') {
+        targetType = 'רווק';
+      }
+
+      if (targetType) {
+        const ftButtons = doc.querySelectorAll('.family-type');
+        ftButtons.forEach(btn => {
+          if (btn.dataset.type === targetType) {
+            btn.click();
+          }
+        });
+      }
+
+      if (typeof w.calc === 'function') {
+        w.calc();
+      }
+    }
+
+    function initCalculatorSync() {
+      calcFrame = document.querySelector('.calc-frame-card iframe');
+      if (!calcFrame) return;
+      calcFrame.addEventListener('load', () => {
+        calcReady = true;
+        syncCalculatorFromForm();
+      });
+    }
+
+    // ----- שמירת/שחזור מצב טופס -----
+
     function saveFormState() {
       const form = document.getElementById('reportForm');
       if (!form) return;
@@ -1032,12 +1109,14 @@ function calculatePaymentsTotals() {
       setupReportsStatusColors();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
-      updateRecommendationTotals();
       attachCurrencyFormatting();
+      updateRecommendationTotals();
       calculatePaymentsTotals();
+      syncCalculatorFromForm();
       alert('הנתונים שוחזרו מהגרסה האחרונה שנשמרה.');
     }
 
+    // חץ חזרה לראש הדף
     function setupScrollTopButton() {
       const btn = document.getElementById('scrollTopBtn');
       if (!btn) return;
@@ -1059,6 +1138,7 @@ function calculatePaymentsTotals() {
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
       setupReportsStatusColors();
       setupScrollTopButton();
+      initCalculatorSync();
 
       const form = document.getElementById('reportForm');
       if (form) {
@@ -1079,8 +1159,11 @@ function calculatePaymentsTotals() {
           )) {
             calculatePaymentsTotals();
           }
+
           saveFormState();
+          syncCalculatorFromForm();
         });
+
         form.addEventListener('change', (e) => {
           if (e.target && (
             e.target.id === 'trusteeMonthly' ||
@@ -1098,11 +1181,13 @@ function calculatePaymentsTotals() {
           )) {
             calculatePaymentsTotals();
           }
+
           saveFormState();
+          syncCalculatorFromForm();
         });
       }
 
-      // חישוב ראשוני של סה"כ תשלומים
+      // חישוב ראשוני
       calculatePaymentsTotals();
     });
   </script>
