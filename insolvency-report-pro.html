@@ -398,52 +398,52 @@
             </div>
           </div>
 
-    <div class="card">
-  <div class="section-title">צו תשלומים</div>
-  
-  <!-- כאן שדות צו תשלומים -->
-  <div class="row">
-    <div class="input-group">
-      <label>תאריך מתן הצו</label>
-      <input type="date" id="orderDate" class="input-date">
+   <!-- עמודה אמצע: צו תשלומים -->
+<div>
+  <div class="order-box">
+    <div class="sub-title">צו תשלומים</div>
+    <div class="row no-wrap">
+      תשלום חודשי:
+      <input type="text" class="short currency-input" maxlength="6" id="monthlyAmount">
     </div>
-    <div class="input-group">
-      <label>סכום חודשי (₪)</label>
-      <input type="number" id="monthlyAmount" class="input-amount" placeholder="הזן סכום חודשי">
-    </div>
-  </div>
-
-  <!-- שדות תשלום מדורג -->
-  <div class="row">
-    <div class="input-group">
-      <label>תשלום מדורג (אם יש)</label>
-      <input type="number" id="staggeredAmount" class="input-amount" placeholder="הזן סכום מדורג (אם יש)">
+    <div class="row no-wrap">
+      תשלום מדורג:
+      <input type="text" class="short currency-input" maxlength="6" id="staggeredAmount" placeholder="אם יש">
       מיום:
-      <input type="date" id="staggeredDate" class="medium">
-      <!-- הצגת התאריך הנוכחי באופן אוטומטי -->
-      <span id="currentDate" style="font-weight: bold;">היום: </span>
+      <input type="date" class="medium" id="staggeredDate">
     </div>
-  </div>
+    <div class="row">
+      מסירה לנושים:
+      <label><input type="radio" name="notices"> כן</label>
+      <label><input type="radio" name="notices"> לא</label>
+    </div>
 
-  <!-- שדה להציג סה"כ נכון ליום -->
-  <div class="row">
-    <div class="input-group">
-      <label>סה"כ נכון ליום:</label>
-      <div id="totalAmount" class="readonly" style="font-weight: bold; color: #0a9396;">₪ 0</div>
+    <!-- כאן הוספנו את סה"כ נכון ליום -->
+    <div class="row">
+      <div class="input-group">
+        <label>סה"כ נכון ליום:</label>
+        <span id="currentDate" style="font-weight: bold; color: #0a9396;">היום: </span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-group">
+        <label>סה"כ נכון ליום (₪):</label>
+        <input type="text" class="readonly currency-input" id="totalAmount" readonly>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // הצגת התאריך הנוכחי באופן אוטומטי ליד השדה "מיום"
-  document.getElementById('currentDate').textContent += new Date().toLocaleDateString('he-IL');
+  // הצגת התאריך הנוכחי באופן אוטומטי
+  document.getElementById('currentDate').textContent = `היום: ${new Date().toLocaleDateString('he-IL')}`;
 
   // פונקציה לחישוב הסכום הכולל
   function calculateTotalAmount() {
-    const orderDate = new Date(document.getElementById('orderDate').value);
+    const orderDate = new Date(document.getElementById('orderDate').value); // שואב את תאריך הצו מ"פרטי תיק"
     const staggeredDate = new Date(document.getElementById('staggeredDate').value);
-    const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value) || 0;
-    const staggeredAmount = parseFloat(document.getElementById('staggeredAmount').value) || 0;
+    const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value.replace(/[^\d.]/g, '')) || 0;
+    const staggeredAmount = parseFloat(document.getElementById('staggeredAmount').value.replace(/[^\d.]/g, '')) || 0;
 
     // אם אין תאריך צו
     if (!orderDate.getTime()) return;
@@ -465,7 +465,7 @@
     }
 
     // הצגת התוצאה
-    document.getElementById('totalAmount').textContent = `₪ ${totalAmount.toLocaleString('he-IL')}`;
+    document.getElementById('totalAmount').value = totalAmount.toLocaleString('he-IL');
   }
 
   // מאזיני שינוי לשדות
@@ -477,7 +477,6 @@
   // חישוב ראשוני
   calculateTotalAmount();
 </script>
-<script>
   // פונקציה לחישוב הסכום הכולל
   function calculateTotalAmount() {
     const orderDate = new Date(document.getElementById('orderDate').value);
