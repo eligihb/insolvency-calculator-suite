@@ -12,9 +12,9 @@
 
 <style>
 .scale-container {
-  transform: scale(0.82);
+  transform: scale(0.75);
   transform-origin: top center;
-  width: 122%;
+  width: 130%;
 }
 
 :root{
@@ -38,56 +38,88 @@ body{
 
 .calculator{width:100%;max-width:var(--maxw)}
 header{
-  background:var(--primary);color:#fff;border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.08);
-  padding:10px 14px;display:flex;align-items:center;justify-content:center;position:relative
+  background:var(--primary);
+  color:#fff;
+  border-radius:14px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+  padding:6px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
-header h1{margin:0;font-size:1.28rem;line-height:1}
-.year-badge{position:absolute;inset-inline-start:10px;inset-block-start:8px;font-size:.72rem;color:#e6f4f1;background:rgba(255,255,255,.12);padding:3px 8px;border:1px solid rgba(255,255,255,.25);border-radius:10px}
+header h1{
+  margin:0;
+  font-size:1.02rem;
+  line-height:1.15;
+}
+.year-badge{
+  position:absolute;
+  inset-inline-start:10px;
+  inset-block-start:5px;
+  font-size:.7rem;
+  color:#e6f4f1;
+  background:rgba(255,255,255,.12);
+  padding:2px 6px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:10px
+}
 
 .board{
-  margin-top:10px;background:#fbfeff;border:1px solid #e6eef5;border-radius:14px;
+  margin-top:8px;
+  background:#fbfeff;
+  border:1px solid #e6eef5;
+  border-radius:14px;
   box-shadow:0 6px 20px rgba(0,0,0,.06);
-  padding:10px;
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:8px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
-.results-col{background:#eaf6f6;border:1px solid var(--border);border-radius:12px;padding:10px;grid-column:2}
-.inputs-col{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px;grid-column:1}
+.results-col{background:#eaf6f6;border:1px solid var(--border);border-radius:12px;padding:8px;grid-column:2}
+.inputs-col{background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px;grid-column:1}
 
-.section-title{margin:2px 0 8px;color:var(--primary);font-size:.98rem;font-weight:700;text-align:center}
+.section-title{
+  margin:2px 0 6px;
+  color:var(--primary);
+  font-size:.9rem;
+  font-weight:700;
+  text-align:center
+}
 
-.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.result-card{background:#fff;border:1px solid #dbe9ea;border-radius:10px;padding:8px;text-align:center}
-.result-card .k{color:var(--muted);font-weight:500;font-size:.9rem}
-.result-card .v{margin-top:4px;font-weight:700;color:var(--accent);font-size:1rem}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.result-card{background:#fff;border:1px solid #dbe9ea;border-radius:10px;padding:6px;text-align:center}
+.result-card .k{color:var(--muted);font-weight:500;font-size:.85rem}
+.result-card .v{margin-top:3px;font-weight:700;color:var(--accent);font-size:.95rem}
 .result-wide{grid-column:1/-1}
-.result-big .v{font-size:1.08rem;color:var(--blue)}
+.result-big .v{font-size:1.02rem;color:var(--blue)}
 .result-danger .v{color:var(--danger)}
-.zero-case{color:#c2410c;font-weight:800;font-size:.98rem}
+.zero-case{color:#c2410c;font-weight:800;font-size:.95rem}
 
 .center-card{max-width:340px;margin-inline:auto}
 .solo-pay{grid-column:1/-1;max-width:340px;justify-self:center}
 
-.row{display:grid;gap:8px}
+.row{display:grid;gap:6px}
 .row-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.input-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.input-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .input-group{display:flex;flex-direction:column;align-items:stretch}
 .input-group label{
-  font-weight:600;color:var(--label);display:flex;gap:6px;align-items:center;justify-content:center;
-  margin-bottom:3px;font-size:.9rem;text-align:center;min-height:34px;line-height:1.2
+  font-weight:600;color:var(--label);display:flex;gap:4px;align-items:center;justify-content:center;
+  margin-bottom:2px;font-size:.85rem;text-align:center;min-height:30px;line-height:1.2
 }
 .input-group input,.input-group select,.input-group textarea{
-  border:1px solid var(--border);padding:6px 8px;border-radius:10px;font-size:.95rem;background:#fbfeff
+  border:1px solid var(--border);padding:5px 7px;border-radius:10px;font-size:.9rem;background:#fbfeff
 }
-.input-group input:focus,.input-group select:focus,.input-group textarea:focus{outline:none;border-color:var(--secondary);box-shadow:0 0 0 3px rgba(10,147,150,.18)}
+.input-group input:focus,.input-group select:focus,.input-group textarea:focus{outline:none;border-color:var(--secondary);box-shadow:0 0 0 2px rgba(10,147,150,.18)}
 .input-group textarea{min-height:70px;resize:vertical}
 .readonly{background:#f2f6ff;border-color:#cfe0ff;color:#1f3a8a;font-weight:600}
 
-.status-row{max-width:60%;margin-inline:auto}
+.status-row{max-width:100%;margin-inline:auto}
 
 .toggles-line{
   display:flex;
-  gap:8px;
+  gap:6px;
   align-items:center;
   justify-content:center;
   flex-wrap:nowrap;
@@ -95,19 +127,19 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
 
 /* כפתורי צ׳יפ – בסיס */
 .chip{
-  padding:4px 10px;
-  min-height:30px;
+  padding:4px 9px;
+  min-height:28px;
   border:1px solid #cfd8e3;
   border-radius:999px !important;
   background:#fff;
   cursor:pointer;
-  font-size:.85rem;
-  line-height:1.1;
+  font-size:.82rem;
+  line-height:1.15;
   color:#0b2239;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:4px;
   white-space:nowrap;
 }
 
@@ -144,12 +176,30 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
   white-space:normal;
 }
 
-/* כפתור הוספת ילד – מודגש וברור */
+/* שורת מי בהליך – כפתורים באותה שורה, טקסט גולש בתוך הכפתור */
+.who-line{
+  flex-wrap:nowrap !important;
+}
+.who-label{
+  font-size:.8rem;
+  white-space:nowrap;
+}
+.chip.who-proc{
+  flex:1 1 0;
+  min-width:0;
+  white-space:normal;
+  text-align:center;
+}
+
+/* כפתור הוספת ילד – מודגש וברור, מימין */
+.kids-line{
+  justify-content:flex-start;
+}
 .chip-add{
   font-weight:700;
   border-style:dashed;
   border-width:2px;
-  padding-inline:12px;
+  padding-inline:10px;
 }
 .chip-add .add-icon{
   font-size:1.1rem;
@@ -157,31 +207,33 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
 }
 .chip-add .add-label{
   font-size:.8rem;
-  opacity:.9;
+}
+.chip-add .children-count{
+  font-size:.78rem;
+  opacity:.85;
 }
 
-.info-btn{width:18px;height:18px;border-radius:50%;background:#eef6f6;color:#0d6b6b;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;border:1px solid #d4e7e7;cursor:pointer}
-.pop{position:absolute;z-index:1000;max-width:320px;background:#fff7d6;color:#3b2f00;border:1px solid #ffe6a8;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.15);padding:10px 12px;line-height:1.45}
+.info-btn{width:16px;height:16px;border-radius:50%;background:#eef6f6;color:#0d6b6b;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;border:1px solid #d4e7e7;cursor:pointer}
+.pop{position:absolute;z-index:1000;max-width:320px;background:#fff7d6;color:#3b2f00;border:1px solid #ffe6a8;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.15);padding:8px 10px;line-height:1.4}
 
-/* אין יותר סרגל דביק/כפתורי פעולה – אז לא משתמשים בזה בפועל */
 .sticky-mobile{display:none}
 
 @media (max-width:768px){
   .calculator{max-width:100%}
-  header h1{font-size:1.12rem}
+  header h1{font-size:.95rem}
   .year-badge{display:none}
 
-  .board{grid-template-columns:1fr;gap:10px}
+  .board{grid-template-columns:1fr;gap:8px}
   .inputs-col{order:1}
   .results-col{order:2}
 
   .status-row{
     max-width:100%;
-    margin:0 auto 6px auto;
+    margin:0 auto 4px auto;
     justify-items:center;
   }
   .status-row .input-group{width:min(420px,100%)}
-  .status-row .toggles-line{justify-content:center;flex-wrap:wrap}
+  .status-row .toggles-line{justify-content:center;}
 
   .row-2,.input-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -205,34 +257,33 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
           <div class="input-group">
             <label>סטטוס משפחתי</label>
             <div class="toggles-line" id="familyTypeGroup">
-              <button class="chip family-type active" data-type="יחיד/ נשוי חי בנפרד">
-                יחיד&#8239;/&#8239;נשוי (חי בנפרד)
-              </button>
-              <button class="chip family-type" data-type="זוג">
+              <button class="chip family-type active" data-type="זוג">
                 זוג
+              </button>
+              <button class="chip family-type" data-type="יחיד/ נשוי חי בנפרד">
+                יחיד&#8239;/&#8239;נשוי (חי בנפרד)
               </button>
               <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
                 רווק&#8239;/&#8239;גרוש&#8239;/&#8239;אלמן
               </button>
             </div>
-            <div class="toggles-line" style="margin-top:6px">
-              <span>מס׳ ילדים:</span>
-              <input id="childrenCount" type="number" min="0" max="10" value="0" style="width:60px;text-align:center;">
+            <div class="toggles-line kids-line" style="margin-top:6px">
               <button class="chip chip-add" type="button" id="addChildBtn">
                 <span class="add-icon">+</span>
-                <span class="add-label">(הוסף ילד)</span>
+                <span class="add-label">הוסף ילד</span>
+                <span class="children-count" id="childrenCountLabel">(0)</span>
               </button>
             </div>
           </div>
-          <div class="toggles-line">
-            <span>מי בהליך?</span>
-            <button class="chip" id="debtorMaleBtn" aria-pressed="true">חייב</button>
-            <button class="chip" id="debtorFemaleBtn" aria-pressed="false">חייבת</button>
-            <button class="chip alert" id="jointBtn" aria-pressed="false">שני בני הזוג בהליך?</button>
+          <div class="toggles-line who-line">
+            <span class="who-label">מי בהליך?</span>
+            <button class="chip who-proc" id="debtorMaleBtn" aria-pressed="true">חייב</button>
+            <button class="chip who-proc" id="debtorFemaleBtn" aria-pressed="false">חייבת</button>
+            <button class="chip who-proc alert" id="jointBtn" aria-pressed="false">שני בני הזוג</button>
           </div>
         </div>
 
-        <hr style="border:none;border-top:1px solid var(--border);margin:6px 0 8px">
+        <hr style="border:none;border-top:1px solid var(--border);margin:6px 0 6px">
 
         <div class="section-title">הכנסות והוצאות התא המשפחתי (₪)</div>
 
@@ -372,7 +423,7 @@ const els = {
 
   male:E('debtorMaleBtn'), female:E('debtorFemaleBtn'), joint:E('jointBtn'),
 
-  children:E('childrenCount'), addChild:E('addChildBtn'),
+  addChild:E('addChildBtn'), childrenLabel:E('childrenCountLabel'),
 };
 
 /* בסיס מחיה לפי סטטוס (בלי ילדים) */
@@ -389,8 +440,12 @@ const kidsMap = {
 };
 
 let gender='חייב', joint=false;
-let familyType = "יחיד/ נשוי חי בנפרד";
+let familyType = "זוג";
 let childrenCount = 0;
+
+function updateChildrenLabel(){
+  els.childrenLabel.textContent = `(${childrenCount})`;
+}
 
 function updateLabelSets(){
   const d=(gender==='חייב')?'חייב':'חייבת';
@@ -451,24 +506,14 @@ familyTypeButtons.forEach(btn=>{
   });
 });
 
-/* ילדים – כפתור + ושדה מספרי */
+/* ילדים – רק כפתור "הוסף ילד" שמגדיל את המספר */
 els.addChild.onclick = ()=>{
-  let current = parseInt(els.children.value,10) || 0;
-  if(current < 10){
-    current++;
-    els.children.value = String(current);
-    childrenCount = current;
+  if(childrenCount < 10){
+    childrenCount++;
+    updateChildrenLabel();
     calc();
   }
 };
-els.children.addEventListener('input',()=>{
-  let val = parseInt(els.children.value,10);
-  if(isNaN(val) || val < 0) val = 0;
-  if(val > 10) val = 10;
-  els.children.value = String(val);
-  childrenCount = val;
-  calc();
-});
 
 /* פופאבר ? */
 let pop=null;
@@ -554,6 +599,7 @@ function calc(){
 /* init */
 setGender('חייב');
 els.debtorPayCard.classList.add('solo-pay');
+updateChildrenLabel();
 calc();
 </script>
 </body>
