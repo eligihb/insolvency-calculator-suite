@@ -872,147 +872,50 @@
     // ----------------- סנכרון נתונים אל המחשבון -----------------
       // ----------------- סנכרון נתונים אל המחשבון -----------------
        // ----------------- סנכרון נתונים אל המחשבון -----------------
+       // ----------------- סנכרון נתונים אל המחשבון – גרסת בדיקה -----------------
     function syncToCalculator() {
       const frame = document.querySelector('.calc-frame-card iframe');
-      if (!frame || !frame.contentWindow) return;
+      if (!frame) {
+        alert('לא נמצא iframe של המחשבון (אין <iframe> עם המחשבון בתוך הדוח).');
+        return;
+      }
 
       let cdoc;
       try {
         cdoc = frame.contentWindow.document;
       } catch (e) {
-        // אם פתוח כ-file:// או דומיין שונה – אין גישה ל-iframe
-        console.warn('לא ניתן לגשת למחשבון בתוך ה-iframe (כנראה file:// או דומיין אחר).', e);
+        alert(
+          'הדפדפן לא מאפשר לגשת למחשבון בתוך ה-iframe.\n' +
+          'אם הקובץ פתוח כ-file:// (יש file:/// בשורת הכתובת), זה יכול לקרות.\n' +
+          'נסה לפתוח את הדוח דרך שרת (Live Server / GitHub Pages וכו\').'
+        );
+        console.warn(e);
         return;
       }
 
-      // ---------- קריאת נתונים מהטופס הראשי ----------
+      // שדה שכר נטו מהדו"ח
+      const from = document.getElementById('debtorNetInput');
+      // שדה הכנסת החייב במחשבון
+      const to   = cdoc.getElementById('salaryDebtor');
 
-      // מצב משפחתי מהדו"ח
-      const familyRadio = document.querySelector('input[name="family_status"]:checked');
-      const familyVal   = familyRadio ? familyRadio.value : ''; // single / married / divorced / widowed
-
-      // ילדים קטינים
-      const kidsCount = parseInt(
-        document.getElementById('minorChildrenInput')?.value || '0',
-        10
-      ) || 0;
-
-      // שכר נטו חייב
-      const debtorIncome = parseNumberFromCurrency(
-        document.getElementById('debtorNetInput')?.value || ''
-      );
-
-      // שכר נטו בן/בת הזוג
-      const spouseIncome = parseNumberFromCurrency(
-        document.getElementById('spouseNetInput')?.value || ''
-      );
-
-      // מזונות
-      const hasAlimony = document.getElementById('hasAlimony')?.checked;
-      const alimonyAmount = parseNumberFromCurrency(
-        document.getElementById('alimonyAmountInput')?.value || ''
-      );
-
-      // ---------- עדכון הכנסות במחשבון ----------
-
-      // הכנסת החייב → salaryDebtor
-      const salaryDebtorEl = cdoc.getElementById('salaryDebtor');
-      if (salaryDebtorEl) {
-        salaryDebtorEl.value = debtorIncome || '';
-        salaryDebtorEl.dispatchEvent(new Event('input', { bubbles: true }));
+      if (!from) {
+        alert('בדוח: לא נמצא שדה עם id="debtorNetInput".');
+        return;
+      }
+      if (!to) {
+        alert('במחשבון: לא נמצא שדה עם id="salaryDebtor".\nבדוק שבשדה ההכנסה של החייב במחשבון כתוב בדיוק id="salaryDebtor".');
+        return;
       }
 
-      // הכנסת בן/בת הזוג → salaryPartner
-      const salaryPartnerEl = cdoc.getElementById('salaryPartner');
-      if (salaryPartnerEl) {
-        salaryPartnerEl.value = spouseIncome || '';
-        salaryPartnerEl.dispatchEvent(new Event('input', { bubbles: true }));
-      }
+      // קריאת המספר מהדו"ח
+      const num = parseNumberFromCurrency(from.value);
+      console.log('ערך שנקרא מהדו"ח:', num);
 
-      // ---------- סטטוס משפחתי במחשבון ----------
+      // עדכון המחשבון
+      to.value = num || '';
+      to.dispatchEvent(new Event('input', { bubbles: true }));
 
-      // ממפה ערך הדו"ח לכפתור הנכון במחשבון:
-      // מהטופס: married = זוג
-      //         single/divorced/widowed = רווק/גרוש/אלמן
-      let statusBtnId = null;
-      if (familyVal === 'married') {
-        statusBtnId = 'statusCoupleBtn';
-      } else if (
-        familyVal === 'single' ||
-        familyVal === 'divorced' ||
-        familyVal === 'widowed'
-      ) {
-        statusBtnId = 'statusSingleBtn';
-      }
-
-      if (statusBtnId) {
-        const statusBtn = cdoc.getElementById(statusBtnId);
-        if (statusBtn) {
-          statusBtn.click(); // מפעיל את הלוגיקה הקיימת של המחשבון
-        }
-      }
-
-      // ---------- ילדים קטינים → הוספת ילד במחשבון ----------
-
-      // קודם ננסה שדה כמות ילדים ישיר (אם קיים)
-      const childrenCountInput = cdoc.getElementById('childrenCount');
-      if (childrenCountInput) {
-        childrenCountInput.value = kidsCount;
-        childrenCountInput.dispatchEvent(new Event('input', { bubbles: true }));
-      } else {
-        // אחרת – לוגיקת "הוסף ילד" עם כפתור addChildBtn ותווית childrenCountLabel
-        const addChildBtn =
-          cdoc.getElementById('addChildBtn') ||
-          cdoc.getElementById('btnAddChild');
-
-        const countLabel = cdoc.getElementById('childrenCountLabel');
-
-        if (addChildBtn && countLabel) {
-          let current = 0;
-          const m = countLabel.textContent.match(/\d+/);
-          if (m) current = parseInt(m[0], 10) || 0;
-
-          // אם צריך יותר ילדים – נוסיף
-          if (kidsCount > current) {
-            for (let i = current; i < kidsCount; i++) {
-              addChildBtn.click();
-            }
-          }
-
-          // אם יש יותר מדי ילדים – ננסה למחוק (אם יש כפתורי מחיקה מוכרים)
-          if (kidsCount < current) {
-            const removeBtns = cdoc.querySelectorAll(
-              '.btn-remove-child, [data-action="remove-child"]'
-            );
-            let toRemove = current - kidsCount;
-            for (let i = 0; i < removeBtns.length && toRemove > 0; i++) {
-              removeBtns[i].click();
-              toRemove--;
-            }
-          }
-        }
-      }
-
-      // ---------- תשלום מזונות → שדה מזונות במחשבון ----------
-
-      const alimonyTargets = [
-        'calcAlimonyExpense',
-        'alimonyExpenses',
-        'alimonyExpense',
-        'alimonyInput',
-        'alimony'
-      ];
-
-      alimonyTargets.forEach((id) => {
-        const el = cdoc.getElementById(id);
-        if (!el) return;
-        if (hasAlimony && alimonyAmount) {
-          el.value = alimonyAmount;
-        } else {
-          el.value = '';
-        }
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      });
+      alert('ניסיון סנכרון בוצע.\nבדוק אם שדה ההכנסה של החייב במחשבון התעדכן.');
     }
 
     // שמירת מצב הטופס
