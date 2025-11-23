@@ -91,13 +91,72 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
 .status-row{max-width:60%;margin-inline:auto}
 
 .toggles-line{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:nowrap}
+
+/* כפתורי צ׳יפ – בסיס */
 .chip{
-  padding:5px 10px;border:1px solid #cfd8e3;border-radius:999px !important;
-  background:#fff;cursor:pointer;font-size:.88rem;line-height:1;color:#0b2239;
+  padding:6px 12px;
+  min-height:34px;
+  border:1px solid #cfd8e3;
+  border-radius:999px !important;
+  background:#fff;
+  cursor:pointer;
+  font-size:.9rem;
+  line-height:1;
+  color:#0b2239;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  white-space:nowrap;
 }
-.chip.active{background:#0d9488;color:#fff;border-color:#0d9488}
-.chip.alert{background:#fff;border-color:#cfd8e3;color:#b42318}
-.chip.alert.active{background:#b42318;color:#fff;border-color:#b42318}
+
+/* מצב נבחר – בולט מאוד, גם בשחור־לבן */
+.chip.active{
+  background:#0d9488;
+  color:#fff;
+  border-color:#0d9488;
+  border-width:2px;
+  font-weight:700;
+  box-shadow:0 0 0 1px #000 inset; /* מסגרת כהה פנימית להדפסה שחור-לבן */
+}
+
+.chip.alert{
+  background:#fff;
+  border-color:#cfd8e3;
+  color:#b42318;
+}
+
+.chip.alert.active{
+  background:#b42318;
+  color:#fff;
+  border-color:#111;
+  border-width:2px;
+  font-weight:700;
+  box-shadow:0 0 0 1px #000 inset;
+}
+
+/* כפתורי סטטוס משפחתי – גודל אחיד */
+.chip.family-type{
+  min-width:145px;
+  justify-content:center;
+  text-align:center;
+}
+
+/* כפתור הוספת ילד – מודגש וברור */
+.chip-add{
+  font-weight:700;
+  border-style:dashed;
+  border-width:2px;
+  padding-inline:14px;
+}
+.chip-add .add-icon{
+  font-size:1.1rem;
+  font-weight:900;
+}
+.chip-add .add-label{
+  font-size:.85rem;
+  opacity:.9;
+}
 
 .info-btn{width:18px;height:18px;border-radius:50%;background:#eef6f6;color:#0d6b6b;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;border:1px solid #d4e7e7;cursor:pointer}
 .pop{position:absolute;z-index:1000;max-width:320px;background:#fff7d6;color:#3b2f00;border:1px solid #ffe6a8;border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.15);padding:10px 12px;line-height:1.45}
@@ -154,20 +213,28 @@ header h1{margin:0;font-size:1.28rem;line-height:1}
     <div class="board">
       <!-- הזנה (משמאל) -->
       <div class="inputs-col">
-        <!-- שורת סטטוס משפחתי + ילדים + מי בהליך -->
+        <!-- סטטוס משפחתי + ילדים + מי בהליך -->
         <div class="row status-row">
           <div class="input-group">
             <label>סטטוס משפחתי</label>
-          <div class="toggles-line" id="familyTypeGroup">
-  <button class="chip family-type active" data-type="יחיד/ נשוי חי בנפרד">יחיד/ נשוי חי בנפרד</button>
-  <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">רווק/ גרוש/ אלמן</button>
-  <button class="chip family-type" data-type="זוג">זוג</button>
-</div>
-
+            <div class="toggles-line" id="familyTypeGroup">
+              <button class="chip family-type active" data-type="יחיד/ נשוי חי בנפרד">
+                יחיד/נשוי (חי בנפרד)
+              </button>
+              <button class="chip family-type" data-type="זוג">
+                זוג
+              </button>
+              <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
+                רווק/ גרוש/ אלמן
+              </button>
+            </div>
             <div class="toggles-line" style="margin-top:6px">
               <span>מס׳ ילדים:</span>
               <input id="childrenCount" type="number" min="0" max="10" value="0" style="width:60px;text-align:center;">
-              <button class="chip" type="button" id="addChildBtn">הוסף ילד</button>
+              <button class="chip chip-add" type="button" id="addChildBtn">
+                <span class="add-icon">+</span>
+                <span class="add-label">(הוסף ילד)</span>
+              </button>
             </div>
           </div>
           <div class="toggles-line">
@@ -354,13 +421,18 @@ const els = {
   children:E('childrenCount'), addChild:E('addChildBtn'),
 };
 
+/* בסיס מחיה לפי סטטוס (בלי ילדים) */
 const livingBase = {
   "יחיד/ נשוי חי בנפרד":4556,
   "רווק/ גרוש/ אלמן":4556,
   "זוג":6024,
 };
 
-const kidsMap = {0:0,1:169,2:383,3:597,4:811,5:980,6:1149,7:1318,8:1487,9:1656,10:1825};
+/* קצבת ילדים – לפי מספר ילדים */
+const kidsMap = {
+  0:0,1:169,2:383,3:597,4:811,
+  5:980,6:1149,7:1318,8:1487,9:1656,10:1825
+};
 
 let gender='חייב', joint=false;
 let familyType = "יחיד/ נשוי חי בנפרד";
@@ -401,20 +473,28 @@ els.joint.onclick=()=>{
   calc();
 };
 
-els.btnAllow.onclick=()=>{ els.btnAllow.classList.toggle('active'); els.boxAllow.style.display=els.btnAllow.classList.contains('active')?'grid':'none'; };
-els.btnAlim.onclick =()=>{ els.btnAlim .classList.toggle('active'); els.boxAlim .style.display=els.btnAlim .classList.contains('active')?'grid':'none'; };
+els.btnAllow.onclick=()=>{
+  els.btnAllow.classList.toggle('active');
+  els.boxAllow.style.display = els.btnAllow.classList.contains('active') ? 'grid' : 'none';
+};
+els.btnAlim.onclick =()=>{
+  els.btnAlim.classList.toggle('active');
+  els.boxAlim.style.display = els.btnAlim.classList.contains('active') ? 'grid' : 'none';
+};
 
 els.reportBtn.onclick=()=>{
   const show = els.reportPanel.style.display!=='grid';
   els.reportPanel.style.display = show?'grid':'none';
-  if(show){ els.reportDate.value = new Date().toLocaleDateString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit'}); }
+  if(show){
+    els.reportDate.value = new Date().toLocaleDateString('he-IL',{year:'numeric',month:'2-digit',day:'2-digit'});
+  }
 };
 els.noteToggle.onclick=()=>{
   const on = els.noteRow.style.display!=='block';
   els.noteRow.style.display = on?'block':'none';
 };
 
-/* בחירת סטטוס משפחתי + ילדים */
+/* בחירת סטטוס משפחתי */
 const familyTypeButtons = document.querySelectorAll('.family-type');
 familyTypeButtons.forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -424,6 +504,7 @@ familyTypeButtons.forEach(btn=>{
   });
 });
 
+/* ילדים – כפתור + ושדה מספרי */
 els.addChild.onclick = ()=>{
   let current = parseInt(els.children.value,10) || 0;
   if(current < 10){
@@ -433,7 +514,6 @@ els.addChild.onclick = ()=>{
     calc();
   }
 };
-
 els.children.addEventListener('input',()=>{
   let val = parseInt(els.children.value,10);
   if(isNaN(val) || val < 0) val = 0;
@@ -450,18 +530,35 @@ document.addEventListener('click',e=>{
   if(b){
     e.stopPropagation();
     if(pop) pop.remove();
-    pop=document.createElement('div'); pop.className='pop'; pop.innerHTML=(b.dataset.info||'').replace(/\n/g,'<br>');
+    pop=document.createElement('div');
+    pop.className='pop';
+    pop.innerHTML=(b.dataset.info||'').replace(/\n/g,'<br>');
     document.body.appendChild(pop);
-    const r=b.getBoundingClientRect(); pop.style.top=(window.scrollY+r.bottom+8)+'px'; pop.style.right=(window.innerWidth-r.right+8)+'px';
+    const r=b.getBoundingClientRect();
+    pop.style.top=(window.scrollY+r.bottom+8)+'px';
+    pop.style.right=(window.innerWidth-r.right+8)+'px';
     return;
   }
   if(pop){ pop.remove(); pop=null; }
 });
 
+/* בסיס מחיה מדורג לפי ילדים:
+   ילדים 1–4: +1500 לכל ילד
+   מהילד ה-5 ואילך: +1300 לכל ילד נוסף
+*/
+function getBaseLiving(familyType, childrenCount){
+  const base0 = livingBase[familyType] || 4556;
+  const c = Math.max(0, childrenCount || 0);
+
+  const upTo4 = Math.min(c, 4);      // ילדים 1–4
+  const above4 = Math.max(c - 4, 0); // מהילד ה-5 ומעלה
+
+  return base0 + (upTo4 * 1500) + (above4 * 1300);
+}
+
 /* חישוב */
 function calc(){
-  const base0 = livingBase[familyType] || 4556;
-  const base = base0 + (childrenCount * 1500);
+  const base = getBaseLiving(familyType, childrenCount);
   const kids = kidsMap[childrenCount] || 0;
 
   const dS=+els.salaryD.value||0, pS=+els.salaryP.value||0;
@@ -501,7 +598,7 @@ function calc(){
   els.zeroRow.style.display = zeroCase ? 'block':'none';
 }
 
-/* מאזינים */
+/* מאזינים להזנת מספרים */
 [
   'salaryDebtor','salaryPartner','otherIncomeDebtor','otherIncomePartner',
   'debtorAllowance','partnerAllowance','unusualExpenses','childcareExpenses','alimonyExpenses'
@@ -519,7 +616,10 @@ function doShot(){
       w.document.write(`<img src="${data}" style="max-width:100%;display:block;margin:0 auto">`);
       w.document.title='צילום מסך המחשבון';
     })
-    .catch(()=>{ root.classList.remove('shot-scale'); alert('שגיאה ביצירת צילום המסך'); });
+    .catch(()=>{
+      root.classList.remove('shot-scale');
+      alert('שגיאה ביצירת צילום המסך');
+    });
 }
 
 /* הדפסה/‏PDF כאימג׳ בדף A4 */
@@ -540,8 +640,14 @@ function doPrint(){
       </head><body>
       <img id="shot" src="${dataURL}" alt="מחשבון צו תשלומים" onload="setTimeout(()=>{window.print();window.close()},100)">
       </body></html>`;
-    const w=window.open('','_blank'); w.document.write(html); w.document.close(); w.focus();
-  }).catch(()=>{ root.classList.remove('shot-scale'); alert('אירעה שגיאה בזמן יצירת ה-PDF/הדפסה'); });
+    const w=window.open('','_blank');
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+  }).catch(()=>{
+    root.classList.remove('shot-scale');
+    alert('אירעה שגיאה בזמן יצירת ה-PDF/הדפסה');
+  });
 }
 function getTxt(id){return (E(id)?.textContent||'').trim();}
 function doMail(){
@@ -562,18 +668,25 @@ function doMail(){
   window.location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 function doReset(){
-  document.querySelectorAll('input[type="number"],input[type="text"],textarea').forEach(i=>{ if(i.id!=='childrenCount') i.value=''; });
+  document.querySelectorAll('input[type="number"],input[type="text"],textarea').forEach(i=>{
+    if(i.id!=='childrenCount') i.value='';
+  });
   els.children.value='0';
   childrenCount=0;
+
   familyType="יחיד/ נשוי חי בנפרד";
   document.querySelectorAll('.family-type').forEach((btn,idx)=>btn.classList.toggle('active', idx===0));
 
   if(els.btnAllow.classList.contains('active')) els.btnAllow.click();
   if(els.btnAlim .classList.contains('active')) els.btnAlim .click();
-  joint=false; els.joint.classList.remove('active'); els.joint.setAttribute('aria-pressed','false');
-  els.famCard.style.display='none'; els.partnerCard.style.display='none';
+  joint=false;
+  els.joint.classList.remove('active');
+  els.joint.setAttribute('aria-pressed','false');
+  els.famCard.style.display='none';
+  els.partnerCard.style.display='none';
   els.debtorPayCard.classList.add('solo-pay');
-  setGender('חייב'); calc();
+  setGender('חייב');
+  calc();
 }
 
 /* כפתורים */
