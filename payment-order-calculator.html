@@ -12,27 +12,12 @@
 
 <style>
 .scale-container {
-  transform: none;          /* בלי scale – אין בריחה לצדדים */
+  transform: scale(0.80);
   transform-origin: top center;
   width: 100%;
   max-width: 100%;
 }
 
-/* לוודא שלא תישאר גלילה אופקית במקרה */
-body {
-  overflow-x: hidden;
-}
-
-/* שהמחשבון לא ינסה להיות רחב יותר מהעמודה */
-.calculator{
-  width: 100%;
-  max-width: 100%;
-}
-
-
-body {
-  overflow-x: hidden;
-}
 :root{
   --primary:#005f73; --secondary:#0a9396; --bg:#f4f7f9; --panel:#fff;
   --text:#1f2937; --label:#4b5563; --border:#dbe3ea; --accent:#ee9b00;
@@ -49,7 +34,8 @@ body{
   padding:12px;
   display:flex;
   justify-content:center;
-  min-height:100vh
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
 .calculator{width:100%;max-width:var(--maxw)}
@@ -58,21 +44,17 @@ header{
   color:#fff;
   border-radius:14px;
   box-shadow:0 6px 16px rgba(0,0,0,.08);
-  padding:6px 10px;
+  padding:4px 10px;
   display:flex;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   position:relative;
-}
-header h1{
-  margin:0;
-  font-size:1.02rem;
-  line-height:1.15;
+  min-height:24px;
 }
 .year-badge{
   position:absolute;
   inset-inline-start:10px;
-  inset-block-start:5px;
+  inset-block-start:4px;
   font-size:.7rem;
   color:#e6f4f1;
   background:rgba(255,255,255,.12);
@@ -89,12 +71,24 @@ header h1{
   box-shadow:0 6px 20px rgba(0,0,0,.06);
   padding:8px;
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:0.85fr 1.15fr; /* שמאל צר, ימין רחב */
   gap:8px;
 }
 
-.results-col{background:#eaf6f6;border:1px solid var(--border);border-radius:12px;padding:8px;grid-column:2}
-.inputs-col{background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px;grid-column:1}
+.results-col{
+  background:#eaf6f6;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:6px;
+  grid-column:2;
+}
+.inputs-col{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:4px 6px;
+  grid-column:1;
+}
 
 .section-title{
   margin:2px 0 6px;
@@ -265,7 +259,6 @@ header h1{
 
 @media (max-width:768px){
   .calculator{max-width:100%}
-  header h1{font-size:.95rem}
   .year-badge{display:none}
 
   .board{grid-template-columns:1fr;gap:8px}
@@ -291,23 +284,26 @@ header h1{
   <div class="calculator" id="calcRoot">
     <header>
       <span class="year-badge" id="yearBadge"></span>
-      <h1>מחשבון צו תשלומים</h1>
     </header>
+
     <div class="board">
       <!-- הזנה (משמאל) -->
-    <div class="toggles-line" id="familyTypeGroup">
-  <button class="chip family-type active" data-type="זוג">
-    זוג
-  </button>
-
-  <button class="chip family-type" data-type="יחיד/ נשוי חי בנפרד">
-    יחיד&#8239;/&#8239;נשוי (חי בנפרד)
-  </button>
-
-  <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
-    רווק/גרוש<br>אלמן
-  </button>
-</div>
+      <div class="inputs-col">
+        <!-- סטטוס משפחתי + ילדים + מי בהליך -->
+        <div class="row status-row">
+          <div class="input-group">
+            <label>סטטוס משפחתי</label>
+            <div class="toggles-line" id="familyTypeGroup">
+              <button class="chip family-type active" data-type="זוג">
+                זוג
+              </button>
+              <button class="chip family-type" data-type="יחיד/ נשוי חי בנפרד">
+                יחיד&#8239;/&#8239;נשוי (חי בנפרד)
+              </button>
+              <button class="chip family-type" data-type="רווק/ גרוש/ אלמן">
+                רווק/גרוש<br>אלמן
+              </button>
+            </div>
             <div class="toggles-line kids-line" style="margin-top:6px">
               <button class="chip chip-add" type="button" id="addChildBtn">
                 <span class="add-icon">+</span>
