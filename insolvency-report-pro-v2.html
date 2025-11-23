@@ -241,7 +241,8 @@
       gap: 4px;
     }
 .earning-potential {
-  margin-inline-start: 12px; /* רווח קטן מהצ'קבוקס */
+  margin-inline-start: 12px; /* רווח תקין ב־RTL */
+  margin-right: 12px;        /* גיבוי – מבטיח שיהיה ריווח בכל הדפדפנים */
 }
     .debts-row {
       flex-wrap: nowrap;
@@ -673,10 +674,10 @@
               <input type="text" id="earningPotential" class="short currency-input">
             </span>
           </div>
-
-          <div class="row" id="earningPotentialRow">
-            הערות:
-           <input type="text" id="earningPotentialNotes" class="short">
+     <div class="row" id="earningPotentialRow">
+  הערות:
+  <input type="text" id="earningPotentialNotes" class="flex-1">
+</div>
           </div>
 
           <hr>
