@@ -398,27 +398,77 @@
             </div>
           </div>
 
-          <!-- עמודה אמצע: צו תשלומים -->
-          <div>
-            <div class="order-box">
-              <div class="sub-title">צו תשלומים</div>
-              <div class="row no-wrap">
-                תשלום חודשי:
-                <input type="text" class="short currency-input" maxlength="6">
-              </div>
-              <div class="row no-wrap">
-                תשלום מדורג:
-                <input type="text" class="short currency-input" maxlength="6" placeholder="אם יש">
-                מיום:
-                <input type="date" class="medium">
-              </div>
-              <div class="row">
-                מסירה לנושים:
-                <label><input type="radio" name="notices"> כן</label>
-                <label><input type="radio" name="notices"> לא</label>
-              </div>
-            </div>
-          </div>
+        <!-- עמודה אמצע: צו תשלומים -->
+<div>
+  <div class="order-box">
+    <div class="sub-title">צו תשלומים</div>
+    <div class="row no-wrap">
+      תשלום חודשי:
+      <input type="text" class="short currency-input" maxlength="6" id="monthlyAmount">
+    </div>
+    <div class="row no-wrap">
+      תשלום מדורג:
+      <input type="text" class="short currency-input" maxlength="6" id="staggeredAmount" placeholder="אם יש">
+      מיום:
+      <input type="date" class="medium" id="staggeredDate">
+    </div>
+    <div class="row">
+      מסירה לנושים:
+      <label><input type="radio" name="notices"> כן</label>
+      <label><input type="radio" name="notices"> לא</label>
+    </div>
+
+    <!-- כאן נוסיף את החישוב של סה"כ נכון ליום -->
+    <div class="row">
+      <div class="input-group">
+        <label>סה"כ נכון ליום:</label>
+        <div id="totalAmount" class="readonly">₪ 0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // פונקציה לחישוב הסכום הכולל
+  function calculateTotalAmount() {
+    const orderDate = new Date(document.getElementById('orderDate').value);
+    const staggeredDate = new Date(document.getElementById('staggeredDate').value);
+    const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value) || 0;
+    const staggeredAmount = parseFloat(document.getElementById('staggeredAmount').value) || 0;
+
+    // אם אין תאריך צו
+    if (!orderDate.getTime()) return;
+
+    // חישוב תאריך הנוכחי
+    const today = new Date();
+
+    // חישוב מספר החודשים בין תאריך הצו והיום
+    const monthDiff = ((today.getFullYear() - orderDate.getFullYear()) * 12) + today.getMonth() - orderDate.getMonth();
+    const fullMonths = Math.max(monthDiff, 0); // לא יותר מ-0 חודשים אם התאריך לא עבר
+
+    let totalAmount = fullMonths * monthlyAmount;
+
+    // אם יש סכום מדורג, נוסיף את החישוב עבור תקופה זו
+    if (staggeredAmount > 0 && staggeredDate.getTime() && staggeredDate <= today) {
+      const staggeredMonthDiff = ((today.getFullYear() - staggeredDate.getFullYear()) * 12) + today.getMonth() - staggeredDate.getMonth();
+      const staggeredMonths = Math.max(staggeredMonthDiff, 0);
+      totalAmount += staggeredMonths * staggeredAmount;
+    }
+
+    // הצגת התוצאה
+    document.getElementById('totalAmount').textContent = `₪ ${totalAmount.toLocaleString('he-IL')}`;
+  }
+
+  // מאזיני שינוי לשדות
+  document.getElementById('orderDate').addEventListener('change', calculateTotalAmount);
+  document.getElementById('monthlyAmount').addEventListener('input', calculateTotalAmount);
+  document.getElementById('staggeredAmount').addEventListener('input', calculateTotalAmount);
+  document.getElementById('staggeredDate').addEventListener('change', calculateTotalAmount);
+
+  // חישוב ראשוני
+  calculateTotalAmount();
+</script>
+
 
           <!-- עמודה שמאל: פרטים אישיים + מצב רפואי -->
           <div>
