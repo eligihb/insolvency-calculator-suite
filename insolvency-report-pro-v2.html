@@ -203,9 +203,8 @@
       page-break-inside: avoid;
       break-inside: avoid;
     }
-   .calc-frame-card iframe {
-  height: 780px;
-}
+    .calc-frame-card iframe {
+      width: 100%;
       border: 0;
       border-radius: 12px;
       height: 340px;  /* כאן אתה יכול לשחק לגובה */
@@ -241,10 +240,7 @@
       align-items: center;
       gap: 4px;
     }
-.earning-potential {
-  margin-inline-start: 12px; /* רווח תקין ב־RTL */
-  margin-right: 12px;        /* גיבוי – מבטיח שיהיה ריווח בכל הדפדפנים */
-}
+
     .debts-row {
       flex-wrap: nowrap;
       justify-content: flex-start;
@@ -670,15 +666,15 @@
             שכר נטו:
             <input type="text" id="debtorNetInput" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            <span class="pair earning-potential">
+            <span class="pair">
               <span class="pair-label-multiline">פוטנציאל השתכרות</span>
               <input type="text" id="earningPotential" class="short currency-input">
             </span>
           </div>
-     <div class="row" id="earningPotentialRow">
-  הערות:
-  <input type="text" id="earningPotentialNotes" class="flex-1">
-</div>
+
+          <div class="row" id="earningPotentialRow">
+            הערות:
+            <input type="text" id="earningPotentialNotes" class="short">
           </div>
 
           <hr>
@@ -872,7 +868,13 @@
       }
     }
 
+    // ----------------- סנכרון נתונים אל המחשבון -----------------
       // ----------------- סנכרון נתונים אל המחשבון -----------------
+       // ----------------- סנכרון נתונים אל המחשבון -----------------
+       // ----------------- סנכרון נתונים אל המחשבון – גרסת בדיקה -----------------
+      // ----------------- סנכרון נתונים אל המחשבון -----------------
+      // ----------------- סנכרון נתונים אל המחשבון -----------------
+       // ----------------- סנכרון נתונים אל המחשבון -----------------
     function syncToCalculator() {
       const frame = document.querySelector('.calc-frame-card iframe');
       if (!frame || !frame.contentWindow) return;
@@ -986,7 +988,7 @@
         }
       }
 
-      // ---------- מזונות במחשבון ----------
+         // ---------- מזונות במחשבון ----------
       const alimonyField = cdoc.getElementById('alimonyExpenses');
 
       if (alimonyField) {
@@ -999,7 +1001,6 @@
         alimonyField.dispatchEvent(new Event('input',  { bubbles: true }));
         alimonyField.dispatchEvent(new Event('change', { bubbles: true }));
       }
-    }  // ← שים לב: זה הסוגר של syncToCalculator
     // שמירת מצב הטופס
     function saveFormState() {
       const form = document.getElementById('reportForm');
