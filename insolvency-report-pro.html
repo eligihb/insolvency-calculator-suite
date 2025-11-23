@@ -912,15 +912,30 @@ function calculatePaymentsTotals() {
   const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
   const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
 
-  // תשלומים חודשיים רגילים – החל מחודש אחרי תאריך הצו
-  const startMonthly = new Date(orderDate.getTime());
-  startMonthly.setMonth(startMonthly.getMonth() + 1);
+  // פונקציה עזר – כמה חודשים קלנדריים (כולל שני הצדדים)
+  function monthsInclusive(startYear, startMonth, endYear, endMonth) {
+    const s = startYear * 12 + startMonth;
+    const e = endYear   * 12 + endMonth;
+    const diff = e - s + 1;
+    return Math.max(diff, 0);
+  }
+
+  // החודש הראשון לתשלום חודשי: החודש שאחרי חודש הצו
+  let firstYear  = orderDate.getFullYear();
+  let firstMonth = orderDate.getMonth() + 1; // החודש הבא
+  if (firstMonth === 12) { // אם הצו בדצמבר → החודש הבא הוא ינואר שנה הבאה
+    firstMonth = 0;
+    firstYear += 1;
+  }
+
+  const todayYear  = today.getFullYear();
+  const todayMonth = today.getMonth();
 
   let total = 0;
 
   if (!gradedAmount || !gradedDateVal) {
-    // אין מדורג – כל התקופה לפי תשלום חודשי רגיל
-    const mAll = fullMonthsBetween(startMonthly, today);
+    // אין מדורג – כל התקופה לפי תשלום חודשי רגיל, בחודשים קלנדריים
+    const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
     total = mAll * monthlyAmount;
 
   } else {
@@ -928,18 +943,41 @@ function calculatePaymentsTotals() {
     const gradedDate = new Date(gradedDateVal);
 
     if (isNaN(gradedDate)) {
-      const mAll = fullMonthsBetween(startMonthly, today);
+      const mAll = monthsInclusive(firstYear, firstMonth, todayYear, todayMonth);
       total = mAll * monthlyAmount;
     } else {
-      // עד המדורג – חודשי רגיל
-      const monthsBefore = fullMonthsBetween(startMonthly, gradedDate);
-      // מהמדורג ואילך – מדורג (בלי לחכות 30 יום)
-      const monthsAfter  = fullMonthsBetween(gradedDate, today);
+      const gYear  = gradedDate.getFullYear();
+      const gMonth = gradedDate.getMonth(); // החודש שבו המדורג נכנס לתוקף
 
-      total = monthsBefore * monthlyAmount + monthsAfter * gradedAmount;
+      // חודשים לפני המדורג: מהחודש שאחרי הצו ועד החודש שלפני המדורג
+      const monthsBefore = monthsInclusive(
+        firstYear,
+        firstMonth,
+        gYear,
+        gMonth - 1
+      );
+
+      // חודשים אחרי/כולל המדורג: מהחודש של המדורג ועד היום
+      const monthsAfter = monthsInclusive(
+        gYear,
+        gMonth,
+        todayYear,
+        todayMonth
+      );
+
+      total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
     }
   }
 
+  if (!total) {
+    totalAmountInput.value = '';
+  } else {
+    totalAmountInput.value = total.toLocaleString('he-IL', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }) + ' ₪';
+  }
+}
   if (!total) {
     totalAmountInput.value = '';
   } else {
