@@ -870,86 +870,170 @@
     }
 
     // ----------------- סנכרון נתונים אל המחשבון -----------------
+      // ----------------- סנכרון נתונים אל המחשבון -----------------
     function syncToCalculator() {
       const frame = document.querySelector('.calc-frame-card iframe');
       if (!frame || !frame.contentWindow || !frame.contentWindow.document) return;
 
       const cdoc = frame.contentWindow.document;
 
-      const debtorIncome  = parseNumberFromCurrency(document.getElementById('debtorNetInput')?.value || '');
-      const spouseIncome  = parseNumberFromCurrency(document.getElementById('spouseNetInput')?.value || '');
-      const kidsCount     = parseInt(document.getElementById('minorChildrenInput')?.value || '0', 10) || 0;
-      const hasAlimony    = document.getElementById('hasAlimony')?.checked;
-      const alimonyAmount = parseNumberFromCurrency(document.getElementById('alimonyAmountInput')?.value || '');
+      // --- קריאת נתונים מהטופס הראשי ---
+      const debtorIncome  = parseNumberFromCurrency(
+        document.getElementById('debtorNetInput')?.value || ''
+      );
+      const spouseIncome  = parseNumberFromCurrency(
+        document.getElementById('spouseNetInput')?.value || ''
+      );
+      const kidsCount     = parseInt(
+        document.getElementById('minorChildrenInput')?.value || '0',
+        10
+      ) || 0;
 
+      const familyRadio = document.querySelector('input[name="family_status"]:checked');
+      const familyVal   = familyRadio ? familyRadio.value : ''; // single / married / divorced / widowed
+
+      // האם יש בן/בת זוג בפועל (לפי שכר / "אינו עובד/ת")
       const spousePresent = !!(
         spouseIncome ||
         document.getElementById('spouseNotWorking')?.checked
       );
 
-      // הכנסת חייב
-      const salaryDebtor = cdoc.getElementById('salaryDebtor');
-      if (salaryDebtor) {
-        salaryDebtor.value = debtorIncome || '';
-        salaryDebtor.dispatchEvent(new Event('input', { bubbles: true }));
+      // --- נירמול סטטוס משפחתי ללוגיקה אחידה ---
+      // four modes: single, single-with-kids, couple, couple-with-kids
+      let familyType = 'single';
+
+      if (spousePresent || familyVal === 'married') {
+        familyType = kidsCount > 0 ? 'couple-with-kids' : 'couple';
+      } else {
+        familyType = kidsCount > 0 ? 'single-with-kids' : 'single';
       }
 
-      // הכנסת בן/בת זוג
-      const salaryPartner = cdoc.getElementById('salaryPartner');
-      if (salaryPartner) {
-        salaryPartner.value = spouseIncome || '';
-        salaryPartner.dispatchEvent(new Event('input', { bubbles: true }));
-      }
+      // --- סנכרון הכנסות למחשבון ---
 
-      // סטטוס משפחתי + ילדים
-      const statusSelect = cdoc.getElementById('status');
+      // חייב – ננסה כמה IDs אפשריים במחשבון
+      const debtorTargets = ['salaryDebtor', 'debtorNet', 'netDebtor'];
+      debtorTargets.forEach((id) => {
+        const el = cdoc.getElementById(id);
+        if (el) {
+          el.value = debtorIncome || '';
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+
+      // בן/בת הזוג – גם כאן כמה IDs אפשריים
+      const spouseTargets = ['salaryPartner', 'partnerNet', 'netPartner'];
+      spouseTargets.forEach((id) => {
+        const el = cdoc.getElementById(id);
+        if (el) {
+          el.value = spouseIncome || '';
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+
+      // --- סנכרון סטטוס משפחתי ---
+
+      // 1. אם יש select סטטוס (לדוגמה: <select id="status">)
+      const statusSelect =
+        cdoc.getElementById('status') ||
+        cdoc.getElementById('familyStatus');
+
       if (statusSelect) {
-        let statusValue = '';
+        let selectValue = '';
 
-        if (spousePresent) {
-          // זוג
-          if (kidsCount <= 0) {
-            statusValue = 'זוג';
-          } else if (kidsCount === 1) {
-            statusValue = 'זוג+ילד';
-          } else if (kidsCount >= 2 && kidsCount <= 10) {
-            statusValue = `זוג+ ${kidsCount} ילדים`;
-          }
-        } else {
-          // יחיד
-          const familyRadio = document.querySelector('input[name="family_status"]:checked');
-          const familyVal   = familyRadio ? familyRadio.value : '';
-
-          if (kidsCount > 0) {
-            statusValue = 'רווק/גרוש/אלמן + ילד';
-          } else {
-            statusValue = 'יחיד/נשוי חי בנפרד';
-          }
+        switch (familyType) {
+          case 'single':
+            selectValue = 'יחיד' || statusSelect.value;
+            break;
+          case 'single-with-kids':
+            // אם יש ערך נפרד ליחיד+ילדים – תתאם למה שיש אצלך
+            selectValue = 'יחיד+ילדים';
+            break;
+          case 'couple':
+            selectValue = 'זוג';
+            break;
+          case 'couple-with-kids':
+            // אם יש במסך "זוג+ילדים" / "זוג+ ילד אחד" וכו' – תתאם לטקסט שלך
+            selectValue = 'זוג+ילדים';
+            break;
         }
 
-        if (statusValue) {
-          statusSelect.value = statusValue;
+        if (selectValue) {
+          statusSelect.value = selectValue;
           statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
         }
+      }
 
-        // יחיד עם ילדים – הוצאות טיפול 1500 לכל ילד
-        if (!spousePresent && kidsCount > 0) {
-          const childcare = cdoc.getElementById('childcareExpenses');
-          if (childcare) {
-            childcare.value = kidsCount * 1500;
-            childcare.dispatchEvent(new Event('input', { bubbles: true }));
+      // 2. אם יש כפתורים (chips) של מצב משפחתי – לדוגמה: #familyTypeGroup
+      const familyGroup = cdoc.getElementById('familyTypeGroup');
+      if (familyGroup) {
+        const labelMap = {
+          'single':           'יחיד',
+          'single-with-kids': 'יחיד+ילדים',
+          'couple':           'זוג',
+          'couple-with-kids': 'זוג+ילדים'
+        };
+        const label = labelMap[familyType];
+
+        if (label) {
+          // עדיפות ל-data-value / value, אחרת לפי טקסט
+          let btn =
+            familyGroup.querySelector(`[data-value="${label}"]`) ||
+            familyGroup.querySelector(`button[value="${label}"]`);
+
+          if (!btn) {
+            btn = Array.from(familyGroup.querySelectorAll('button'))
+              .find(b => b.textContent.trim().includes(label));
+          }
+
+          if (btn) {
+            btn.click(); // מפעיל את כל הלוגיקה הפנימית של המחשבון
           }
         }
       }
 
-      // מזונות → הוצאות מזונות במחשבון
-      const alimonyField = cdoc.getElementById('alimonyExpenses');
-      if (alimonyField) {
-        alimonyField.value = hasAlimony ? (alimonyAmount || '') : '';
-        alimonyField.dispatchEvent(new Event('input', { bubbles: true }));
+      // --- סנכרון ילדים קטינים ---
+
+      // 1. אם יש שדה מספרי פשוט לכמות הילדים במחשבון (לדוגמה: #childrenCount)
+      const childrenCountEl = cdoc.getElementById('childrenCount');
+      if (childrenCountEl) {
+        childrenCountEl.value = kidsCount || 0;
+        childrenCountEl.dispatchEvent(new Event('input', { bubbles: true }));
+      } else {
+        // 2. אם יש כפתור "הוספת ילד" ורשימת ילדים דינמית
+        const childrenContainer =
+          cdoc.getElementById('childrenContainer') ||
+          cdoc.querySelector('[data-role="children-container"]');
+
+        const addChildBtn =
+          cdoc.getElementById('btnAddChild') ||
+          cdoc.querySelector('[data-action="add-child"]');
+
+        if (childrenContainer && addChildBtn) {
+          const getCurrentCount = () =>
+            childrenContainer.querySelectorAll('.child-row').length;
+
+          let current = getCurrentCount();
+
+          // הוספת ילדים עד שמגיעים למספר הרצוי
+          while (current < kidsCount) {
+            addChildBtn.click();
+            current = getCurrentCount();
+          }
+
+          // אם צריך להפחית – ננסה ללחוץ על כפתורי מחיקה, אם קיימים
+          if (current > kidsCount) {
+            const removeBtns = childrenContainer.querySelectorAll(
+              '.btn-remove-child, [data-action="remove-child"]'
+            );
+            let toRemove = current - kidsCount;
+            for (let i = 0; i < removeBtns.length && toRemove > 0; i++) {
+              removeBtns[i].click();
+              toRemove--;
+            }
+          }
+        }
       }
     }
-
     // שמירת מצב הטופס
     function saveFormState() {
       const form = document.getElementById('reportForm');
