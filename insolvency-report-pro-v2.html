@@ -868,13 +868,7 @@
       }
     }
 
-    // ----------------- סנכרון נתונים אל המחשבון -----------------
       // ----------------- סנכרון נתונים אל המחשבון -----------------
-       // ----------------- סנכרון נתונים אל המחשבון -----------------
-       // ----------------- סנכרון נתונים אל המחשבון – גרסת בדיקה -----------------
-      // ----------------- סנכרון נתונים אל המחשבון -----------------
-      // ----------------- סנכרון נתונים אל המחשבון -----------------
-       // ----------------- סנכרון נתונים אל המחשבון -----------------
     function syncToCalculator() {
       const frame = document.querySelector('.calc-frame-card iframe');
       if (!frame || !frame.contentWindow) return;
@@ -988,7 +982,7 @@
         }
       }
 
-         // ---------- מזונות במחשבון ----------
+      // ---------- מזונות במחשבון ----------
       const alimonyField = cdoc.getElementById('alimonyExpenses');
 
       if (alimonyField) {
@@ -1001,6 +995,7 @@
         alimonyField.dispatchEvent(new Event('input',  { bubbles: true }));
         alimonyField.dispatchEvent(new Event('change', { bubbles: true }));
       }
+    }  // ← שים לב: זה הסוגר של syncToCalculator
     // שמירת מצב הטופס
     function saveFormState() {
       const form = document.getElementById('reportForm');
