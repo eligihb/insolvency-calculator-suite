@@ -240,6 +240,23 @@ header h1{
 
 .shot-scale{transform:scale(.96);transform-origin:top center}
 </style>
+.reset-btn{
+  background:#ffe0e0;
+  color:#a30000;
+  border:1px solid #ffbaba;
+  border-radius:10px;
+  padding:4px 10px;
+  font-weight:700;
+  font-size:.78rem;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+
+.reset-btn:hover{
+  background:#ffcccc;
+}
+
 </head>
 <body>
 <div class="scale-container">
@@ -601,6 +618,33 @@ setGender('חייב');
 els.debtorPayCard.classList.add('solo-pay');
 updateChildrenLabel();
 calc();
+E('btnReset').onclick = ()=>{
+  // איפוס מספר ילדים
+  childrenCount = 0;
+  updateChildrenLabel();
+
+  // איפוס שדות הכנסה/הוצאות
+  document.querySelectorAll('input[type="number"]').forEach(i=>i.value='');
+
+  // כיבוי בלוקים נפתחים
+  ['btnAllow','btnAlim','btnExtra'].forEach(k=>{
+    if(els[k].classList.contains('active')) els[k].click();
+  });
+
+  // סטטוס משפחתי: חזרה לברירת מחדל (זוג)
+  familyType = "זוג";
+  document.querySelectorAll('.family-type').forEach(b=>{
+    b.classList.toggle('active', b.dataset.type === "זוג");
+  });
+
+  // מי בהליך: חייב (ללא בן זוג)
+  setGender('חייב');
+  joint = false;
+  els.joint.classList.remove('active');
+
+  calc();
+};
+
 </script>
 </body>
 </html>
