@@ -240,7 +240,9 @@
       align-items: center;
       gap: 4px;
     }
-
+.earning-potential {
+  margin-inline-start: 12px; /* רווח קטן מהצ'קבוקס */
+}
     .debts-row {
       flex-wrap: nowrap;
       justify-content: flex-start;
@@ -666,7 +668,7 @@
             שכר נטו:
             <input type="text" id="debtorNetInput" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            <span class="pair">
+            <span class="pair earning-potential">
               <span class="pair-label-multiline">פוטנציאל השתכרות</span>
               <input type="text" id="earningPotential" class="short currency-input">
             </span>
@@ -674,7 +676,7 @@
 
           <div class="row" id="earningPotentialRow">
             הערות:
-            <input type="text" id="earningPotentialNotes" class="short">
+           <input type="text" id="earningPotentialNotes" class="short">
           </div>
 
           <hr>
