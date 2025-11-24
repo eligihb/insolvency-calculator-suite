@@ -326,7 +326,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-102
+    דו"ח מסכם לדיון צו שיקום-103
   </div>
 
   <form id="reportForm">
@@ -666,22 +666,24 @@
             <input type="month" class="medium">
           </div>
 
-          <div class="row not-working-toggle-row" id="debtorIncomeRow">
-            שכר נטו:
-            <input type="text" id="debtorNetIncome" class="short currency-input">
-            <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-          /* להזיז את פוטנציאל השתכרות שמאלה */
-#earningPotential {
-  margin-left: -10px;  /* תוכל לשנות את הערך כדי להזיז אותו שמאלה יותר או פחות */
-}
+        <div class="row not-working-toggle-row" id="debtorIncomeRow">
+  שכר נטו:
+  <input type="text" id="debtorNetIncome" class="short currency-input">
+  <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
+</div>
 
-          <div class="row" id="earningPotentialRow">
-            הערות:
-            <input type="text" id="earningPotentialNotes" class="short">
-          </div>
+<div class="row" id="earningPotentialRow">
+  פוטנציאל השתכרות:
+  <input type="text" id="earningPotential" class="short currency-input">
+</div>
 
-          <hr>
+<div class="row">
+  הערות:
+  <input type="text" id="earningPotentialNotes" class="short">
+</div>
 
+<hr>
+          
           <!-- הכנסות בן/בת הזוג -->
           <div class="sub-title">הכנסות בן/בת הזוג</div>
 
