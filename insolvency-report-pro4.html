@@ -326,7 +326,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-101
+    דו"ח מסכם לדיון צו שיקום-102
   </div>
 
   <form id="reportForm">
@@ -670,9 +670,10 @@
             שכר נטו:
             <input type="text" id="debtorNetIncome" class="short currency-input">
             <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            פוטנציאל השתכרות:
-            <input type="text" id="earningPotential" class="short currency-input">
-          </div>
+          /* להזיז את פוטנציאל השתכרות שמאלה */
+#earningPotential {
+  margin-left: -10px;  /* תוכל לשנות את הערך כדי להזיז אותו שמאלה יותר או פחות */
+}
 
           <div class="row" id="earningPotentialRow">
             הערות:
