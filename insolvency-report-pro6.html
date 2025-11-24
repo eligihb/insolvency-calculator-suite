@@ -139,24 +139,24 @@
 
         /* הגדרה מדויקת של מיקום הבלוקים החדשים ב-Grid */
         
-        /* חובות/נכסים (Step 2) */
+        /* חובות/נכסים (A1) */
         .grid-item-A1 { grid-area: 1 / 1 / 2 / 2; }
-        /* הכנסות (Step 3) */
+        /* הכנסות (A2) */
         .grid-item-A2 { grid-area: 1 / 2 / 2 / 3; }
-        /* המלצת נאמן (Step 4) */
+        /* המלצת נאמן (B1) */
         .grid-item-B1 { grid-area: 2 / 1 / 3 / 2; }
-        /* מחשבון (Step 5) */
+        /* מחשבון (B2) */
         .grid-item-B2 { grid-area: 2 / 2 / 3 / 3; }
-        /* המלצת ממונה (Step 6) */
-        .grid-item-C1 { grid-area: 3 / 1 / 4 / 2; }
+        /* המלצת ממונה (C2 - מתחת למחשבון) */
+        .grid-item-C2 { grid-area: 3 / 2 / 4 / 3; }
         
         /* מבנה ה-Grid בדסקטופ (3 שורות * 2 עמודות) */
         .layout-main {
-            grid-template-rows: auto auto auto;
+            grid-template-rows: auto auto auto; 
             grid-template-areas: 
                 "A1 A2"
                 "B1 B2"
-                "C1 .";
+                ".  C2"; /* העמודה השמאלית ריקה בשורה 3 */
         }
     }
 
@@ -176,7 +176,7 @@
       .card { box-shadow: none; border: 1px solid #e2e8f0; }
       .buttons-inline, .scroll-top-btn, .progress-container, .mobile-navigation { display: none !important; }
       
-      /* יישור Grid להדפסה - שתי עמודות צמודות כדי לחסוך מקום */
+      /* יישור Grid להדפסה - 2 עמודות */
       .layout-main { 
         display: grid !important; 
         grid-template-columns: 1fr 1.2fr !important; 
@@ -201,7 +201,6 @@
     
     @media (min-width: 800px) {
       .mobile-fixed-elements { display: none !important; }
-      /* הסתרת הבלוקים מהמובייל שהועברו לתוך ה-Grid */
     }
 
     /* --- התאמות ספציפיות למובייל (עד 800px) --- */
@@ -226,7 +225,6 @@
       }
       
       .layout-main { display: block; }
-      .layout-col-left { display: block; }
       .income-expense-row {
         flex-wrap: wrap !important;
         justify-content: flex-start !important;
@@ -244,7 +242,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-201
+    דו"ח מסכם לדיון צו שיקום-202
   </div>
   
   <div class="page">
@@ -519,13 +517,13 @@
               <input type="month" class="medium">
             </div>
 
-            <div class="row" style="flex-wrap:wrap; justify-content: space-between; gap: 12px;">
+            <div class="row" style="flex-wrap:wrap; justify-content: flex-start; gap: 12px;">
                 <span class="pair">
                     <label>שכר נטו:</label>
                     <input type="text" id="debtorNetIncome" class="short currency-input">
                     <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
                 </span>
-                <span class="pair">
+                <span class="pair" style="margin-inline-start: 10px;">
                     <label style="white-space:nowrap;">פוטנציאל השתכרות:</label>
                     <input type="text" id="earningPotential" class="short currency-input">
                 </span>
@@ -610,7 +608,7 @@
               <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
           </div>
 
-          <div data-step="4c" data-label="המלצות ממונה" class="card grid-item-C1">
+          <div data-step="4c" data-label="המלצות ממונה" class="card grid-item-C2">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               סיכום והמלצות הממונה
             </div>
@@ -649,6 +647,7 @@
             </div>
           </div>
 
+
         </div> </div> </form>
     
     <div class="footer">
@@ -678,7 +677,7 @@
     // בלוק 1 (פרטי תיק)
     // בלוק 2 (חובות)
     // בלוק 3 (הכנסות)
-    // בלוק 4 (המלצות + מחשבון)
+    // בלוק 4 (המלצות נאמן + מחשבון + ממונה) - הבלוק האחרון
     const allSteps = [
         document.querySelector('[data-step="1"]'), 
         document.querySelector('[data-step="2"]'), 
