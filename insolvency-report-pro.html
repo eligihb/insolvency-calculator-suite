@@ -167,7 +167,6 @@
     .allowances-title-row {
       justify-content: flex-start;
     }
-
     .allowance-title {
       color: #15803d;
       font-weight: 700;
@@ -327,7 +326,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום
+    דו"ח מסכם לדיון צו שיקום-103
   </div>
 
   <form id="reportForm">
@@ -356,7 +355,7 @@
               תיק ממונה:
               <input type="text" class="short" maxlength="5">
               תיק ביהמ"ש:
-              <input type="text" class="short" placeholder="123456-12-25">
+              <input type="text" class="short" placeholder="">
             </div>
 
             <div class="row">
@@ -388,7 +387,7 @@
             </div>
           </div>
 
-          <!-- עמודה אמצע: צו תשלומים -->
+          <!-- עמודה אמצע: צו תשלומים בלבד במסגרת -->
           <div>
             <div class="order-box">
               <div class="sub-title">צו תשלומים</div>
@@ -400,7 +399,7 @@
 
               <div class="row no-wrap">
                 תשלום מדורג:
-                <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="אם יש">
+                <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="">
                 מיום:
                 <input type="date" id="gradedFromDate" class="medium">
               </div>
@@ -436,13 +435,13 @@
               <label><input type="radio" name="family_status" value="אלמן"> אלמן</label>
             </div>
 
-            <div class="row">
-              ילדים קטינים:
-              <input type="number" id="minorChildrenCount" class="mini" min="0" max="9">
-              תשלום מזונות:
-              <label><input type="checkbox" id="hasAlimony"> כן</label>
-              <input type="text" id="alimonyAmount" class="short currency-input">
-            </div>
+           <div class="row">
+  ילדים קטינים:
+  <input type="number" id="minorChildrenCount" class="short" min="0" max="11">
+  תשלום מזונות:
+  <label><input type="checkbox" id="hasAlimony"> כן</label>
+  <input type="text" id="alimonyAmount" class="short currency-input">
+</div>
 
             <hr>
 
@@ -485,6 +484,7 @@
               התנהלות החייב, חובות ונכסים
             </div>
 
+            <!-- התנהלות החייב -->
             <div class="sub-title">התנהלות החייב</div>
 
             <div class="small-text">דו"חות חודשיים:</div>
@@ -516,6 +516,7 @@
 
             <hr>
 
+            <!-- חובות -->
             <div class="sub-title">חובות</div>
 
             <div class="row debts-row">
@@ -541,7 +542,7 @@
               <label><input type="radio" name="claims_checked"> לא</label>
             </div>
 
-          <div class="sub-title">חובות לא ברי הפטר</div>
+           <div class="sub-title">חובות לא ברי הפטר</div>
 <div class="row" style="flex-wrap:wrap;">
   <span class="pair">
     <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
@@ -555,6 +556,7 @@
 
             <hr>
 
+            <!-- נכסים -->
             <div class="sub-title">נכסים</div>
 
             <div class="row">
@@ -576,6 +578,7 @@
               סיכום והמלצות
             </div>
 
+            <!-- סיכום הנאמן -->
             <div class="row" style="justify-content:space-between;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">סיכום הנאמן</div>
               <label><input type="checkbox"> הכשרה כלכלית</label>
@@ -584,6 +587,7 @@
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
             </div>
 
+            <!-- המלצת נאמן -->
             <div class="row" style="justify-content:flex-start;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">המלצת נאמן</div>
             </div>
@@ -604,6 +608,7 @@
               </div>
             </div>
 
+            <!-- סיכום הממונה -->
             <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px;">
               <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
               <label><input type="checkbox"> הכשרה כלכלית</label>
@@ -612,6 +617,7 @@
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
             </div>
 
+            <!-- המלצת הממונה -->
             <div class="row" style="justify-content:flex-start;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
             </div>
@@ -646,6 +652,7 @@
             הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים
           </div>
 
+          <!-- הכנסות החייב -->
           <div class="sub-title">הכנסות החייב</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -659,21 +666,25 @@
             <input type="month" class="medium">
           </div>
 
-          <div class="row not-working-toggle-row" id="debtorIncomeRow">
-            שכר נטו:
-            <input type="text" id="debtorNetIncome" class="short currency-input">
-            <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-            פוטנציאל השתכרות:
-            <input type="text" id="earningPotential" class="short currency-input">
-          </div>
+        <div class="row not-working-toggle-row" id="debtorIncomeRow">
+  שכר נטו:
+  <input type="text" id="debtorNetIncome" class="short currency-input">
+  <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
+</div>
 
-          <div class="row" id="earningPotentialRow">
-            הערות:
-            <input type="text" id="earningPotentialNotes" class="short">
-          </div>
+<div class="row" id="earningPotentialRow">
+  פוטנציאל השתכרות:
+  <input type="text" id="earningPotential" class="short currency-input">
+</div>
 
-          <hr>
+<div class="row">
+  הערות:
+  <input type="text" id="earningPotentialNotes" class="short">
+</div>
 
+<hr>
+          
+          <!-- הכנסות בן/בת הזוג -->
           <div class="sub-title">הכנסות בן/בת הזוג</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -695,6 +706,7 @@
 
           <hr>
 
+          <!-- סך הכנסות והוצאות -->
           <div class="sub-title">סך הכנסות והוצאות</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -704,6 +716,7 @@
             <input type="text" id="familyExpensesTotal" class="short currency-input">
           </div>
 
+          <!-- מחשבון צו תשלומים -->
           <div class="calc-frame-card">
             <div class="sub-title">מחשבון צו תשלומים</div>
             <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
@@ -720,7 +733,7 @@
   <button type="button" id="scrollTopBtn" class="scroll-top-btn">↑</button>
 
   <script>
-    // שדות אחוזים
+    // פורמט אחוזים – 3 ספרות + %
     function setupPercentField(id) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -734,10 +747,11 @@
         el.value = v + '%';
       });
     }
+
     setupPercentField('disabilityPercent');
     setupPercentField('incapacityPercent');
 
-    // המרת סכומי כסף
+    // עיצוב סכומי כסף בכל הטופס
     function attachCurrencyFormatting() {
       const inputs = document.querySelectorAll(".currency-input");
       inputs.forEach(input => {
@@ -771,6 +785,7 @@
       window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
     }
 
+    // צילום מסך של הדו"ח
     function screenshotReport() {
       const root = document.querySelector('.page');
       if (!root) return;
@@ -784,6 +799,7 @@
         .catch(() => alert('שגיאה ביצירת צילום המסך'));
     }
 
+    // "אינו עובד" – צביעה באדום
     function setupNotWorkingToggle(checkboxId, rowId) {
       const chk = document.getElementById(checkboxId);
       const row = document.getElementById(rowId);
@@ -799,6 +815,7 @@
       update();
     }
 
+    // דו"חות חודשיים – צבע לפי סימון
     function setupReportsStatusColors() {
       const radios = document.querySelectorAll('input[name="reports_status"]');
       if (!radios.length) return;
@@ -824,6 +841,7 @@
       update();
     }
 
+    // עזר: המרת טקסט סכום למספר
     function parseNumberFromCurrency(val) {
       if (!val) return 0;
       const clean = String(val).replace(/[^\d.]/g,'');
@@ -831,6 +849,7 @@
       return isNaN(num) ? 0 : num;
     }
 
+    // חישוב סכומים כוללים בהמלצות (נאמן/ממונה)
     function updateRecommendationTotals() {
       const tm = document.getElementById('trusteeMonthly');
       const td = document.getElementById('trusteeDuration');
@@ -855,206 +874,212 @@
       }
     }
 
-    // ----- חישוב סה"כ תשלומים מצו התשלומים -----
-    function calculatePaymentsTotals() {
-      const orderDateInput   = document.getElementById('orderDate');
-      const monthlyInput     = document.getElementById('monthlyPayment');
-      const gradedInput      = document.getElementById('gradedPayment');
-      const gradedDateInput  = document.getElementById('gradedFromDate');
-      const totalDateInput   = document.getElementById('paymentsTotalDate');
-      const totalAmountInput = document.getElementById('paymentsTotalAmount');
+function calculatePaymentsTotals() {
+  const orderDateInput   = document.getElementById('orderDate');
+  const monthlyInput     = document.getElementById('monthlyPayment');
+  const gradedInput      = document.getElementById('gradedPayment');
+  const gradedDateInput  = document.getElementById('gradedFromDate');
+  const totalDateInput   = document.getElementById('paymentsTotalDate');
+  const totalAmountInput = document.getElementById('paymentsTotalAmount');
 
-      if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
+  if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
 
-      const today = new Date();
-      totalDateInput.value = today.toLocaleDateString('he-IL');
+  const today = new Date();
+  totalDateInput.value = today.toLocaleDateString('he-IL');
 
-      if (!orderDateInput.value) {
-        totalAmountInput.value = '';
-        return;
-      }
+  if (!orderDateInput.value) {
+    totalAmountInput.value = '';
+    return;
+  }
 
-      const orderDate = new Date(orderDateInput.value);
-      if (isNaN(orderDate)) {
-        totalAmountInput.value = '';
-        return;
-      }
+  const orderDate = new Date(orderDateInput.value);
+  if (isNaN(orderDate)) {
+    totalAmountInput.value = '';
+    return;
+  }
 
-      const monthlyAmount = parseNumberFromCurrency(monthlyInput.value);
-      const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
-      const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
+  const monthlyAmount = parseNumberFromCurrency(monthlyInput.value);
+  const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
+  const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
 
-      if (!monthlyAmount && !gradedAmount) {
-        totalAmountInput.value = '';
-        return;
-      }
+  if (!monthlyAmount && !gradedAmount) {
+    totalAmountInput.value = '';
+    return;
+  }
 
-      // פונקציה לעבודה ברמת "חודש" (שנה*12 + חודש)
-      const toIndex = (y,m) => y*12 + m; // m: 0-11
-      const monthDiffInclusive = (startIndex, endIndex) => {
-        const diff = endIndex - startIndex + 1;
-        return diff > 0 ? diff : 0;
-      };
+  // פונקציה לעבודה ברמת "חודש" (שנה*12 + חודש)
+  const toIndex = (y,m) => y*12 + m; // m: 0-11
+  const monthDiffInclusive = (startIndex, endIndex) => {
+    const diff = endIndex - startIndex + 1;
+    return diff > 0 ? diff : 0;
+  };
 
-      const firstPayMonthDate = new Date(orderDate.getTime());
-      firstPayMonthDate.setMonth(firstPayMonthDate.getMonth() + 1); // החודש אחרי הצו
+  const firstPayMonthDate = new Date(orderDate.getTime());
+  firstPayMonthDate.setMonth(firstPayMonthDate.getMonth() + 1); // החודש אחרי הצו
 
-      const firstY = firstPayMonthDate.getFullYear();
-      const firstM = firstPayMonthDate.getMonth(); // 0-11
+  const firstY = firstPayMonthDate.getFullYear();
+  const firstM = firstPayMonthDate.getMonth(); // 0-11
 
-      const todayY = today.getFullYear();
-      const todayM = today.getMonth();
+  const todayY = today.getFullYear();
+  const todayM = today.getMonth();
 
-      const firstIdx = toIndex(firstY, firstM);
-      const todayIdx = toIndex(todayY, todayM);
+  const firstIdx = toIndex(firstY, firstM);
+  const todayIdx = toIndex(todayY, todayM);
 
-      // אם אנחנו לפני החודש הראשון לתשלום – אין תשלום
-      if (todayIdx < firstIdx) {
-        totalAmountInput.value = '';
-        return;
-      }
+  // אם אנחנו לפני החודש הראשון לתשלום – אין תשלום
+  if (todayIdx < firstIdx) {
+    totalAmountInput.value = '';
+    return;
+  }
 
-      let total = 0;
+  let total = 0;
 
-      if (!gradedAmount || !gradedDateVal) {
-        // אין מדורג – הכל לפי החודשי
+  if (!gradedAmount || !gradedDateVal) {
+    // אין מדורג – הכל לפי החודשי
+    const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+    total = monthsAll * monthlyAmount;
+  } else {
+    const gradedDate = new Date(gradedDateVal);
+    if (isNaN(gradedDate)) {
+      const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+      total = monthsAll * monthlyAmount;
+    } else {
+      const gY = gradedDate.getFullYear();
+      const gM = gradedDate.getMonth(); // המדורג מתחיל בחודש זה
+      const gIdx = toIndex(gY, gM);
+
+      // אם המדורג בעתיד ביחס להיום – מתעלמים ממנו
+      if (gIdx > todayIdx) {
         const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
         total = monthsAll * monthlyAmount;
       } else {
-        const gradedDate = new Date(gradedDateVal);
-        if (isNaN(gradedDate)) {
+        // אם המדורג מתחיל לפני או עם תחילת התשלומים – הכל מדורג
+        if (gIdx <= firstIdx) {
           const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
-          total = monthsAll * monthlyAmount;
+          const useAmount = gradedAmount || monthlyAmount;
+          total = monthsAll * useAmount;
         } else {
-          const gY = gradedDate.getFullYear();
-          const gM = gradedDate.getMonth(); // המדורג מתחיל בחודש זה
-          const gIdx = toIndex(gY, gM);
+          // שלב 1: חודשים רגילים – מהחודש הראשון לתשלום עד החודש שלפני המדורג
+          const beforeEndIdx = gIdx - 1;
+          const monthsBefore = monthDiffInclusive(firstIdx, beforeEndIdx);
 
-          // אם המדורג בעתיד ביחס להיום – מתעלמים ממנו
-          if (gIdx > todayIdx) {
-            const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
-            total = monthsAll * monthlyAmount;
-          } else {
-            // אם המדורג מתחיל לפני או עם תחילת התשלומים – הכל מדורג
-            if (gIdx <= firstIdx) {
-              const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
-              const useAmount = gradedAmount || monthlyAmount;
-              total = monthsAll * useAmount;
-            } else {
-              // שלב 1: חודשים רגילים – מהחודש הראשון לתשלום עד החודש שלפני המדורג
-              const beforeEndIdx = gIdx - 1;
-              const monthsBefore = monthDiffInclusive(firstIdx, beforeEndIdx);
+          // שלב 2: חודשים מדורגים – מחודש המדורג ועד היום
+          const monthsAfter = monthDiffInclusive(gIdx, todayIdx);
 
-              // שלב 2: חודשים מדורגים – מחודש המדורג ועד היום
-              const monthsAfter = monthDiffInclusive(gIdx, todayIdx);
-
-              total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
-            }
-          }
+          total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
         }
       }
+    }
+  }
 
-      if (!total) {
-        totalAmountInput.value = '';
-      } else {
-        totalAmountInput.value = total.toLocaleString('he-IL', {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }) + ' ₪';
+  if (!total) {
+    totalAmountInput.value = '';
+  } else {
+    totalAmountInput.value = total.toLocaleString('he-IL', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }) + ' ₪';
+  }
+}
+
+   // ----- סנכרון טופס ← מחשבון באייפריים -----
+let calcFrame = null;
+let calcReady = false;
+
+function syncCalculatorFromForm() {
+  if (!calcReady || !calcFrame || !calcFrame.contentWindow) return;
+
+  const w   = calcFrame.contentWindow;
+  const doc = w.document;
+  if (!doc) return;
+
+  const debtorIncomeEl = document.getElementById('debtorNetIncome');
+  const spouseIncomeEl = document.getElementById('spouseNetIncome');
+  const kidsEl         = document.getElementById('minorChildrenCount');
+  const alimonyChk     = document.getElementById('hasAlimony');
+  const alimonyAmtEl   = document.getElementById('alimonyAmount');
+
+  const debtorNet  = debtorIncomeEl ? parseNumberFromCurrency(debtorIncomeEl.value) : 0;
+  const spouseNet  = spouseIncomeEl ? parseNumberFromCurrency(spouseIncomeEl.value) : 0;
+  const kidsCount  = kidsEl ? (parseInt(kidsEl.value || '0', 10) || 0) : 0;
+  const hasAlimony = alimonyChk ? alimonyChk.checked : false;
+  const alimonyAmt = alimonyAmtEl ? parseNumberFromCurrency(alimonyAmtEl.value) : 0;
+
+  // שכר חייב
+  const salaryDebtor = doc.getElementById('salaryDebtor');
+  if (salaryDebtor) {
+    salaryDebtor.value = debtorNet || '';
+    salaryDebtor.dispatchEvent(new w.Event('input', {bubbles:true}));
+  }
+
+  // שכר בן/בת זוג
+  const salaryPartner = doc.getElementById('salaryPartner');
+  if (salaryPartner) {
+    salaryPartner.value = spouseNet || '';
+    salaryPartner.dispatchEvent(new w.Event('input', {bubbles:true}));
+  }
+
+  // ילדים – עדכון childrenCount בתוך המחשבון (מוגדר שם עם let, לא על window)
+  try {
+    const n = Math.max(0, Math.min(10, kidsCount));
+    if (typeof w.eval === 'function') {
+      // מעדכנים את המשתנה הגלובלי באייפריים
+      w.eval('childrenCount = ' + n + ';');
+      if (typeof w.updateChildrenLabel === 'function') {
+        w.updateChildrenLabel();
       }
     }
-
-    // ----- סנכרון טופס ← מחשבון באייפריים -----
-    let calcFrame = null;
-    let calcReady = false;
-
-    function syncCalculatorFromForm() {
-      if (!calcReady || !calcFrame || !calcFrame.contentWindow) return;
-
-      const w   = calcFrame.contentWindow;
-      const doc = w.document;
-      if (!doc) return;
-
-      const debtorIncomeEl = document.getElementById('debtorNetIncome');
-      const spouseIncomeEl = document.getElementById('spouseNetIncome');
-      const kidsEl         = document.getElementById('minorChildrenCount');
-      const alimonyChk     = document.getElementById('hasAlimony');
-      const alimonyAmtEl   = document.getElementById('alimonyAmount');
-
-      const debtorNet  = debtorIncomeEl ? parseNumberFromCurrency(debtorIncomeEl.value) : 0;
-      const spouseNet  = spouseIncomeEl ? parseNumberFromCurrency(spouseIncomeEl.value) : 0;
-      const kidsCount  = kidsEl ? (parseInt(kidsEl.value || '0', 10) || 0) : 0;
-      const hasAlimony = alimonyChk ? alimonyChk.checked : false;
-      const alimonyAmt = alimonyAmtEl ? parseNumberFromCurrency(alimonyAmtEl.value) : 0;
-
-      const salaryDebtor = doc.getElementById('salaryDebtor');
-      if (salaryDebtor) {
-        salaryDebtor.value = debtorNet || '';
-        salaryDebtor.dispatchEvent(new w.Event('input', {bubbles:true}));
-      }
-
-      const salaryPartner = doc.getElementById('salaryPartner');
-      if (salaryPartner) {
-        salaryPartner.value = spouseNet || '';
-        salaryPartner.dispatchEvent(new w.Event('input', {bubbles:true}));
-      }
-
-      // ילדים – מעדכנים childrenCount בתוך המחשבון (שם מוגדר עם let)
-      try {
-        const n = Math.max(0, Math.min(10, kidsCount));
-        if (typeof w.eval === 'function') {
-          w.eval('childrenCount = ' + n + ';');
-          if (typeof w.updateChildrenLabel === 'function') {
-            w.updateChildrenLabel();
-          }
-        }
-      } catch (e) {}
-
-      const alimonyInput = doc.getElementById('alimonyExpenses');
-      if (alimonyInput) {
-        if (hasAlimony && alimonyAmt > 0) {
-          alimonyInput.value = alimonyAmt;
-        } else {
-          alimonyInput.value = '';
-        }
-        alimonyInput.dispatchEvent(new w.Event('input', {bubbles:true}));
-      }
-
-      const familyRadios = document.querySelectorAll('input[name="family_status"]');
-      let familyValue = '';
-      familyRadios.forEach(r => { if (r.checked) familyValue = r.value; });
-
-      let targetType = null;
-      if (familyValue === 'נשוי') {
-        targetType = 'זוג';
-      } else if (familyValue === 'רווק' || familyValue === 'גרוש' || familyValue === 'אלמן') {
-        targetType = 'רווק';
-      }
-
-      if (targetType) {
-        const ftButtons = doc.querySelectorAll('.family-type');
-        ftButtons.forEach(btn => {
-          if (btn.dataset.type === targetType) {
-            btn.click();
-          }
-        });
-      }
-
-      if (typeof w.calc === 'function') {
-        w.calc();
-      }
+  } catch (e) {
+    // אם מסיבה כלשהי אין גישה – מתעלמים
+  }
+  // מזונות – רק אם מסומן בטופס
+  const alimonyInput = doc.getElementById('alimonyExpenses');
+  if (alimonyInput) {
+    if (hasAlimony && alimonyAmt > 0) {
+      alimonyInput.value = alimonyAmt;
+    } else {
+      alimonyInput.value = '';
     }
+    alimonyInput.dispatchEvent(new w.Event('input', {bubbles:true}));
+  }
 
-    function initCalculatorSync() {
-      calcFrame = document.querySelector('.calc-frame-card iframe');
-      if (!calcFrame) return;
-      calcFrame.addEventListener('load', () => {
-        calcReady = true;
-        syncCalculatorFromForm();
-      });
-    }
+  // מצב משפחתי → סטטוס במחשבון
+  const familyRadios = document.querySelectorAll('input[name="family_status"]');
+  let familyValue = '';
+  familyRadios.forEach(r => { if (r.checked) familyValue = r.value; });
 
-    // שמירה/שחזור
+  let targetType = null; // "יחיד" / "זוג" / "רווק"
+  if (familyValue === 'נשוי') {
+    targetType = 'זוג';
+  } else if (familyValue === 'רווק' || familyValue === 'גרוש' || familyValue === 'אלמן') {
+    targetType = 'רווק';
+  }
+
+  if (targetType) {
+    const ftButtons = doc.querySelectorAll('.family-type');
+    ftButtons.forEach(btn => {
+      if (btn.dataset.type === targetType) {
+        btn.click();
+      }
+    });
+  }
+
+  // חישוב מחדש במחשבון
+  if (typeof w.calc === 'function') {
+    w.calc();
+  }
+}
+
+function initCalculatorSync() {
+  calcFrame = document.querySelector('.calc-frame-card iframe');
+  if (!calcFrame) return;
+  calcFrame.addEventListener('load', () => {
+    calcReady = true;
+    syncCalculatorFromForm();
+  });
+}
+    // ----- שמירת/שחזור מצב טופס -----
+
     function saveFormState() {
       const form = document.getElementById('reportForm');
       if (!form) return;
@@ -1107,6 +1132,7 @@
       alert('הנתונים שוחזרו מהגרסה האחרונה שנשמרה.');
     }
 
+    // חץ חזרה לראש הדף
     function setupScrollTopButton() {
       const btn = document.getElementById('scrollTopBtn');
       if (!btn) return;
@@ -1177,57 +1203,9 @@
         });
       }
 
+      // חישוב ראשוני
       calculatePaymentsTotals();
     });
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // הגדרת הגרסה שמופיעה ליד הכותרת
-    const version = "36.52.100";  // שנה את הגרסה לפי הצורך
-    const versionLabel = document.createElement('span');
-    versionLabel.textContent = `גרסה ${version}`;
-    versionLabel.style.fontSize = '12px';
-    versionLabel.style.color = '#6B7280';
-    versionLabel.style.marginLeft = '10px';
-
-    // הוספת הגרסה ליד הכותרת
-    const header = document.querySelector('.top-bar');
-    if (header) {
-      header.appendChild(versionLabel);
-    }
-
-    // הפונקציות השונות שמופעלות אחרי טעינת הדף
-    attachCurrencyFormatting();
-    setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
-    setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
-    setupReportsStatusColors();
-    setupScrollTopButton();  // כפתור חזרה לראש הדף
-    initCalculatorSync();
-
-    const form = document.getElementById('reportForm');
-    if (form) {
-      form.addEventListener('input', (e) => {
-        if (e.target && (
-          e.target.id === 'trusteeMonthly' ||
-          e.target.id === 'trusteeDuration' ||
-          e.target.id === 'commMonthly' ||
-          e.target.id === 'commDuration'
-        )) {
-          updateRecommendationTotals(); // עדכון המלצות
-        }
-        if (e.target && (
-          e.target.id === 'orderDate' ||
-          e.target.id === 'monthlyPayment' ||
-          e.target.id === 'gradedPayment' ||
-          e.target.id === 'gradedFromDate'
-        )) {
-          calculatePaymentsTotals(); // חישוב תשלומים
-        }
-
-        saveFormState();  // שמירת מצב הטופס
-        syncCalculatorFromForm();  // סנכרון המחשבון
-      });
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
