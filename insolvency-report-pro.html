@@ -322,11 +322,50 @@
       .calc-frame-card { display: none; }
       .scroll-top-btn { display: none !important; }
     }
-  </style>
+</style>
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm;
+  }
+
+  body {
+    background: #ffffff;
+    font-size: 11px;
+  }
+
+  .top-bar {
+    border-bottom: 1px solid #cbd5e1;
+    box-shadow: none;
+  }
+
+  .page {
+    max-width: 100%;
+    margin: 0;
+    padding: 4mm;
+  }
+
+  .card {
+    box-shadow: none;
+  }
+
+  .buttons-inline {
+    display: none;
+  }
+
+  .calc-frame-card {
+    display: none;
+  }
+
+  .scroll-top-btn {
+    display: none !important;
+  }
+}
+
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-105
+    דו"ח מסכם לדיון צו שיקום-106
   </div>
 
   <form id="reportForm">
