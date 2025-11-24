@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם 110 לדיון צו שיקום</title>
+  <title>דו"ח מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
@@ -167,6 +167,7 @@
     .allowances-title-row {
       justify-content: flex-start;
     }
+
     .allowance-title {
       color: #15803d;
       font-weight: 700;
@@ -235,7 +236,8 @@
     .pair-label-multiline {
       display: inline-block;
       line-height: 1.1;
-          .debts-row {
+    }
+    .debts-row {
       flex-wrap: nowrap;
       justify-content: flex-start;
       gap: 10px;
@@ -247,8 +249,6 @@
       line-height: 1.1;
       white-space: normal;
       text-align: right;
-    }
-
     }
 
     .docs-row .arrears-label {
@@ -323,222 +323,15 @@
       .scroll-top-btn { display: none !important; }
     }
   </style>
-  <head>
-  <meta charset="UTF-8" />
-  <title>דו"ח מסכם לדיון צו שיקום</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      direction: rtl;
-      text-align: right;
-      margin: 0;
-      background: #e5f6ff;
-      font-size: 12px;
-    }
-
-    .top-bar {
-      background: #0f766e;
-      color: #fff;
-      padding: 10px 18px;
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .page {
-      max-width: 1100px;
-      margin: 8px auto;
-      padding: 8px;
-    }
-
-    .card {
-      background: #f8fafc;
-      border-radius: 14px;
-      border: 1px solid #dbeafe;
-      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
-      padding: 8px 10px;
-      margin-bottom: 8px;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #0f172a;
-      text-align: right;
-      margin: 0;
-    }
-
-    .section-header-flex {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 4px;
-      padding-bottom: 2px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .sub-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f766e;
-      margin: 4px 0 2px;
-      text-align: right;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-
-    .no-wrap {
-      flex-wrap: nowrap;
-    }
-
-    label {
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="month"],
-    input[type="time"],
-    textarea,
-    select {
-      font-size: 11px;
-      padding: 3px 5px;
-      border-radius: 8px;
-      border: 1px solid #cbd5f5;
-      background: #ffffff;
-      min-width: 0;
-      font-weight: 600;
-      color: #1d4ed8;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .short   { width: 80px; }
-    .tiny    { width: 50px; }
-    .mini    { width: 30px; }
-    .medium  { width: 120px; }
-    .xshort  { width: 60px; }
-    .flex-1  { flex: 1 1 0; }
-
-    .small-text {
-      font-size: 11px;
-      color: #64748b;
-    }
-
-    hr {
-      border: none;
-      border-top: 1px dashed #e2e8f0;
-      margin: 4px 0;
-    }
-
-    .layout-main {
-      display: grid;
-      grid-template-columns: 1.1fr 1.9fr;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
-    .footer {
-      text-align: center;
-      font-size: 11px;
-      color: #475569;
-      margin-top: 6px;
-    }
-
-    .buttons-inline {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 0;
-    }
-
-    .btn {
-      border: none;
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-print   { background: #0ea5e9; color: #fff; }
-    .btn-email   { background: #6366f1; color: #fff; }
-    .btn-shot    { background: #0f766e; color: #fff; }
-    .btn-reset   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-    .btn-restore { background: #eef2ff; color: #1e3a8a; border: 1px solid #c7d2fe; }
-
-    .allowances-title-row {
-      justify-content: flex-start;
-    }
-
-    .allowance-title {
-      color: #15803d;
-      font-weight: 700;
-      text-align: right;
-      width: auto;
-    }
-
-    .medical-notes-row input {
-      width: 100%;
-    }
-
-    .order-box {
-      border: 2px solid #0f766e;
-      border-radius: 12px;
-      padding: 6px 8px;
-      background: #ecfeff;
-    }
-
-    .hearing-box {
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 4px 6px;
-      background: #eff6ff;
-      margin-top: 2px;
-    }
-
-    .calc-frame-card {
-      margin-top: 6px;
-      flex: 1 1 auto;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .calc-frame-card iframe {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      height: 380px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
-
+</head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-104
+    דו"ח מסכם לדיון צו שיקום-120
   </div>
 
   <form id="reportForm">
     <div class="page">
 
-      <!-- כרטיס עליון – פרטי תיק + צו תשלומים + פרטים אישיים + מצב רפואי -->
       <div class="card">
         <div class="section-header-flex">
           <div class="section-title">פרטי תיק וצו תשלומים</div>
@@ -553,7 +346,6 @@
 
         <div style="display:grid;grid-template-columns:1.1fr 1fr 1.2fr;gap:8px;align-items:flex-start;">
 
-          <!-- עמודה ימין: פרטי תיק -->
           <div>
             <div class="sub-title">פרטי תיק</div>
 
@@ -593,7 +385,6 @@
             </div>
           </div>
 
-          <!-- עמודה אמצע: צו תשלומים בלבד במסגרת -->
           <div>
             <div class="order-box">
               <div class="sub-title">צו תשלומים</div>
@@ -629,7 +420,6 @@
             </div>
           </div>
 
-          <!-- עמודה שמאל: פרטים אישיים + מצב רפואי -->
           <div>
             <div class="sub-title">פרטים אישיים</div>
 
@@ -678,19 +468,15 @@
         </div>
       </div>
 
-      <!-- שתי עמודות – שמאל: התנהלות/חובות/נכסים/סיכום, ימין: הכנסות + מחשבון -->
       <div class="layout-main">
 
-        <!-- עמודה שמאלית -->
         <div>
 
-          <!-- כרטיס התנהלות, חובות ונכסים -->
           <div class="card">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               התנהלות החייב, חובות ונכסים
             </div>
 
-            <!-- התנהלות החייב -->
             <div class="sub-title">התנהלות החייב</div>
 
             <div class="small-text">דו"חות חודשיים:</div>
@@ -722,7 +508,6 @@
 
             <hr>
 
-            <!-- חובות -->
             <div class="sub-title">חובות</div>
 
             <div class="row debts-row">
@@ -752,17 +537,14 @@
 <div class="row" style="flex-wrap:wrap;">
   <span class="pair">
     <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
-    <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
-  </span>
+    <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999"> </span>
   <span class="pair">
     <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
-    <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
-  </span>
+    <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999"> </span>
 </div>
 
             <hr>
 
-            <!-- נכסים -->
             <div class="sub-title">נכסים</div>
 
             <div class="row">
@@ -778,13 +560,11 @@
             </div>
           </div>
 
-          <!-- כרטיס סיכום והמלצות -->
           <div class="card">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               סיכום והמלצות
             </div>
 
-            <!-- סיכום הנאמן -->
             <div class="row" style="justify-content:space-between;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">סיכום הנאמן</div>
               <label><input type="checkbox"> הכשרה כלכלית</label>
@@ -793,7 +573,6 @@
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
             </div>
 
-            <!-- המלצת נאמן -->
             <div class="row" style="justify-content:flex-start;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">המלצת נאמן</div>
             </div>
@@ -814,7 +593,6 @@
               </div>
             </div>
 
-            <!-- סיכום הממונה -->
             <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px;">
               <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
               <label><input type="checkbox"> הכשרה כלכלית</label>
@@ -823,7 +601,6 @@
               <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
             </div>
 
-            <!-- המלצת הממונה -->
             <div class="row" style="justify-content:flex-start;align-items:center;">
               <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
             </div>
@@ -852,13 +629,11 @@
 
         </div>
 
-        <!-- עמודה ימנית: הכנסות + מחשבון -->
         <div class="card" style="display:flex;flex-direction:column;">
           <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
             הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים
           </div>
 
-          <!-- הכנסות החייב -->
           <div class="sub-title">הכנסות החייב</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -890,7 +665,6 @@
 
 <hr>
           
-          <!-- הכנסות בן/בת הזוג -->
           <div class="sub-title">הכנסות בן/בת הזוג</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -912,7 +686,6 @@
 
           <hr>
 
-          <!-- סך הכנסות והוצאות -->
           <div class="sub-title">סך הכנסות והוצאות</div>
 
           <div class="row" style="flex-wrap:wrap;">
@@ -922,7 +695,6 @@
             <input type="text" id="familyExpensesTotal" class="short currency-input">
           </div>
 
-          <!-- מחשבון צו תשלומים -->
           <div class="calc-frame-card">
             <div class="sub-title">מחשבון צו תשלומים</div>
             <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
