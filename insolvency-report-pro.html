@@ -1180,5 +1180,24 @@
       calculatePaymentsTotals();
     });
   </script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // פונקציה להוספת פסיקים וש"ח לכל השדות (גם לחובות לא ברי הפטר)
+    function applyCurrencyFormat() {
+        const inputs = document.querySelectorAll('.currency-input');
+        inputs.forEach(input => {
+            input.addEventListener("blur", function () {
+                let value = this.value.replace(/[^\d]/g, '');  // מסנן את כל התוים הלא מספריים
+                if (value) {
+                    this.value = parseInt(value).toLocaleString('he-IL') + ' ₪';  // מעצב עם פסיקים וש"ח
+                } else {
+                    this.value = '';
+                }
+            });
+        });
+    }
+
+    // קורא לפונקציה אחרי שהדף נטען
+    applyCurrencyFormat();
+});
 </body>
 </html>
