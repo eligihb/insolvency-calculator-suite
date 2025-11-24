@@ -1199,5 +1199,55 @@
     // קורא לפונקציה אחרי שהדף נטען
     applyCurrencyFormat();
 });
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // הגדרת הגרסה שמופיעה ליד הכותרת
+    const version = "36.52.100";  // שנה את הגרסה לפי הצורך
+    const versionLabel = document.createElement('span');
+    versionLabel.textContent = `גרסה ${version}`;
+    versionLabel.style.fontSize = '12px';
+    versionLabel.style.color = '#6B7280';
+    versionLabel.style.marginLeft = '10px';
+
+    // הוספת הגרסה ליד הכותרת
+    const header = document.querySelector('.top-bar');
+    if (header) {
+      header.appendChild(versionLabel);
+    }
+
+    // הפונקציות השונות שמופעלות אחרי טעינת הדף
+    attachCurrencyFormatting();
+    setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
+    setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
+    setupReportsStatusColors();
+    setupScrollTopButton();  // כפתור חזרה לראש הדף
+    initCalculatorSync();
+
+    const form = document.getElementById('reportForm');
+    if (form) {
+      form.addEventListener('input', (e) => {
+        if (e.target && (
+          e.target.id === 'trusteeMonthly' ||
+          e.target.id === 'trusteeDuration' ||
+          e.target.id === 'commMonthly' ||
+          e.target.id === 'commDuration'
+        )) {
+          updateRecommendationTotals(); // עדכון המלצות
+        }
+        if (e.target && (
+          e.target.id === 'orderDate' ||
+          e.target.id === 'monthlyPayment' ||
+          e.target.id === 'gradedPayment' ||
+          e.target.id === 'gradedFromDate'
+        )) {
+          calculatePaymentsTotals(); // חישוב תשלומים
+        }
+
+        saveFormState();  // שמירת מצב הטופס
+        syncCalculatorFromForm();  // סנכרון המחשבון
+      });
+    }
+  });
+</script>
 </body>
 </html>
