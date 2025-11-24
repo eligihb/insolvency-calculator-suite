@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם לדיון צו שיקום</title>
+  <title>100-דו"ח מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
@@ -542,18 +542,17 @@
               <label><input type="radio" name="claims_checked"> לא</label>
             </div>
 
-            <!-- חובות לא ברי הפטר -->
-            <div class="sub-title">חובות לא ברי הפטר</div>
-            <div class="row" style="flex-wrap:wrap;">
-              <span class="pair">
-                <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
-                <input type="number" id="alimonyDebtAmount" class="short" min="0" max="99999">
-              </span>
-              <span class="pair">
-                <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
-                <input type="number" id="taxDebtAmount" class="short" min="0" max="99999">
-              </span>
-            </div>
+           <div class="sub-title">חובות לא ברי הפטר</div>
+<div class="row" style="flex-wrap:wrap;">
+  <span class="pair">
+    <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
+    <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
+  </span>
+  <span class="pair">
+    <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
+    <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
+  </span>
+</div>
 
             <hr>
 
