@@ -305,33 +305,16 @@
       z-index: 50;
     }
 
-    @media print {
-      @page { size: A4 portrait; margin: 5mm; }
-
-      body { background: #ffffff; font-size: 11px; }
-      .top-bar { border-bottom: 1px solid #cbd5e1; box-shadow: none; }
-      .page {
-        max-width: 100%;
-        margin: 0;
-        padding: 4mm;
-        transform: scale(0.86);
-        transform-origin: top center;
-      }
-      .card { box-shadow: none; }
-      .buttons-inline { display: none; }
-      .calc-frame-card { display: none; }
-      .scroll-top-btn { display: none !important; }
-    }
-</style>
-@media print {
+  @media print {
   @page {
-    size: A4 portrait;
-    margin: 5mm;
+    size: A4 portrait; 
+    margin: 10mm;  /* הגדלתי מעט את המרווחים */
   }
 
   body {
     background: #ffffff;
     font-size: 11px;
+    margin: 0;
   }
 
   .top-bar {
@@ -340,9 +323,10 @@
   }
 
   .page {
-    max-width: 100%;
+    width: 100%;
     margin: 0;
     padding: 4mm;
+    overflow: hidden;
   }
 
   .card {
@@ -360,12 +344,22 @@
   .scroll-top-btn {
     display: none !important;
   }
+
+  /* ביטול שבר בעמודים – לא לשבור קישורים בין עמודים */
+  a {
+    page-break-inside: avoid;
+  }
+
+  /* תיקון לחווית קישור או טקסט שלא יתפוס יותר מדי רוחב */
+  .row {
+    word-wrap: break-word;
+  }
 }
 
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-106
+    דו"ח מסכם לדיון צו שיקום76
   </div>
 
   <form id="reportForm">
