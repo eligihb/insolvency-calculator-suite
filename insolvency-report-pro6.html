@@ -97,6 +97,24 @@
     .order-box-comm { border-color: #6366f1; background: #eef2ff; }
     .scroll-top-btn { position: fixed; bottom: 16px; left: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #cbd5e1; background: #ffffff; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 16px; z-index: 50; }
     
+    /* הוספת סגנון לשורת הכנסות/הוצאות המחולקת */
+    .income-expense-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: nowrap !important;
+    }
+    .income-expense-row .pair {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1 1 0;
+    }
+    .income-expense-row .pair input {
+        width: 100%;
+    }
+
+
     /* --- גודל הדפסה A4 (שומר על ה-transform המקורי לבקשתך) --- */
     @media print {
       @page { size: A4 portrait; margin: 5mm; }
@@ -112,8 +130,12 @@
       }
       .card { box-shadow: none; border: 1px solid #e2e8f0; }
       .buttons-inline, .scroll-top-btn, .calc-frame-card, .progress-container, .mobile-navigation { display: none !important; }
-      /* הצגת מבנה הדסקטופ המקורי בהדפסה */
-      .layout-main { display: grid !important; }
+      /* הצגת מבנה הדסקטופ המקורי בהדפסה (כולל ה-grid החדש) */
+      .layout-main { 
+        display: grid !important; 
+        grid-template-columns: 1.2fr 1.2fr 1fr; /* 3 עמודות להדפסה */
+      }
+      .income-expense-row { flex-wrap: wrap !important; }
     }
     
     /* --- ממשק מובייל רב-שלבי (Mobile Flow Stepper) --- */
@@ -151,22 +173,9 @@
       border-radius: 12px 12px 0 0;
     }
 
-    .progress-bar {
-      height: 6px; background: #cbd5e1; flex-grow: 1; border-radius: 3px; margin-inline: 10px; position: relative; overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%; width: 0%; background: #0f766e; border-radius: 3px; transition: width 0.3s ease-in-out;
-    }
-    .step-label {
-      font-size: 10px; color: #0f172a; font-weight: 600; white-space: nowrap;
-    }
-
-    .mobile-nav-btn {
-      flex: 1; background: #0f766e; color: #fff; padding: 8px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin: 0 4px; font-size: 12px;
-    }
-    .mobile-nav-btn:disabled {
-      background: #cbd5e1; cursor: default;
-    }
+    .progress-bar { height: 6px; background: #cbd5e1; flex-grow: 1; border-radius: 3px; margin-inline: 10px; position: relative; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: #0f766e; border-radius: 3px; transition: width 0.3s ease-in-out; }
+    .step-label { font-size: 10px; color: #0f172a; font-weight: 600; white-space: nowrap; }
 
     /* מיכל המסכים הראשי - Flexbox ליצירת ה-Carousel */
     #form-flow-container {
@@ -178,19 +187,26 @@
       .mobile-fixed-elements { display: none !important; }
     }
 
+    /* --- מבנה 3 העמודות המבוקש (דסקטופ) --- */
+    .layout-main {
+      display: grid;
+      /* 25% (חובות/סיכום) | 40% (הכנסות) | 35% (מחשבון) */
+      grid-template-columns: 1fr 1.6fr 1.4fr; 
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .layout-col-left { 
+        display: flex; 
+        flex-direction: column;
+        gap: 8px;
+    }
+
     /* --- התאמות ספציפיות למובייל (עד 800px) --- */
     @media (max-width: 800px) {
       body { padding-top: 50px; padding-bottom: 70px; } /* מרווח קבוע לניווט */
       .top-bar { position: fixed; width: 100%; } /* מקבע את ה-Top Bar */
       
-      /* הופך את ה-page לאזור גלילה רגיל */
-      .page {
-        margin-top: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-      
-      /* הופך את כל ה-body לעטוף את התוכן הפנימי ומסדר את המסכים */
+      /* הופך את ה-body לעטוף את התוכן הפנימי ומסדר את המסכים */
       #form-flow-container {
         display: flex;
         overflow-x: hidden;
@@ -205,20 +221,20 @@
         min-height: 100%;
       }
       
-      /* ביטול מבנה הגריד המקורי והפיכתו לבלוקים ערימים במובייל */
-      .layout-main {
-        display: block;
+      /* במובייל, הבלוקים בעמודות המקוריים מוצגים כבלוקים יחידים */
+      .layout-main { display: block; }
+      .layout-col-left { display: block; }
+
+      .income-expense-row {
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+      }
+      .income-expense-row .pair {
+          flex: 1 1 100%;
+          margin-bottom: 4px;
       }
     }
     
-    /* --- המבנה המקורי של שתי העמודות (דסקטופ) --- */
-    .layout-main {
-      display: grid;
-      grid-template-columns: 1.1fr 1.9fr;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
     /* כל שאר הסגנונות הקיימים שלך */
     .allowances-title-row { justify-content: flex-start; }
     .allowances-title-row .allowance-title { margin-inline-end: 12px; }
@@ -387,82 +403,79 @@
 
         <div class="layout-main">
 
-          <div>
-            <div data-step="2" data-label="הכנסות ומחשבון" class="card" style="display:flex;flex-direction:column;">
-              <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
-                הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים
-              </div>
+          <div data-step="2" data-label="הכנסות" class="card" style="display:flex;flex-direction:column;">
+            <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+              הכנסות החייב, בן/בת הזוג וסיכום
+            </div>
 
-              <div class="sub-title">הכנסות החייב</div>
+            <div class="sub-title">הכנסות החייב</div>
 
-              <div class="row" style="flex-wrap:wrap;">
-                מקצוע:
-                <input type="text" class="short">
-                מקום עבודה:
-                <input type="text" class="short">
-                היקף משרה:
-                <input type="text" class="short">
-                תחילת עבודה:
-                <input type="month" class="medium">
-              </div>
+            <div class="row" style="flex-wrap:wrap;">
+              מקצוע:
+              <input type="text" class="short">
+              מקום עבודה:
+              <input type="text" class="short">
+              היקף משרה:
+              <input type="text" class="short">
+              תחילת עבודה:
+              <input type="month" class="medium">
+            </div>
 
-              <div class="row not-working-toggle-row" id="debtorIncomeRow">
-                שכר נטו:
-                <input type="text" id="debtorNetIncome" class="short currency-input">
-                <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-              </div>
+            <div class="row not-working-toggle-row" id="debtorIncomeRow">
+              שכר נטו:
+              <input type="text" id="debtorNetIncome" class="short currency-input">
+              <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
+            </div>
 
-              <div class="row" id="earningPotentialRow">
-                פוטנציאל השתכרות:
-                <input type="text" id="earningPotential" class="short currency-input">
-              </div>
+            <div class="row" id="earningPotentialRow">
+              פוטנציאל השתכרות:
+              <input type="text" id="earningPotential" class="short currency-input">
+            </div>
 
-              <div class="row">
-                הערות:
-                <input type="text" id="earningPotentialNotes" class="short">
-              </div>
+            <div class="row">
+              הערות:
+              <input type="text" id="earningPotentialNotes" class="short">
+            </div>
 
-              <hr>
-              
-              <div class="sub-title">הכנסות בן/בת הזוג</div>
+            <hr>
+            
+            <div class="sub-title">הכנסות בן/בת הזוג</div>
 
-              <div class="row" style="flex-wrap:wrap;">
-                מקצוע:
-                <input type="text" class="short">
-                מקום עבודה:
-                <input type="text" class="short">
-                היקף משרה:
-                <input type="text" class="short">
-                תחילת עבודה:
-                <input type="month" class="medium">
-              </div>
+            <div class="row" style="flex-wrap:wrap;">
+              מקצוע:
+              <input type="text" class="short">
+              מקום עבודה:
+              <input type="text" class="short">
+              היקף משרה:
+              <input type="text" class="short">
+              תחילת עבודה:
+              <input type="month" class="medium">
+            </div>
 
-              <div class="row not-working-toggle-row" id="spouseIncomeRow">
-                שכר נטו:
-                <input type="text" id="spouseNetIncome" class="short currency-input">
-                <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
-              </div>
+            <div class="row not-working-toggle-row" id="spouseIncomeRow">
+              שכר נטו:
+              <input type="text" id="spouseNetIncome" class="short currency-input">
+              <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
+            </div>
 
-              <hr>
+            <hr>
 
-              <div class="sub-title">סך הכנסות והוצאות</div>
+            <div class="sub-title">סך הכנסות והוצאות **לתא המשפחתי**</div>
 
-              <div class="row" style="flex-wrap:wrap;">
-                סך הכנסות לתא המשפחתי:
-                <input type="text" id="familyIncomeTotal" class="short currency-input">
-                סך הוצאות לתא המשפחתי:
-                <input type="text" id="familyExpensesTotal" class="short currency-input">
-              </div>
-
-              <div class="calc-frame-card">
-                <div class="sub-title">מחשבון צו תשלומים</div>
-                <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
-              </div>
+            <div class="income-expense-row">
+                <span class="pair">
+                    <label>סך הכנסות:</label>
+                    <input type="text" id="familyIncomeTotal" class="currency-input">
+                </span>
+                <span class="pair">
+                    <label>סך הוצאות:</label>
+                    <input type="text" id="familyExpensesTotal" class="currency-input">
+                </span>
             </div>
           </div>
 
 
-          <div>
+          <div class="layout-col-left">
             <div data-step="3" data-label="חובות ונכסים" class="card">
               <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
                 התנהלות החייב, חובות ונכסים
@@ -619,7 +632,11 @@
                 <textarea rows="2" class="flex-1" placeholder="נימוקים קצרים"></textarea>
               </div>
             </div>
+          </div> <div data-step="5" data-label="מחשבון" class="calc-frame-card card">
+              <div class="sub-title" style="margin-top:0;">מחשבון צו תשלומים</div>
+              <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
           </div>
+
         </div> </div> </form>
     
     <div class="footer">
@@ -645,15 +662,16 @@
     const progressText = document.getElementById('progress-text');
     const currentStepLabel = document.getElementById('current-step-label');
     
-    // מוצא את ארבעת הבלוקים העיקריים שמרכיבים את הדו"ח (כולל ה-layout-main)
+    // מזהה את 4 הבלוקים הנפרדים לניווט במובייל
     const allSteps = [
-        document.querySelector('[data-step="1"]'), // הכרטיס העליון
+        document.querySelector('[data-step="1"]'), // פרטי תיק
         document.querySelector('[data-step="2"]'), // הכנסות
         document.querySelector('[data-step="3"]'), // חובות
         document.querySelector('[data-step="4"]')  // סיכום
     ];
 
-    const totalSteps = allSteps.length;
+    // בגלל השינוי ל-3 עמודות, הבלוק של המחשבון (data-step="5") לא משתתף בניווט כבלוק נפרד
+    const totalSteps = allSteps.length; 
     let currentStep = 1;
 
     function isMobileView() {
@@ -667,8 +685,7 @@
         }
 
         // 1. הזזה פיזית של המסך
-        // מאחר וארבעת הבלוקים הם ילדים ישירים, ה-translateX יעביר אותם 
-        // 0% (שלב 1), -25% (שלב 2), -50% (שלב 3), -75% (שלב 4)
+        // 4 מסכים, כל אחד 25%
         const offset = (currentStep - 1) * -25;
         formFlowContainer.style.transform = `translateX(${offset}%)`;
 
@@ -728,7 +745,6 @@
         }
       }
     }
-
 
     // --- קוד JavaScript קיים (שילוב הפונקציות שלך) ---
 
@@ -987,6 +1003,13 @@
     let calcReady = false;
 
     function syncCalculatorFromForm() {
+      const calcFrameElement = document.querySelector('.calc-frame-card iframe');
+      if (!calcFrameElement) return;
+
+      // חיפוש האייפריים בתוך הבלוק שלו
+      calcFrame = calcFrameElement; 
+      
+      // בדיקה חוזרת האם האייפריים מוכן (בגלל שהעברנו אותו ל-step 5)
       if (!calcReady || !calcFrame || !calcFrame.contentWindow) return;
 
       const w   = calcFrame.contentWindow;
