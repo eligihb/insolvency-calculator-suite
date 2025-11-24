@@ -65,7 +65,10 @@
     .xshort  { width: 60px; }
     .flex-1  { flex: 1 1 0; }
     .small-text { font-size: 11px; color: #64748b; }
-    hr { border: none; border-top: 1px dashed #e2e8f0; margin: 4px 0; }
+    
+    /* הורדת ה-margin העליון והתחתון ב-hr כדי לצמצם ריווח אנכי */
+    hr { border: none; border-top: 1px dashed #e2e8f0; margin: 3px 0; }
+    
     .footer { text-align: center; font-size: 11px; color: #475569; margin-top: 6px; }
     .buttons-inline { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 0; }
     .btn { border: none; padding: 4px 9px; border-radius: 999px; font-size: 11px; cursor: pointer; font-weight: 600; }
@@ -78,8 +81,11 @@
     .medical-notes-row input { width: 100%; }
     .order-box { border: 2px solid #0f766e; border-radius: 12px; padding: 6px 8px; background: #ecfeff; }
     .hearing-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 6px; background: #eff6ff; margin-top: 2px; }
-    .calc-frame-card { margin-top: 6px; flex: 1 1 auto; page-break-inside: avoid; break-inside: avoid; }
+    
+    /* צמצום ה-margin העליון של בלוק המחשבון */
+    .calc-frame-card { margin-top: 0; flex: 1 1 auto; page-break-inside: avoid; break-inside: avoid; }
     .calc-frame-card iframe { width: 100%; border: 0; border-radius: 12px; height: 380px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1); background: #ffffff; }
+    
     #familyIncomeTotal { color: #15803d; }
     #familyExpensesTotal { color: #b91c1c; }
     .status-ok { color: #15803d; font-weight: 700; }
@@ -96,10 +102,13 @@
 
     .debts-row { flex-wrap: nowrap; justify-content: flex-start; gap: 10px; }
     .docs-row .arrears-label { margin-inline-start: 12px; }
-    .recom-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 4px; align-items: flex-start; }
-    .recom-item { display: flex; flex-direction: column; align-items: flex-start; }
-    .recom-item label { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
-    .recom-item input { width: auto; max-width: 100%; }
+    
+    /* צמצום רוחב שדות בהמלצות */
+    .recom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 4px; align-items: flex-start; }
+    .recom-item input { max-width: 100%; width: 99%; }
+    .recom-item .tiny { width: 40px !important; }
+    .recom-item .xshort { width: 70px !important; }
+
     .recom-total { background: #fef9c3; font-weight: 700; }
     .order-box-comm { border-color: #6366f1; background: #eef2ff; }
     .scroll-top-btn { position: fixed; bottom: 16px; left: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #cbd5e1; background: #ffffff; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 16px; z-index: 50; }
@@ -119,9 +128,10 @@
     }
     .income-expense-row .pair input {
         width: 100%;
+        min-width: 80px; /* רוחב סטנדרטי ל-6 ספרות */
     }
     .income-expense-row .pair label {
-        font-size: 12px; /* מעט גדול יותר לכותרת */
+        font-size: 12px;
         font-weight: 600;
         color: #0f172a;
     }
@@ -138,16 +148,10 @@
         }
 
         /* הגדרה מדויקת של מיקום הבלוקים החדשים ב-Grid */
-        
-        /* חובות/נכסים (A1) */
         .grid-item-A1 { grid-area: 1 / 1 / 2 / 2; }
-        /* הכנסות (A2) */
         .grid-item-A2 { grid-area: 1 / 2 / 2 / 3; }
-        /* המלצת נאמן (B1) */
         .grid-item-B1 { grid-area: 2 / 1 / 3 / 2; }
-        /* מחשבון (B2) */
         .grid-item-B2 { grid-area: 2 / 2 / 3 / 3; }
-        /* המלצת ממונה (C2 - מתחת למחשבון) */
         .grid-item-C2 { grid-area: 3 / 2 / 4 / 3; }
         
         /* מבנה ה-Grid בדסקטופ (3 שורות * 2 עמודות) */
@@ -156,7 +160,7 @@
             grid-template-areas: 
                 "A1 A2"
                 "B1 B2"
-                ".  C2"; /* העמודה השמאלית ריקה בשורה 3 */
+                ".  C2"; 
         }
     }
 
@@ -242,7 +246,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-202
+    דו"ח מסכם לדיון צו שיקום-203
   </div>
   
   <div class="page">
@@ -423,26 +427,28 @@
 
             <div class="row">
               הערות:
-              <input type="text" class="medium">
+              <input type="text" class="flex-1">
             </div>
 
             <div class="sub-title" style="margin-top:4px;">מסמכים ותשלומים</div>
-            <div class="row docs-row">
-              <span>מסמכים חסרים:</span>
-              <label><input type="radio" name="missing_docs"> כן</label>
-              <label><input type="radio" name="missing_docs"> לא</label>
-            </div>
             
-            <div class="row">
-              <span class="arrears-label">סך פיגורים:</span>
-              <input type="text" class="short currency-input">
+            <div class="row docs-row" style="justify-content: space-between;">
+              <span class="pair">
+                <span>מסמכים חסרים:</span>
+                <label><input type="radio" name="missing_docs"> כן</label>
+                <label><input type="radio" name="missing_docs"> לא</label>
+              </span>
+              <span class="pair" style="margin-inline-start: 10px;">
+                <span class="arrears-label">סך פיגורים:</span>
+                <input type="text" class="short currency-input">
+              </span>
             </div>
 
             <hr>
 
             <div class="sub-title">חובות</div>
 
-            <div class="row debts-row">
+            <div class="row debts-row" style="justify-content: flex-start; gap: 4px;">
               <span class="pair">
                 <span class="pair-label-multiline">מס' נושים</span>
                 <input type="number" class="tiny" min="0" max="99">
@@ -452,9 +458,7 @@
                 <span class="pair-label-multiline">סכום כולל</span>
                 <input type="text" class="short currency-input">
               </span>
-            </div>
-            
-            <div class="row">
+              
               <span class="pair">
                 <span class="pair-label-multiline">דין קדימה</span>
                 <input type="text" class="short currency-input">
@@ -468,14 +472,12 @@
             </div>
 
             <div class="sub-title">חובות לא ברי הפטר</div>
-            <div class="row" style="flex-wrap:wrap;">
+            
+            <div class="row" style="flex-wrap:wrap; justify-content: space-between;">
               <span class="pair">
                 <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
                 <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999">
               </span>
-            </div>
-            
-            <div class="row" style="flex-wrap:wrap;">
               <span class="pair">
                 <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
                 <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999">
@@ -486,20 +488,22 @@
 
             <div class="sub-title">נכסים</div>
 
-            <div class="row">
-              <label><input type="checkbox"> דירת מגורים</label>
-              <label><input type="checkbox"> נכס</label>
-              <label><input type="checkbox"> רכב</label>
-              <label><input type="checkbox"> זכויות</label>
+            <div class="row" style="justify-content: space-between; flex-wrap: wrap;">
+              <span class="pair">
+                  <label><input type="checkbox"> דירת מגורים</label>
+                  <label><input type="checkbox"> נכס</label>
+                  <label><input type="checkbox"> רכב</label>
+                  <label><input type="checkbox"> זכויות</label>
+              </span>
+              <span class="pair">
+                הערכת שווי:
+                <input type="text" class="short currency-input">
+              </span>
             </div>
 
-            <div class="row">
-              הערכת שווי:
-              <input type="text" class="short currency-input">
-            </div>
           </div> 
           
-          <div data-step="3" data-label="הכנסות" class="card grid-item-A2" style="display:flex;flex-direction:column;">
+          <div data-step="3" data-label="הכנסות" class="card grid-item-A2" style="display:flex;flex-direction:column; padding-bottom: 0;">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               הכנסות החייב, בן/בת הזוג וסיכום
             </div>
@@ -513,8 +517,7 @@
               <input type="text" class="short">
               היקף משרה:
               <input type="text" class="short">
-              תחילת עבודה:
-              <input type="month" class="medium">
+              <span style="display:none;"><input type="month" class="medium"></span>
             </div>
 
             <div class="row" style="flex-wrap:wrap; justify-content: flex-start; gap: 12px;">
@@ -545,8 +548,7 @@
               <input type="text" class="short">
               היקף משרה:
               <input type="text" class="short">
-              תחילת עבודה:
-              <input type="month" class="medium">
+              <span style="display:none;"><input type="month" class="medium"></span>
             </div>
 
             <div class="row not-working-toggle-row" id="spouseIncomeRow">
@@ -567,7 +569,8 @@
                     <input type="text" id="familyExpensesTotal" class="currency-input short">
                 </span>
             </div>
-          </div>
+            
+            </div>
 
           <div data-step="4a" data-label="המלצות נאמן" class="card grid-item-B1">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
@@ -603,7 +606,7 @@
             </div>
           </div>
           
-          <div data-step="4b" data-label="מחשבון" class="calc-frame-card card grid-item-B2">
+          <div data-step="4b" data-label="מחשבון" class="calc-frame-card card grid-item-B2" style="padding-top: 0; padding-bottom: 0;">
               <div class="sub-title" style="margin-top:0;">מחשבון צו תשלומים</div>
               <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
           </div>
