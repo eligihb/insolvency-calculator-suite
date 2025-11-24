@@ -73,7 +73,6 @@
     .btn { border: none; padding: 4px 9px; border-radius: 999px; font-size: 11px; cursor: pointer; font-weight: 600; }
     .btn-print   { background: #0ea5e9; color: #fff; }
     .btn-email   { background: #6366f1; color: #fff; }
-    .btn-shot    { background: #0f766e; color: #fff; }
     .btn-reset   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
     .btn-restore { background: #eef2ff; color: #1e3a8a; border: 1px solid #c7d2fe; }
     .allowance-title { color: #15803d; font-weight: 700; text-align: right; width: auto; }
@@ -81,18 +80,14 @@
     .order-box { border: 2px solid #0f766e; border-radius: 12px; padding: 6px 8px; background: #ecfeff; }
     .hearing-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px 6px; background: #eff6ff; margin-top: 2px; }
     
-    /* הסרת המרווחים האנכיים סביב המחשבון */
+    /* צמצום המרווחים האנכיים סביב המחשבון */
     .calc-frame-card { margin-top: 0; margin-bottom: 0; flex: 1 1 auto; page-break-inside: avoid; break-inside: avoid; }
     .calc-frame-card iframe { width: 100%; border: 0; border-radius: 12px; height: 380px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1); background: #ffffff; }
     
-    #familyIncomeTotal { color: #15803d; }
-    #familyExpensesTotal { color: #b91c1c; }
-    .status-ok { color: #15803d; font-weight: 700; }
-    .status-bad { color: #b91c1c; font-weight: 700; }
-    .not-working-section label, .not-working-section input, .not-working-section select { color: #b91c1c; border-color: #fecaca; }
-    .pair { display: inline-flex; align-items: center; gap: 4px; }
-    .pair-label-multiline { display: inline-block; line-height: 1.1; max-width: 60px; white-space: normal; text-align: right; }
-    
+    /* סגנונות ספציפיים לשדות */
+    .highlight-disability { border: 2px solid #ff7b00; box-shadow: 0 0 5px rgba(255, 123, 0, 0.5); }
+    .status-bad-bold { color: #b91c1c; font-weight: 700; border-color: #b91c1c; }
+
     /* התאמות לעמודת החובות המצומצמת */
     .narrow-col .row input[type="text"], .narrow-col .row input[type="number"] { width: 70px; }
     .narrow-col .debts-row .pair .pair-label-multiline { max-width: 50px; }
@@ -110,30 +105,11 @@
 
     .recom-total { background: #fef9c3; font-weight: 700; }
     .order-box-comm { border-color: #6366f1; background: #eef2ff; }
-    .scroll-top-btn { position: fixed; bottom: 16px; left: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #cbd5e1; background: #ffffff; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 16px; z-index: 50; }
     
-    /* סגנון לשורת הכנסות/הוצאות המחולקת */
-    .income-expense-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: nowrap !important;
-    }
-    .income-expense-row .pair {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        flex: 1 1 0;
-    }
-    .income-expense-row .pair input {
-        width: 100%;
-        min-width: 80px;
-    }
-    .income-expense-row .pair label {
-        font-size: 12px;
-        font-weight: 600;
-        color: #0f172a;
-    }
+    .income-expense-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: nowrap !important; }
+    .income-expense-row .pair { display: flex; flex-direction: column; align-items: flex-start; flex: 1 1 0; }
+    .income-expense-row .pair input { width: 100%; min-width: 80px; }
+    .income-expense-row .pair label { font-size: 12px; font-weight: 600; color: #0f172a; }
     
     /* פריסת 2 העמודות החדשה והרציפה בדסקטופ */
     @media (min-width: 800px) {
@@ -141,30 +117,31 @@
             /* 1fr (צר) | 1.6fr (רחב) */
             display: grid;
             grid-template-columns: 1fr 1.6fr; 
-            gap: 4px; /* צמצום ה-GAP הכללי ל-4px (במקום 8px) */
+            gap: 4px; /* צמצום ה-GAP הכללי ל-4px */
             align-items: flex-start;
             margin-bottom: 8px;
         }
 
-        /* הגדרה מדויקת של מיקום הבלוקים החדשים ב-Grid */
-        .grid-item-A1 { grid-area: 1 / 1 / 2 / 2; }
-        .grid-item-A2 { grid-area: 1 / 2 / 2 / 3; margin-bottom: 0; /* ביטול המרווח התחתון כדי להדק את A2 ל-B2 */ } 
-        .grid-item-B1 { grid-area: 2 / 1 / 4 / 2; /* נמתח על פני שתי השורות התחתונות */ } 
-        .grid-item-B2 { grid-area: 2 / 2 / 3 / 3; margin-bottom: 0; /* ביטול המרווח התחתון כדי להדק את B2 ל-C2 */ }
-        .grid-item-C2 { grid-area: 3 / 2 / 4 / 3; }
+        /* הגדרת Grid Areas - החלפת מיקום מחשבון והכנסות */
+        .grid-item-A1 { grid-area: 1 / 1 / 2 / 2; } /* חובות */
+        .grid-item-B2 { grid-area: 1 / 2 / 2 / 3; margin-bottom: 0; } /* מחשבון עולה למעלה */
+        
+        .grid-item-A2 { grid-area: 2 / 2 / 3 / 3; margin-bottom: 0; } /* הכנסות יורד לשורה 2 */
+        .grid-item-B1 { grid-area: 2 / 1 / 4 / 2; } /* המלצת נאמן/ממונה נמתח */ 
+        .grid-item-C2 { grid-area: 3 / 2 / 4 / 3; } /* הממונה (יורד לשורה 3, עמודה 2) */
         
         /* מבנה ה-Grid בדסקטופ (3 שורות * 2 עמודות) */
         .layout-main {
             grid-template-rows: auto auto auto; 
             grid-template-areas: 
-                "A1 A2"
-                "B1 B2"
+                "A1 B2" 
+                "B1 A2" 
                 "B1 C2"; 
         }
     }
 
 
-    /* --- גודל הדפסה A4 --- */
+    /* --- גודל הדפסה A4 (תיקון: הסרת הסקייל ודחיסת פריסה) --- */
     @media print {
       @page { size: A4 portrait; margin: 5mm; }
       body { background: #ffffff; font-size: 11px; }
@@ -173,18 +150,17 @@
         max-width: 100%;
         margin: 0;
         padding: 4mm;
-        /* הסרת הסקיילינג האגרסיבי לטובת הדפסה קריאה */
-        transform: none; 
+        transform: none; /* הסרת הסקייל */
       }
       .card { box-shadow: none; border: 1px solid #e2e8f0; }
       .buttons-inline, .scroll-top-btn, .progress-container, .mobile-navigation { display: none !important; }
       
-      /* יישור Grid להדפסה - 2 עמודות */
+      /* יישור Grid להדפסה - 2 עמודות צפופות */
       .layout-main { 
         display: grid !important; 
         grid-template-columns: 1fr 1.2fr !important; 
         grid-template-rows: auto auto auto !important;
-        gap: 4px;
+        gap: 3px; /* דחיסת ריווח אנכי */
       }
       .income-expense-row { flex-wrap: wrap !important; }
     }
@@ -236,6 +212,18 @@
           flex: 1 1 100%;
           margin-bottom: 4px;
       }
+      
+      /* שדות הקצבה החדשים במובייל */
+      .allowance-input-row .row {
+          justify-content: space-between;
+          gap: 4px;
+      }
+      .allowance-input-row .row > span:first-child {
+          flex: 2 1 0;
+      }
+      .allowance-input-row .row > span:last-child {
+          flex: 1 1 0;
+      }
     }
     
     /* כל שאר הסגנונות הקיימים שלך */
@@ -245,15 +233,20 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום-204
+    דו"ח מסכם לדיון צו שיקום-205
   </div>
   
   <div class="page">
-    <div class="buttons-inline">
-      <button type="button" class="btn btn-print" onclick="window.print()">🖨 הדפסה / PDF</button>
-      <button type="button" class="btn btn-email" onclick="sendEmail()">✉ שליחה במייל</button>
-      <button type="button" class="btn btn-reset" onclick="document.getElementById('reportForm').reset()">↺ איפוס</button>
-      <button type="button" class="btn btn-restore" onclick="restoreFormState()">🔁 שחזור</button>
+    <div style="display:flex; flex-direction: column;">
+        <div style="display:flex; justify-content: flex-end;">
+            <div class="section-title" style="margin-inline-end: auto;">פרטי תיק וצו תשלומים</div>
+        </div>
+        <div class="buttons-inline">
+          <button type="button" class="btn btn-print" onclick="window.print()">🖨 הדפסה / PDF</button>
+          <button type="button" class="btn btn-email" onclick="sendEmail()">✉ שליחה במייל</button>
+          <button type="button" class="btn btn-reset" onclick="document.getElementById('reportForm').reset()">↺ איפוס</button>
+          <button type="button" class="btn btn-restore" onclick="restoreFormState()">🔁 שחזור</button>
+        </div>
     </div>
     
     <div class="mobile-fixed-elements progress-container-wrapper">
@@ -272,9 +265,8 @@
       
         <div data-step="1" data-label="פרטי תיק וצו">
           <div class="card">
-            <div class="section-header-flex">
-              <div class="section-title">פרטי תיק וצו תשלומים</div>
-            </div>
+            <div class="section-header-flex" style="border-bottom: none;">
+              </div>
 
             <div style="display:grid;grid-template-columns:1.1fr 1fr 1.2fr;gap:8px;align-items:flex-start;">
 
@@ -368,14 +360,13 @@
                   <input type="number" id="minorChildrenCount" class="short" min="0" max="11">
                   תשלום מזונות:
                   <label><input type="checkbox" id="hasAlimony"> כן</label>
-                  <input type="text" id="alimonyAmount" class="short currency-input">
-                </div>
+                  <input type="text" id="alimonyAmount" class="short currency-input" disabled> </div>
 
                 <hr>
 
                 <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
 
-                <div class="row">
+                <div class="row medical-highlight-row">
                   נכות:
                   <input type="text" class="short percent-field" id="disabilityPercent" maxlength="3" placeholder="0%">
                   אי כושר:
@@ -416,10 +407,10 @@
                 <input type="radio" name="reports_status" value="full"> הוגשו
               </label>
               <label class="reports-status-partial">
-                <input type="radio" name="reports_status" value="partial"> הוגשו חלקית
+                <input type="radio" name="reports_status" value="partial"> חלקי
               </label>
               <label class="reports-status-none">
-                <input type="radio" name="reports_status" value="none"> לא הוגשו כלל
+                <input type="radio" name="reports_status" value="none"> לא הוגשו
               </label>
             </div>
 
@@ -430,7 +421,7 @@
 
             <div class="sub-title" style="margin-top:4px;">מסמכים ותשלומים</div>
             
-            <div class="row docs-row" style="justify-content: space-between;">
+            <div class="row docs-row" style="justify-content: flex-start; gap: 10px;">
               <span class="pair">
                 <span>מסמכים חסרים:</span>
                 <label><input type="radio" name="missing_docs"> כן</label>
@@ -438,7 +429,7 @@
               </span>
               <span class="pair" style="margin-inline-start: 10px;">
                 <span class="arrears-label">סך פיגורים:</span>
-                <input type="text" class="short currency-input">
+                <input type="text" class="short currency-input status-bad-bold">
               </span>
             </div>
 
@@ -453,12 +444,12 @@
               </span>
 
               <span class="pair">
-                <span class="pair-label-multiline">סכום כולל</span>
+                <span class="pair-label-multiline" style="white-space: normal; max-width: 70px;">סכום כולל</span>
                 <input type="text" class="short currency-input">
               </span>
               
               <span class="pair">
-                <span class="pair-label-multiline">דין קדימה</span>
+                <span class="pair-label-multiline" style="white-space: normal; max-width: 70px;">דין קדימה</span>
                 <input type="text" class="short currency-input">
               </span>
             </div>
@@ -471,7 +462,7 @@
 
             <div class="sub-title">חובות לא ברי הפטר</div>
             
-            <div class="row" style="flex-wrap:wrap; justify-content: space-between;">
+            <div class="row" style="flex-wrap:wrap; justify-content: flex-start; gap: 10px;">
               <span class="pair">
                 <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
                 <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999">
@@ -501,6 +492,11 @@
 
           </div> 
           
+          <div data-step="4b" data-label="מחשבון" class="calc-frame-card card grid-item-B2" style="padding-top: 0; padding-bottom: 0;">
+              <div class="sub-title" style="margin-top:0;">מחשבון צו תשלומים</div>
+              <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
+          </div>
+
           <div data-step="3" data-label="הכנסות" class="card grid-item-A2" style="display:flex;flex-direction:column; padding-bottom: 0;">
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               הכנסות החייב, בן/בת הזוג וסיכום
@@ -536,6 +532,18 @@
             </div>
 
             <hr>
+            <div class="sub-title">קצבאות לחישוב</div>
+            <div class="allowance-input-row" id="allowanceInputs">
+                <div class="row" style="justify-content: space-between;">
+                    <span style="flex: 2 1 0;"><input type="text" placeholder="סוג קצבה" class="flex-1 allowance-type"></span>
+                    <span style="flex: 1 1 0;"><input type="text" placeholder="סכום" class="currency-input allowance-amount"></span>
+                </div>
+                <div class="row" style="justify-content: space-between;">
+                    <span style="flex: 2 1 0;"><input type="text" placeholder="סוג קצבה נוספת (אופציונלי)" class="flex-1 allowance-type"></span>
+                    <span style="flex: 1 1 0;"><input type="text" placeholder="סכום" class="currency-input allowance-amount"></span>
+                </div>
+            </div>
+            <hr>
             
             <div class="sub-title">הכנסות בן/בת הזוג</div>
 
@@ -568,9 +576,9 @@
                 </span>
             </div>
             
-            </div>
+          </div>
 
-          <div data-step="4a" data-label="המלצות נאמן" class="card grid-item-B1">
+          <div data-step="4" data-label="המלצות" class="card grid-item-B1">
             
             <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
               סיכום והמלצות הנאמן
@@ -643,9 +651,43 @@
             </div>
           </div>
           
-          <div data-step="4b" data-label="מחשבון" class="calc-frame-card card grid-item-B2" style="padding-top: 0; padding-bottom: 0;">
-              <div class="sub-title" style="margin-top:0;">מחשבון צו תשלומים</div>
-              <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
+          <div data-step="4c" data-label="המלצות ממונה" class="card grid-item-C2">
+            <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+              סיכום והמלצות הממונה
+            </div>
+
+            <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px;">
+              <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
+              <label><input type="checkbox"> הכשרה כלכלית</label>
+            </div>
+            <div class="row">
+              <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
+            </div>
+
+            <div class="row" style="justify-content:flex-start;align-items:center;">
+              <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
+            </div>
+            <div class="order-box order-box-comm" style="margin-top:2px;">
+              <div class="recom-grid">
+                <div class="recom-item">
+                  <label>סכום חודשי</label>
+                  <input type="text" id="commMonthly" class="currency-input xshort" maxlength="6">
+                </div>
+                <div class="recom-item">
+                  <label>משך</label>
+                  <input type="number" id="commDuration" class="tiny" min="0" max="99">
+                </div>
+                <div class="recom-item">
+                  <label>סכום כולל</label>
+                  <input type="text" id="commTotal" class="currency-input xshort recom-total" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              נימוקים להמלצת הממונה:
+              <textarea rows="2" class="flex-1" placeholder="נימוקים קצרים"></textarea>
+            </div>
           </div>
 
 
@@ -675,10 +717,6 @@
     const currentStepLabel = document.getElementById('current-step-label');
     
     // מזהה את 4 הבלוקים הנפרדים לניווט במובייל
-    // בלוק 1 (פרטי תיק)
-    // בלוק 2 (חובות)
-    // בלוק 3 (הכנסות)
-    // בלוק 4 (המלצות + מחשבון) - הבלוק האחרון
     const allSteps = [
         document.querySelector('[data-step="1"]'), 
         document.querySelector('[data-step="2"]'), 
@@ -767,7 +805,7 @@
       }
     }
 
-    // --- קוד JavaScript קיים ---
+    // --- קוד JavaScript ללוגיקה ואינטראקציה ---
 
     // פורמט אחוזים – 3 ספרות + %
     function setupPercentField(id) {
@@ -778,14 +816,97 @@
       });
       el.addEventListener('blur', () => {
         let v = el.value.replace(/[^\d]/g,'');
-        if (!v) { el.value = ''; return; }
+        if (!v) { 
+            el.value = ''; 
+            checkDisabilityHighlight();
+            return; 
+        }
         if (v.length > 3) v = v.slice(0,3);
         el.value = v + '%';
+        checkDisabilityHighlight();
       });
     }
 
+    function parseNumberFromPercent(val) {
+        if (!val) return 0;
+        const clean = String(val).replace(/[^\d]/g,'');
+        const num = parseInt(clean, 10);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function checkDisabilityHighlight() {
+        const disabilityEl = document.getElementById('disabilityPercent');
+        const incapacityEl = document.getElementById('incapacityPercent');
+        const dVal = parseNumberFromPercent(disabilityEl ? disabilityEl.value : '0%');
+        const iVal = parseNumberFromPercent(incapacityEl ? incapacityEl.value : '0%');
+
+        const highlightRows = document.querySelectorAll('.medical-highlight-row');
+        highlightRows.forEach(row => row.classList.remove('highlight-disability'));
+        
+        // הבלטה גורפת אם אי כושר מעל 75%
+        if (iVal > 75) {
+             highlightRows.forEach(row => row.classList.add('highlight-disability'));
+        }
+        // אם 100% אי כושר, הבלטה וגם הפעלת לוגיקת צו אפס
+        if (iVal === 100) {
+            // הלוגיקה מתבצעת ב-syncCalculatorFromForm
+            highlightRows.forEach(row => row.classList.add('highlight-disability'));
+        }
+        
+        // הבלטה של שדה אי הכושר או הנכות עצמו (לפי בקשת הלקוח)
+        if (iVal > 0 && incapacityEl) {
+             incapacityEl.classList.add('highlight-disability');
+        } else if (incapacityEl) {
+             incapacityEl.classList.remove('highlight-disability');
+        }
+         if (dVal > 0 && disabilityEl) {
+             disabilityEl.classList.add('highlight-disability');
+        } else if (disabilityEl) {
+             disabilityEl.classList.remove('highlight-disability');
+        }
+    }
+
+
     setupPercentField('disabilityPercent');
     setupPercentField('incapacityPercent');
+
+    // ניהול שדות מבוטלים
+    function setupInputDisabling() {
+        // --- החייב אינו עובד ---
+        const debtorChk = document.getElementById('debtorNotWorking');
+        const debtorIncomeInput = document.getElementById('debtorNetIncome');
+        if (debtorChk && debtorIncomeInput) {
+            function updateDebtorState() {
+                // ביטול הקלדה בהכנסה נטו כאשר מסומן 'אינו עובד'
+                debtorIncomeInput.disabled = debtorChk.checked;
+                if (debtorChk.checked) {
+                    // כדי שהמחשבון יקבל אפס אם לא עובד
+                    if(debtorIncomeInput.value !== '0') {
+                        debtorIncomeInput.value = '0';
+                    }
+                    debtorIncomeInput.dispatchEvent(new Event('input')); 
+                }
+            }
+            debtorChk.addEventListener('change', updateDebtorState);
+            updateDebtorState(); 
+        }
+
+        // --- תשלום מזונות ---
+        const alimonyChk = document.getElementById('hasAlimony');
+        const alimonyAmountInput = document.getElementById('alimonyAmount');
+        if (alimonyChk && alimonyAmountInput) {
+            function updateAlimonyState() {
+                alimonyAmountInput.disabled = !alimonyChk.checked;
+                if (!alimonyChk.checked) {
+                    alimonyAmountInput.value = '';
+                    alimonyAmountInput.dispatchEvent(new Event('input')); 
+                }
+            }
+            alimonyChk.addEventListener('change', updateAlimonyState);
+            updateAlimonyState(); 
+        }
+    }
+
 
     // עיצוב סכומי כסף בכל הטופס
     function attachCurrencyFormatting() {
@@ -816,13 +937,10 @@
       const subject = encodeURIComponent('דו"ח מסכם לדיון צו שיקום');
       const body = encodeURIComponent(
         'מצורף דו"ח סיכום לדיון צו שיקום כלכלי.\n\n' +
-        '(ליצירת PDF – השתמש/י בכפתור הדפסה ושמור/י כ-PDF, ולאחר מכן צרף/י את הקובץ למייל.)'
+        '(ליצירת PDF – השתמש/י בכפתור הדפסה ושמור/י כ-PDF.)'
       );
       window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
     }
-
-    // צילום מסך של הדו"ח (הוסר הכפתור אך הושאר קוד התמיכה במקרה של שחזור)
-    // function screenshotReport() { ... }
 
     // "אינו עובד" – צביעה באדום
     function setupNotWorkingToggle(checkboxId, rowId) {
@@ -830,10 +948,14 @@
       const row = document.getElementById(rowId);
       if (!chk || !row) return;
       function update() {
-        if (chk.checked) {
-          row.classList.add('not-working-section');
-        } else {
-          row.classList.remove('not-working-section');
+        // רק בן/בת זוג מקבל אדום לפי הבקשה
+        const isSpouse = checkboxId === 'spouseNotWorking';
+        if (isSpouse) {
+             if (chk.checked) {
+                row.classList.add('not-working-section');
+            } else {
+                row.classList.remove('not-working-section');
+            }
         }
       }
       chk.addEventListener('change', update);
@@ -1030,16 +1152,34 @@
       const alimonyChk     = document.getElementById('hasAlimony');
       const alimonyAmtEl   = document.getElementById('alimonyAmount');
 
-      const debtorNet  = debtorIncomeEl ? parseNumberFromCurrency(debtorIncomeEl.value) : 0;
+      let debtorNet  = debtorIncomeEl ? parseNumberFromCurrency(debtorIncomeEl.value) : 0;
       const spouseNet  = spouseIncomeEl ? parseNumberFromCurrency(spouseIncomeEl.value) : 0;
       const kidsCount  = kidsEl ? (parseInt(kidsEl.value || '0', 10) || 0) : 0;
       const hasAlimony = alimonyChk ? alimonyChk.checked : false;
       const alimonyAmt = alimonyAmtEl ? parseNumberFromCurrency(alimonyAmtEl.value) : 0;
+      
+      // לוגיקת קצבאות
+      const allowanceAmounts = Array.from(document.querySelectorAll('.allowance-amount'))
+                                  .map(input => parseNumberFromCurrency(input.value));
+      const totalAllowances = allowanceAmounts.reduce((sum, current) => sum + current, 0);
+
+      // לוגיקת צו אפס (100% אי כושר בלבד) - מאפסת הכנסות רגילות
+      const incapacityEl = document.getElementById('incapacityPercent');
+      const iVal = parseNumberFromPercent(incapacityEl ? incapacityEl.value : '0%');
+
+      if (iVal === 100) {
+          debtorNet = 0; // ביטול הכנסה רגילה למחשבון (צו אפס)
+          // הקצבאות יישלחו למחשבון במקום השכר
+      }
+
 
       // שכר חייב
+      // אם יש צו אפס, נשלח 0. אחרת, שולחים הכנסה רגילה + קצבאות.
+      const salaryToCalculator = (iVal === 100) ? totalAllowances : debtorNet + totalAllowances;
+      
       const salaryDebtor = doc.getElementById('salaryDebtor');
       if (salaryDebtor) {
-        salaryDebtor.value = debtorNet || '';
+        salaryDebtor.value = salaryToCalculator || '';
         salaryDebtor.dispatchEvent(new w.Event('input', {bubbles:true}));
       }
 
@@ -1157,6 +1297,8 @@
       setupReportsStatusColors();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
+      setupInputDisabling(); // הפעלה לאחר שחזור
+      checkDisabilityHighlight(); // הפעלה לאחר שחזור
       attachCurrencyFormatting();
       updateRecommendationTotals();
       calculatePaymentsTotals();
@@ -1184,10 +1326,12 @@
       attachCurrencyFormatting();
       setupNotWorkingToggle('debtorNotWorking', 'debtorIncomeRow');
       setupNotWorkingToggle('spouseNotWorking', 'spouseIncomeRow');
+      setupInputDisabling(); 
       setupReportsStatusColors();
       setupScrollTopButton();
       initCalculatorSync();
       updateFlow(); // אתחול תצוגת המובייל
+      checkDisabilityHighlight(); // בדיקה ראשונית לאחר טעינה
 
       const form = document.getElementById('reportForm');
       if (form) {
@@ -1208,9 +1352,18 @@
           )) {
             calculatePaymentsTotals();
           }
+          if (e.target && (
+              e.target.id === 'disabilityPercent' || 
+              e.target.id === 'incapacityPercent' ||
+              e.target.classList.contains('allowance-amount') ||
+              e.target.classList.contains('currency-input')
+          )) {
+              checkDisabilityHighlight();
+              syncCalculatorFromForm();
+          }
 
           saveFormState();
-          syncCalculatorFromForm();
+          // ה-syncCalculatorFromForm כבר נקרא בתוך ה-if/else if
         });
 
         form.addEventListener('change', (e) => {
@@ -1230,9 +1383,20 @@
           )) {
             calculatePaymentsTotals();
           }
+          if (e.target && (
+              e.target.id === 'disabilityPercent' || 
+              e.target.id === 'incapacityPercent'
+          )) {
+              checkDisabilityHighlight();
+          }
+          if (e.target && (e.target.id === 'hasAlimony')) {
+             // שינוי מזונות גורר סנכרון
+             syncCalculatorFromForm();
+          }
+
 
           saveFormState();
-          syncCalculatorFromForm();
+          // ה-syncCalculatorFromForm כבר נקרא בתוך ה-if/else if
         });
       }
 
