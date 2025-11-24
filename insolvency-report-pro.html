@@ -541,17 +541,17 @@
               <label><input type="radio" name="claims_checked"> לא</label>
             </div>
 
-            <div class="sub-title">חובות לא ברי הפטר</div>
-            <div class="row" style="flex-wrap:wrap;">
-              <span class="pair">
-                <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
-                <input type="number" id="alimonyDebtAmount" class="short" min="0" max="99999">
-              </span>
-              <span class="pair">
-                <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
-                <input type="number" id="taxDebtAmount" class="short" min="0" max="99999">
-              </span>
-            </div>
+          <div class="sub-title">חובות לא ברי הפטר</div>
+<div class="row" style="flex-wrap:wrap;">
+  <span class="pair">
+    <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
+    <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
+  </span>
+  <span class="pair">
+    <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
+    <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999"> <!-- הוספתי את המחלקה currency-input -->
+  </span>
+</div>
 
             <hr>
 
@@ -1179,26 +1179,6 @@
 
       calculatePaymentsTotals();
     });
-  </script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // פונקציה להוספת פסיקים וש"ח לכל השדות (גם לחובות לא ברי הפטר)
-    function applyCurrencyFormat() {
-        const inputs = document.querySelectorAll('.currency-input');
-        inputs.forEach(input => {
-            input.addEventListener("blur", function () {
-                let value = this.value.replace(/[^\d]/g, '');  // מסנן את כל התוים הלא מספריים
-                if (value) {
-                    this.value = parseInt(value).toLocaleString('he-IL') + ' ₪';  // מעצב עם פסיקים וש"ח
-                } else {
-                    this.value = '';
-                }
-            });
-        });
-    }
-
-    // קורא לפונקציה אחרי שהדף נטען
-    applyCurrencyFormat();
-});
   <script>
   document.addEventListener("DOMContentLoaded", () => {
     // הגדרת הגרסה שמופיעה ליד הכותרת
