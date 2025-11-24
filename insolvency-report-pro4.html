@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>100-דו"ח מסכם לדיון צו שיקום</title>
+  <title>דו"ח מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
@@ -326,7 +326,7 @@
 </head>
 <body>
   <div class="top-bar">
-    דו"ח מסכם לדיון צו שיקום
+    דו"ח מסכם לדיון צו שיקום-101
   </div>
 
   <form id="reportForm">
@@ -871,7 +871,6 @@
       }
     }
 
-   // ----- חישוב סה"כ תשלומים מצו התשלומים -----
 function calculatePaymentsTotals() {
   const orderDateInput   = document.getElementById('orderDate');
   const monthlyInput     = document.getElementById('monthlyPayment');
@@ -883,7 +882,6 @@ function calculatePaymentsTotals() {
   if (!orderDateInput || !monthlyInput || !totalDateInput || !totalAmountInput) return;
 
   const today = new Date();
-  // סה"כ נכון ליום – תאריך היום
   totalDateInput.value = today.toLocaleDateString('he-IL');
 
   if (!orderDateInput.value) {
@@ -901,55 +899,73 @@ function calculatePaymentsTotals() {
   const gradedAmount  = gradedInput ? parseNumberFromCurrency(gradedInput.value) : 0;
   const gradedDateVal = gradedDateInput ? gradedDateInput.value : '';
 
-  if (!monthlyAmount) {
+  if (!monthlyAmount && !gradedAmount) {
     totalAmountInput.value = '';
     return;
   }
 
-  // החודש הראשון לתשלום חודשי: החודש שאחרי הצו
-  let curYear  = orderDate.getFullYear();
-  let curMonth = orderDate.getMonth() + 1; // חודש הבא מהצו (0–11)
-  if (curMonth === 12) {
-    curMonth = 0;
-    curYear += 1;
-  }
+  // פונקציה לעבודה ברמת "חודש" (שנה*12 + חודש)
+  const toIndex = (y,m) => y*12 + m; // m: 0-11
+  const monthDiffInclusive = (startIndex, endIndex) => {
+    const diff = endIndex - startIndex + 1;
+    return diff > 0 ? diff : 0;
+  };
 
-  // נקודת סיום – החודש הנוכחי
-  const endYear  = today.getFullYear();
-  const endMonth = today.getMonth();
+  const firstPayMonthDate = new Date(orderDate.getTime());
+  firstPayMonthDate.setMonth(firstPayMonthDate.getMonth() + 1); // החודש אחרי הצו
 
-  // תאריך תחילת תשלום מדורג (אם קיים)
-  let gradedYear  = null;
-  let gradedMonth = null;
-  if (gradedAmount && gradedDateVal) {
-    const gd = new Date(gradedDateVal);
-    if (!isNaN(gd)) {
-      gradedYear  = gd.getFullYear();
-      gradedMonth = gd.getMonth(); // המדורג מתחיל מהחודש הזה עצמו
-    }
+  const firstY = firstPayMonthDate.getFullYear();
+  const firstM = firstPayMonthDate.getMonth(); // 0-11
+
+  const todayY = today.getFullYear();
+  const todayM = today.getMonth();
+
+  const firstIdx = toIndex(firstY, firstM);
+  const todayIdx = toIndex(todayY, todayM);
+
+  // אם אנחנו לפני החודש הראשון לתשלום – אין תשלום
+  if (todayIdx < firstIdx) {
+    totalAmountInput.value = '';
+    return;
   }
 
   let total = 0;
 
-  // לולאה חודשית: לכל חודש מוסיפים או את החודשי, או את המדורג
-  while (curYear < endYear || (curYear === endYear && curMonth <= endMonth)) {
-    let amountForMonth = monthlyAmount;
+  if (!gradedAmount || !gradedDateVal) {
+    // אין מדורג – הכל לפי החודשי
+    const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+    total = monthsAll * monthlyAmount;
+  } else {
+    const gradedDate = new Date(gradedDateVal);
+    if (isNaN(gradedDate)) {
+      const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+      total = monthsAll * monthlyAmount;
+    } else {
+      const gY = gradedDate.getFullYear();
+      const gM = gradedDate.getMonth(); // המדורג מתחיל בחודש זה
+      const gIdx = toIndex(gY, gM);
 
-    if (
-      gradedYear !== null &&
-      (curYear > gradedYear || (curYear === gradedYear && curMonth >= gradedMonth))
-    ) {
-      // מהחודש של המדורג ואילך – סכום מדורג
-      amountForMonth = gradedAmount || monthlyAmount;
-    }
+      // אם המדורג בעתיד ביחס להיום – מתעלמים ממנו
+      if (gIdx > todayIdx) {
+        const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+        total = monthsAll * monthlyAmount;
+      } else {
+        // אם המדורג מתחיל לפני או עם תחילת התשלומים – הכל מדורג
+        if (gIdx <= firstIdx) {
+          const monthsAll = monthDiffInclusive(firstIdx, todayIdx);
+          const useAmount = gradedAmount || monthlyAmount;
+          total = monthsAll * useAmount;
+        } else {
+          // שלב 1: חודשים רגילים – מהחודש הראשון לתשלום עד החודש שלפני המדורג
+          const beforeEndIdx = gIdx - 1;
+          const monthsBefore = monthDiffInclusive(firstIdx, beforeEndIdx);
 
-    total += amountForMonth;
+          // שלב 2: חודשים מדורגים – מחודש המדורג ועד היום
+          const monthsAfter = monthDiffInclusive(gIdx, todayIdx);
 
-    // התקדם חודש קדימה
-    curMonth++;
-    if (curMonth === 12) {
-      curMonth = 0;
-      curYear++;
+          total = (monthsBefore * monthlyAmount) + (monthsAfter * gradedAmount);
+        }
+      }
     }
   }
 
@@ -962,6 +978,7 @@ function calculatePaymentsTotals() {
     }) + ' ₪';
   }
 }
+
    // ----- סנכרון טופס ← מחשבון באייפריים -----
 let calcFrame = null;
 let calcReady = false;
