@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם לדיון צו שיקום (מובייל)</title>
+  <title>דו"ח מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
@@ -26,7 +26,7 @@
       font-size: 18px;
       font-weight: 700;
       text-align: center;
-      position: sticky;
+      position: sticky; /* נשאר דבוק למעלה */
       top: 0;
       z-index: 100;
     }
@@ -97,159 +97,133 @@
     .order-box-comm { border-color: #6366f1; background: #eef2ff; }
     .scroll-top-btn { position: fixed; bottom: 16px; left: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #cbd5e1; background: #ffffff; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 16px; z-index: 50; }
     
-    /* --- גודל הדפסה A4 --- */
+    /* --- גודל הדפסה A4 (שומר על ה-transform המקורי לבקשתך) --- */
     @media print {
-      @page { size: A4 portrait; margin: 5mm; } /* מבטיח שהדף הוא A4 */
+      @page { size: A4 portrait; margin: 5mm; }
       body { background: #ffffff; font-size: 11px; }
       .top-bar { border-bottom: 1px solid #cbd5e1; box-shadow: none; position: static; }
       .page {
         max-width: 100%;
         margin: 0;
         padding: 4mm;
-        /* ביטול שינוי הגודל שהיה קודם */
-        transform: none; 
+        /* החזרת הסקיילינג כדי להבטיח כניסה לדף A4 */
+        transform: scale(0.86);
+        transform-origin: top center;
       }
-      .card { box-shadow: none; border: 1px solid #e2e8f0; } /* הדגשת גבולות בהדפסה */
+      .card { box-shadow: none; border: 1px solid #e2e8f0; }
       .buttons-inline, .scroll-top-btn, .calc-frame-card, .progress-container, .mobile-navigation { display: none !important; }
-      /* הצגת כל הבלוקים בעת הדפסה */
-      #form-flow-container > div {
-        display: block !important;
-        width: 100%;
-        margin-bottom: 8px;
-        page-break-after: auto;
-      }
-      .layout-main {
-        display: block; /* ביטול הגריד הדו-עמודתי */
-      }
+      /* הצגת מבנה הדסקטופ המקורי בהדפסה */
+      .layout-main { display: grid !important; }
     }
     
     /* --- ממשק מובייל רב-שלבי (Mobile Flow Stepper) --- */
+    
+    /* האלמנטים של הניווט (Fixed/Sticky) */
+    .mobile-fixed-elements {
+        position: fixed;
+        width: 100%;
+        left: 0;
+        z-index: 60;
+        padding: 0 8px; /* כדי לא להגיע לקצוות */
+    }
     .progress-container {
+      top: 50px; /* מתחת ל-top-bar */
       background: #eff6ff;
       padding: 8px 10px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+      border-radius: 0 0 12px 12px;
       box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 50px; /* מתחת ל-top-bar */
-      z-index: 50;
+      margin-inline: 0;
+      border: 1px solid #dbeafe;
+      border-top: none;
     }
+    
+    .mobile-navigation {
+      bottom: 0;
+      background: #e5f6ff;
+      padding: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 -2px 6px rgba(15, 23, 42, 0.1);
+      border-radius: 12px 12px 0 0;
+    }
+
     .progress-bar {
-      height: 6px;
-      background: #cbd5e1;
-      flex-grow: 1;
-      border-radius: 3px;
-      margin-inline: 10px;
-      position: relative;
-      overflow: hidden;
+      height: 6px; background: #cbd5e1; flex-grow: 1; border-radius: 3px; margin-inline: 10px; position: relative; overflow: hidden;
     }
     .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: #0f766e;
-      border-radius: 3px;
-      transition: width 0.3s ease-in-out;
+      height: 100%; width: 0%; background: #0f766e; border-radius: 3px; transition: width 0.3s ease-in-out;
     }
     .step-label {
-      font-size: 10px;
-      color: #0f172a;
-      font-weight: 600;
-      white-space: nowrap;
+      font-size: 10px; color: #0f172a; font-weight: 600; white-space: nowrap;
+    }
+
+    .mobile-nav-btn {
+      flex: 1; background: #0f766e; color: #fff; padding: 8px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin: 0 4px; font-size: 12px;
+    }
+    .mobile-nav-btn:disabled {
+      background: #cbd5e1; cursor: default;
     }
 
     /* מיכל המסכים הראשי - Flexbox ליצירת ה-Carousel */
     #form-flow-container {
-      display: flex;
-      overflow-x: hidden; /* הסתרת תוכן שגולש */
-      scroll-snap-type: x mandatory; /* לאפשר מעבר מדויק במסך אחד */
-      -webkit-overflow-scrolling: touch;
-      transition: transform 0.4s ease-in-out;
-    }
-
-    /* הגדרת כל בלוק למסך מלא */
-    #form-flow-container > div {
-      min-width: 100%; /* כל בלוק תופס מסך מלא */
-      flex: 0 0 100%;
-      scroll-snap-align: center;
-      padding: 0 4px;
+      display: block; /* ברירת מחדל לדסקטופ */
     }
     
-    .layout-main, .card:not(.top-card) {
-      /* ביטול פריסת הגריד המקורית (layout-main) במובייל והצגת כרטיסים כבלוק */
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    /* כפתורי ניווט במובייל */
-    .mobile-navigation {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-    }
-    .mobile-nav-btn {
-      flex: 1;
-      background: #0f766e;
-      color: #fff;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      margin: 0 4px;
-      font-size: 12px;
-    }
-    .mobile-nav-btn:disabled {
-      background: #cbd5e1;
-      cursor: default;
-    }
-    .nav-next { margin-inline-start: 4px; }
-    .nav-prev { margin-inline-end: 4px; }
-
-
-    /* --- התאמות לדסקטופ (מחזיר את הפריסה המקורית) --- */
+    /* הסתרת כפתורי הניווט וכלי ההתקדמות בדסקטופ */
     @media (min-width: 800px) {
-      /* החזרת הפריסה המקורית */
-      .layout-main {
-        display: grid;
-        grid-template-columns: 1.1fr 1.9fr;
-        gap: 8px;
-      }
-      /* ביטול תצוגת המובייל המיוחדת והצגת כל הבלוקים יחד */
-      #form-flow-container {
-        display: block;
-        overflow-x: visible;
-      }
-      #form-flow-container > div {
-        min-width: auto;
-        flex: auto;
-        padding: 0;
-      }
-      .progress-container, .mobile-navigation {
-        display: none !important;
-      }
-      .card.top-card {
-        display: block; /* הכרטיס העליון חוזר למצב בלוק רגיל */
-      }
+      .mobile-fixed-elements { display: none !important; }
     }
 
-    /* --- שאר הסגנונות הקיימים שלך --- */
+    /* --- התאמות ספציפיות למובייל (עד 800px) --- */
+    @media (max-width: 800px) {
+      body { padding-top: 50px; padding-bottom: 70px; } /* מרווח קבוע לניווט */
+      .top-bar { position: fixed; width: 100%; } /* מקבע את ה-Top Bar */
+      
+      /* הופך את ה-page לאזור גלילה רגיל */
+      .page {
+        margin-top: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      
+      /* הופך את כל ה-body לעטוף את התוכן הפנימי ומסדר את המסכים */
+      #form-flow-container {
+        display: flex;
+        overflow-x: hidden;
+        transition: transform 0.4s ease-in-out;
+        width: 400%; /* 4 מסכים * 100% */
+      }
+      
+      /* כל כרטיס הוא מסך של 100% מהאזור הגלוי */
+      #form-flow-container > div {
+        flex: 0 0 25%; /* 4 בלוקים, כל אחד 25% מ-400% = 100% viewport */
+        padding: 0 4px;
+        min-height: 100%;
+      }
+      
+      /* ביטול מבנה הגריד המקורי והפיכתו לבלוקים ערימים במובייל */
+      .layout-main {
+        display: block;
+      }
+    }
+    
+    /* --- המבנה המקורי של שתי העמודות (דסקטופ) --- */
     .layout-main {
-      display: block; /* נותן עדיפות לבלוק במובייל */
+      display: grid;
+      grid-template-columns: 1.1fr 1.9fr;
       gap: 8px;
       align-items: flex-start;
     }
 
-    .row:has(input.currency-input, input.percent-field) {
-      justify-content: flex-start;
-    }
-
-    /* תיקונים קטנים לסגנונות הקיימים */
+    /* כל שאר הסגנונות הקיימים שלך */
     .allowances-title-row { justify-content: flex-start; }
     .allowances-title-row .allowance-title { margin-inline-end: 12px; }
-    
+    .row:has(input.currency-input, input.percent-field) { justify-content: flex-start; }
+
   </style>
 </head>
 <body>
@@ -266,391 +240,401 @@
       <button type="button" class="btn btn-restore" onclick="restoreFormState()">🔁 שחזור</button>
     </div>
     
+    <div class="mobile-fixed-elements progress-container-wrapper">
+        <div class="progress-container">
+            <span id="current-step-label" class="step-label">1. פרטי תיק</span>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <span id="progress-text">1/4</span>
+        </div>
+    </div>
+    
     <form id="reportForm">
       
-      <div class="progress-container">
-        <span id="current-step-label" class="step-label">1. פרטי תיק</span>
-        <div class="progress-bar">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
-        <span id="progress-text">1/4</span>
-      </div>
-      
       <div id="form-flow-container">
-        
-        <div data-step="1" data-label="פרטי תיק" class="card top-card">
-          <div class="section-header-flex">
-            <div class="section-title">1. פרטי תיק וצו תשלומים</div>
-          </div>
-          
-          <div style="display:grid;grid-template-columns:1fr;gap:8px;align-items:flex-start;">
-            
-            <div>
-              <div class="sub-title">פרטי תיק</div>
-              
-              <div class="row">
-                תיק ממונה:
-                <input type="text" class="short" maxlength="5">
-                תיק ביהמ"ש:
-                <input type="text" class="short" placeholder="">
-              </div>
-              
-              <div class="row">
-                שם החייב/ת:
-                <input type="text" class="short">
-                שם הנאמן:
-                <input type="text" class="short">
-              </div>
-              
-              <div class="row">
-                תאריך צו:
-                <input type="date" id="orderDate" class="medium">
-                לבקשת:
-                <label><input type="radio" name="order_by"> חייב</label>
-                <label><input type="radio" name="order_by"> נושה</label>
-              </div>
-              
-              <div class="hearing-box">
-                <div class="row no-wrap">
-                  מקום שיפוט:
-                  <input type="text" class="tiny">
-                  תאריך דיון:
-                  <input type="date" class="medium">
-                </div>
-                <div class="row">
-                  שעת דיון:
-                  <input type="time" class="short" step="300">
-                </div>
-              </div>
+      
+        <div data-step="1" data-label="פרטי תיק וצו">
+          <div class="card">
+            <div class="section-header-flex">
+              <div class="section-title">פרטי תיק וצו תשלומים</div>
             </div>
-            
-            <hr>
 
-            <div>
-              <div class="order-box">
-                <div class="sub-title">צו תשלומים</div>
-                
-                <div class="row no-wrap">
-                  תשלום חודשי:
-                  <input type="text" id="monthlyPayment" class="xshort currency-input" maxlength="6">
-                </div>
-                
-                <div class="row no-wrap">
-                  תשלום מדורג:
-                  <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="">
-                  מיום:
-                  <input type="date" id="gradedFromDate" class="medium">
-                </div>
-                
+            <div style="display:grid;grid-template-columns:1.1fr 1fr 1.2fr;gap:8px;align-items:flex-start;">
+
+              <div>
+                <div class="sub-title">פרטי תיק</div>
+
                 <div class="row">
-                  מסירה לנושים:
-                  <label><input type="radio" name="notices"> כן</label>
-                  <label><input type="radio" name="notices"> לא</label>
+                  תיק ממונה:
+                  <input type="text" class="short" maxlength="5">
+                  תיק ביהמ"ש:
+                  <input type="text" class="short" placeholder="">
                 </div>
-                
+
+                <div class="row">
+                  שם החייב/ת:
+                  <input type="text" class="short">
+                  שם הנאמן:
+                  <input type="text" class="short">
+                </div>
+
+                <div class="row">
+                  תאריך צו:
+                  <input type="date" id="orderDate" class="medium">
+                  לבקשת:
+                  <label><input type="radio" name="order_by"> חייב</label>
+                  <label><input type="radio" name="order_by"> נושה</label>
+                </div>
+
+                <div class="hearing-box">
+                  <div class="row no-wrap">
+                    מקום שיפוט:
+                    <input type="text" class="tiny">
+                    תאריך דיון:
+                    <input type="date" class="medium">
+                  </div>
+                  <div class="row">
+                    שעת דיון:
+                    <input type="time" class="short" step="300">
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="order-box">
+                  <div class="sub-title">צו תשלומים</div>
+
+                  <div class="row no-wrap">
+                    תשלום חודשי:
+                    <input type="text" id="monthlyPayment" class="xshort currency-input" maxlength="6">
+                  </div>
+
+                  <div class="row no-wrap">
+                    תשלום מדורג:
+                    <input type="text" id="gradedPayment" class="xshort currency-input" maxlength="6" placeholder="">
+                    מיום:
+                    <input type="date" id="gradedFromDate" class="medium">
+                  </div>
+
+                  <div class="row">
+                    מסירה לנושים:
+                    <label><input type="radio" name="notices"> כן</label>
+                    <label><input type="radio" name="notices"> לא</label>
+                  </div>
+
+                  <hr>
+
+                  <div class="row no-wrap">
+                    סה"כ נכון ליום:
+                    <input type="text" id="paymentsTotalDate" class="short" readonly>
+                  </div>
+
+                  <div class="row">
+                    <input type="text" id="paymentsTotalAmount" class="short currency-input" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="sub-title">פרטים אישיים</div>
+
+                <div class="row" style="flex-wrap:wrap;">
+                  מצב משפחתי:
+                  <label><input type="radio" name="family_status" value="רווק"> רווק</label>
+                  <label><input type="radio" name="family_status" value="נשוי"> נשוי</label>
+                  <label><input type="radio" name="family_status" value="גרוש"> גרוש</label>
+                  <label><input type="radio" name="family_status" value="אלמן"> אלמן</label>
+                </div>
+
+                <div class="row">
+                  ילדים קטינים:
+                  <input type="number" id="minorChildrenCount" class="short" min="0" max="11">
+                  תשלום מזונות:
+                  <label><input type="checkbox" id="hasAlimony"> כן</label>
+                  <input type="text" id="alimonyAmount" class="short currency-input">
+                </div>
+
                 <hr>
-                
-                <div class="row no-wrap">
-                  סה"כ נכון ליום:
-                  <input type="text" id="paymentsTotalDate" class="short" readonly>
-                </div>
-                
-                <div class="row">
-                  <input type="text" id="paymentsTotalAmount" class="short currency-input" readonly>
-                </div>
-              </div>
-            </div>
 
-            <hr>
-            
-            <div>
-              <div class="sub-title">פרטים אישיים</div>
-              
+                <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
+
+                <div class="row">
+                  נכות:
+                  <input type="text" class="short percent-field" id="disabilityPercent" maxlength="3" placeholder="0%">
+                  אי כושר:
+                  <input type="text" class="short percent-field" id="incapacityPercent" maxlength="3" placeholder="0%">
+                </div>
+
+                <div class="row allowances-title-row">
+                  <span class="allowance-title">קצבאות</span>
+                </div>
+                <div class="row" style="justify-content:flex-start;flex-wrap:wrap;">
+                  <label><input type="checkbox"> קצבת ילד נכה</label>
+                  <label><input type="checkbox"> הבטחת הכנסה</label>
+                  <label><input type="checkbox"> סיוע שכ"ד</label>
+                </div>
+
+                <div class="row medical-notes-row">
+                  בעיות רפואיות (תמציתי):
+                  <input type="text" class="flex-1">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="layout-main">
+
+          <div>
+            <div data-step="2" data-label="הכנסות ומחשבון" class="card" style="display:flex;flex-direction:column;">
+              <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+                הכנסות החייב, בן/בת הזוג ומחשבון צו תשלומים
+              </div>
+
+              <div class="sub-title">הכנסות החייב</div>
+
               <div class="row" style="flex-wrap:wrap;">
-                מצב משפחתי:
-                <label><input type="radio" name="family_status" value="רווק"> רווק</label>
-                <label><input type="radio" name="family_status" value="נשוי"> נשוי</label>
-                <label><input type="radio" name="family_status" value="גרוש"> גרוש</label>
-                <label><input type="radio" name="family_status" value="אלמן"> אלמן</label>
+                מקצוע:
+                <input type="text" class="short">
+                מקום עבודה:
+                <input type="text" class="short">
+                היקף משרה:
+                <input type="text" class="short">
+                תחילת עבודה:
+                <input type="month" class="medium">
               </div>
-              
+
+              <div class="row not-working-toggle-row" id="debtorIncomeRow">
+                שכר נטו:
+                <input type="text" id="debtorNetIncome" class="short currency-input">
+                <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
+              </div>
+
+              <div class="row" id="earningPotentialRow">
+                פוטנציאל השתכרות:
+                <input type="text" id="earningPotential" class="short currency-input">
+              </div>
+
               <div class="row">
-                ילדים קטינים:
-                <input type="number" id="minorChildrenCount" class="short" min="0" max="11">
-                תשלום מזונות:
-                <label><input type="checkbox" id="hasAlimony"> כן</label>
-                <input type="text" id="alimonyAmount" class="short currency-input">
+                הערות:
+                <input type="text" id="earningPotentialNotes" class="short">
               </div>
-              
+
               <hr>
               
-              <div class="sub-title">מצב רפואי ואישורי מל"ל</div>
-              
+              <div class="sub-title">הכנסות בן/בת הזוג</div>
+
+              <div class="row" style="flex-wrap:wrap;">
+                מקצוע:
+                <input type="text" class="short">
+                מקום עבודה:
+                <input type="text" class="short">
+                היקף משרה:
+                <input type="text" class="short">
+                תחילת עבודה:
+                <input type="month" class="medium">
+              </div>
+
+              <div class="row not-working-toggle-row" id="spouseIncomeRow">
+                שכר נטו:
+                <input type="text" id="spouseNetIncome" class="short currency-input">
+                <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
+              </div>
+
+              <hr>
+
+              <div class="sub-title">סך הכנסות והוצאות</div>
+
+              <div class="row" style="flex-wrap:wrap;">
+                סך הכנסות לתא המשפחתי:
+                <input type="text" id="familyIncomeTotal" class="short currency-input">
+                סך הוצאות לתא המשפחתי:
+                <input type="text" id="familyExpensesTotal" class="short currency-input">
+              </div>
+
+              <div class="calc-frame-card">
+                <div class="sub-title">מחשבון צו תשלומים</div>
+                <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
+              </div>
+            </div>
+          </div>
+
+
+          <div>
+            <div data-step="3" data-label="חובות ונכסים" class="card">
+              <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+                התנהלות החייב, חובות ונכסים
+              </div>
+
+              <div class="sub-title">התנהלות החייב</div>
+
+              <div class="small-text">דו"חות חודשיים:</div>
               <div class="row">
-                נכות:
-                <input type="text" class="short percent-field" id="disabilityPercent" maxlength="3" placeholder="0%">
-                אי כושר:
-                <input type="text" class="short percent-field" id="incapacityPercent" maxlength="3" placeholder="0%">
+                <label class="reports-status-full">
+                  <input type="radio" name="reports_status" value="full"> הוגשו
+                </label>
+                <label class="reports-status-partial">
+                  <input type="radio" name="reports_status" value="partial"> הוגשו חלקית
+                </label>
+                <label class="reports-status-none">
+                  <input type="radio" name="reports_status" value="none"> לא הוגשו כלל
+                </label>
               </div>
-              
-              <div class="row allowances-title-row">
-                <span class="allowance-title">קצבאות</span>
-              </div>
-              <div class="row" style="justify-content:flex-start;flex-wrap:wrap;">
-                <label><input type="checkbox"> קצבת ילד נכה</label>
-                <label><input type="checkbox"> הבטחת הכנסה</label>
-                <label><input type="checkbox"> סיוע שכ"ד</label>
-              </div>
-              
-              <div class="row medical-notes-row">
-                בעיות רפואיות (תמציתי):
+
+              <div class="row">
+                הערות דו"חות:
                 <input type="text" class="flex-1">
               </div>
-            </div>
-            
-          </div>
-        </div>
-        
-        <div data-step="2" data-label="הכנסות ומחשבון" class="card">
-          <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
-            2. הכנסות ומחשבון צו תשלומים
-          </div>
-          
-          <div class="sub-title">הכנסות החייב</div>
-          
-          <div class="row" style="flex-wrap:wrap;">
-            מקצוע:
-            <input type="text" class="short">
-            מקום עבודה:
-            <input type="text" class="short">
-            היקף משרה:
-            <input type="text" class="short">
-            תחילת עבודה:
-            <input type="month" class="medium">
-          </div>
-          
-          <div class="row not-working-toggle-row" id="debtorIncomeRow">
-            שכר נטו:
-            <input type="text" id="debtorNetIncome" class="short currency-input">
-            <label><input type="checkbox" id="debtorNotWorking"> החייב אינו עובד</label>
-          </div>
-          
-          <div class="row" id="earningPotentialRow">
-            פוטנציאל השתכרות:
-            <input type="text" id="earningPotential" class="short currency-input">
-          </div>
-          
-          <div class="row">
-            הערות:
-            <input type="text" id="earningPotentialNotes" class="short">
-          </div>
-          
-          <hr>
-          
-          <div class="sub-title">הכנסות בן/בת הזוג</div>
-          
-          <div class="row" style="flex-wrap:wrap;">
-            מקצוע:
-            <input type="text" class="short">
-            מקום עבודה:
-            <input type="text" class="short">
-            היקף משרה:
-            <input type="text" class="short">
-            תחילת עבודה:
-            <input type="month" class="medium">
-          </div>
-          
-          <div class="row not-working-toggle-row" id="spouseIncomeRow">
-            שכר נטו:
-            <input type="text" id="spouseNetIncome" class="short currency-input">
-            <label><input type="checkbox" id="spouseNotWorking"> בן/בת הזוג אינו/ה עובד/ת</label>
-          </div>
-          
-          <hr>
-          
-          <div class="sub-title">סך הכנסות והוצאות</div>
-          
-          <div class="row" style="flex-wrap:wrap;">
-            סך הכנסות לתא המשפחתי:
-            <input type="text" id="familyIncomeTotal" class="short currency-input">
-            סך הוצאות לתא המשפחתי:
-            <input type="text" id="familyExpensesTotal" class="short currency-input">
-          </div>
-          
-          <div class="calc-frame-card">
-            <div class="sub-title">מחשבון צו תשלומים</div>
-            <iframe src="payment-order-calculator.html" loading="lazy"></iframe>
-          </div>
-        </div>
-        
-        <div data-step="3" data-label="חובות ונכסים" class="card">
-          <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
-            3. התנהלות החייב, חובות ונכסים
-          </div>
-          
-          <div class="sub-title">התנהלות החייב</div>
-          
-          <div class="small-text">דו"חות חודשיים:</div>
-          <div class="row">
-            <label class="reports-status-full">
-              <input type="radio" name="reports_status" value="full"> הוגשו
-            </label>
-            <label class="reports-status-partial">
-              <input type="radio" name="reports_status" value="partial"> הוגשו חלקית
-            </label>
-            <label class="reports-status-none">
-              <input type="radio" name="reports_status" value="none"> לא הוגשו כלל
-            </label>
-          </div>
-          
-          <div class="row">
-            הערות דו"חות:
-            <input type="text" class="flex-1">
-          </div>
-          
-          <div class="sub-title" style="margin-top:4px;">מסמכים ותשלומים</div>
-          <div class="row docs-row">
-            <span>מסמכים חסרים:</span>
-            <label><input type="radio" name="missing_docs"> כן</label>
-            <label><input type="radio" name="missing_docs"> לא</label>
-            <span class="arrears-label">סך פיגורים:</span>
-            <input type="text" class="short currency-input">
-          </div>
-          
-          <hr>
-          
-          <div class="sub-title">חובות</div>
-          
-          <div class="row debts-row">
-            <span class="pair">
-              <span class="pair-label-multiline">מס' נושים</span>
-              <input type="number" class="tiny" min="0" max="99">
-            </span>
-            
-            <span class="pair">
-              <span class="pair-label-multiline">סכום כולל</span>
-              <input type="text" class="short currency-input">
-            </span>
-            
-            <span class="pair">
-              <span class="pair-label-multiline">דין קדימה</span>
-              <input type="text" class="short currency-input">
-            </span>
-          </div>
-          
-          <div class="row">
-            תביעות חוב נבדקו:
-            <label><input type="radio" name="claims_checked"> כן</label>
-            <label><input type="radio" name="claims_checked"> לא</label>
-          </div>
-          
-          <div class="sub-title">חובות לא ברי הפטר</div>
-          <div class="row" style="flex-wrap:wrap;">
-            <span class="pair">
-              <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
-              <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999">
-            </span>
-            <span class="pair">
-              <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
-              <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999">
-            </span>
-          </div>
-          
-          <hr>
-          
-          <div class="sub-title">נכסים</div>
-          
-          <div class="row">
-            <label><input type="checkbox"> דירת מגורים</label>
-            <label><input type="checkbox"> נכס</label>
-            <label><input type="checkbox"> רכב</label>
-            <label><input type="checkbox"> זכויות</label>
-          </div>
-          
-          <div class="row">
-            הערכת שווי:
-            <input type="text" class="short currency-input">
-          </div>
-        </div>
-        
-        <div data-step="4" data-label="סיכום והמלצות" class="card">
-          <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
-            4. סיכום והמלצות
-          </div>
-          
-          <div class="row" style="justify-content:space-between;align-items:center;">
-            <div class="sub-title" style="margin-bottom:0;">סיכום הנאמן</div>
-            <label><input type="checkbox"> הכשרה כלכלית</label>
-          </div>
-          <div class="row">
-            <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
-          </div>
-          
-          <div class="row" style="justify-content:flex-start;align-items:center;">
-            <div class="sub-title" style="margin-bottom:0;">המלצת נאמן</div>
-          </div>
-          <div class="order-box" style="margin-top:2px;">
-            <div class="recom-grid">
-              <div class="recom-item">
-                <label>סכום חודשי</label>
-                <input type="text" id="trusteeMonthly" class="currency-input xshort" maxlength="6">
-              </div>
-              <div class="recom-item">
-                <label>משך</label>
-                <input type="number" id="trusteeDuration" class="tiny" min="0" max="99">
-              </div>
-              <div class="recom-item">
-                <label>סכום כולל</label>
-                <input type="text" id="trusteeTotal" class="currency-input xshort recom-total" readonly>
-              </div>
-            </div>
-          </div>
-          
-          <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px;">
-            <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
-            <label><input type="checkbox"> הכשרה כלכלית</label>
-          </div>
-          <div class="row">
-            <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
-          </div>
-          
-          <div class="row" style="justify-content:flex-start;align-items:center;">
-            <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
-          </div>
-          <div class="order-box order-box-comm" style="margin-top:2px;">
-            <div class="recom-grid">
-              <div class="recom-item">
-                <label>סכום חודשי</label>
-                <input type="text" id="commMonthly" class="currency-input xshort" maxlength="6">
-              </div>
-              <div class="recom-item">
-                <label>משך</label>
-                <input type="number" id="commDuration" class="tiny" min="0" max="99">
-              </div>
-              <div class="recom-item">
-                <label>סכום כולל</label>
-                <input type="text" id="commTotal" class="currency-input xshort recom-total" readonly>
-              </div>
-            </div>
-          </div>
-          
-          <div class="row">
-            נימוקים להמלצת הממונה:
-            <textarea rows="2" class="flex-1" placeholder="נימוקים קצרים"></textarea>
-          </div>
-        </div>
-        
-      </div> <div class="mobile-navigation">
-        <button type="button" id="nav-prev" class="mobile-nav-btn nav-prev" disabled>← קודם</button>
-        <button type="button" id="nav-next" class="mobile-nav-btn nav-next">הבא →</button>
-      </div>
 
-    </form>
+              <div class="sub-title" style="margin-top:4px;">מסמכים ותשלומים</div>
+              <div class="row docs-row">
+                <span>מסמכים חסרים:</span>
+                <label><input type="radio" name="missing_docs"> כן</label>
+                <label><input type="radio" name="missing_docs"> לא</label>
+                <span class="arrears-label">סך פיגורים:</span>
+                <input type="text" class="short currency-input">
+              </div>
+
+              <hr>
+
+              <div class="sub-title">חובות</div>
+
+              <div class="row debts-row">
+                <span class="pair">
+                  <span class="pair-label-multiline">מס' נושים</span>
+                  <input type="number" class="tiny" min="0" max="99">
+                </span>
+
+                <span class="pair">
+                  <span class="pair-label-multiline">סכום כולל</span>
+                  <input type="text" class="short currency-input">
+                </span>
+
+                <span class="pair">
+                  <span class="pair-label-multiline">דין קדימה</span>
+                  <input type="text" class="short currency-input">
+                </span>
+              </div>
+
+              <div class="row">
+                תביעות חוב נבדקו:
+                <label><input type="radio" name="claims_checked"> כן</label>
+                <label><input type="radio" name="claims_checked"> לא</label>
+              </div>
+
+              <div class="sub-title">חובות לא ברי הפטר</div>
+              <div class="row" style="flex-wrap:wrap;">
+                <span class="pair">
+                  <label><input type="checkbox" id="alimonyDebtChk"> מזונות</label>
+                  <input type="text" id="alimonyDebtAmount" class="short currency-input" min="0" max="99999">
+                </span>
+                <span class="pair">
+                  <label><input type="checkbox" id="taxDebtChk"> רשויות אכיפה</label>
+                  <input type="text" id="taxDebtAmount" class="short currency-input" min="0" max="99999">
+                </span>
+              </div>
+
+              <hr>
+
+              <div class="sub-title">נכסים</div>
+
+              <div class="row">
+                <label><input type="checkbox"> דירת מגורים</label>
+                <label><input type="checkbox"> נכס</label>
+                <label><input type="checkbox"> רכב</label>
+                <label><input type="checkbox"> זכויות</label>
+              </div>
+
+              <div class="row">
+                הערכת שווי:
+                <input type="text" class="short currency-input">
+              </div>
+            </div>
+
+            <div data-step="4" data-label="סיכום והמלצות" class="card">
+              <div class="section-title" style="border-bottom:1px solid #e2e8f0;padding-bottom:2px;margin-bottom:4px;">
+                סיכום והמלצות
+              </div>
+
+              <div class="row" style="justify-content:space-between;align-items:center;">
+                <div class="sub-title" style="margin-bottom:0;">סיכום הנאמן</div>
+                <label><input type="checkbox"> הכשרה כלכלית</label>
+              </div>
+              <div class="row">
+                <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן (שתי שורות)"></textarea>
+              </div>
+
+              <div class="row" style="justify-content:flex-start;align-items:center;">
+                <div class="sub-title" style="margin-bottom:0;">המלצת נאמן</div>
+              </div>
+              <div class="order-box" style="margin-top:2px;">
+                <div class="recom-grid">
+                  <div class="recom-item">
+                    <label>סכום חודשי</label>
+                    <input type="text" id="trusteeMonthly" class="currency-input xshort" maxlength="6">
+                  </div>
+                  <div class="recom-item">
+                    <label>משך</label>
+                    <input type="number" id="trusteeDuration" class="tiny" min="0" max="99">
+                  </div>
+                  <div class="recom-item">
+                    <label>סכום כולל</label>
+                    <input type="text" id="trusteeTotal" class="currency-input xshort recom-total" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px;">
+                <div class="sub-title" style="margin-bottom:0;">סיכום הממונה</div>
+                <label><input type="checkbox"> הכשרה כלכלית</label>
+              </div>
+              <div class="row">
+                <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה (שתי שורות)"></textarea>
+              </div>
+
+              <div class="row" style="justify-content:flex-start;align-items:center;">
+                <div class="sub-title" style="margin-bottom:0;">המלצת הממונה</div>
+              </div>
+              <div class="order-box order-box-comm" style="margin-top:2px;">
+                <div class="recom-grid">
+                  <div class="recom-item">
+                    <label>סכום חודשי</label>
+                    <input type="text" id="commMonthly" class="currency-input xshort" maxlength="6">
+                  </div>
+                  <div class="recom-item">
+                    <label>משך</label>
+                    <input type="number" id="commDuration" class="tiny" min="0" max="99">
+                  </div>
+                  <div class="recom-item">
+                    <label>סכום כולל</label>
+                    <input type="text" id="commTotal" class="currency-input xshort recom-total" readonly>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                נימוקים להמלצת הממונה:
+                <textarea rows="2" class="flex-1" placeholder="נימוקים קצרים"></textarea>
+              </div>
+            </div>
+          </div>
+        </div> </div> </form>
     
     <div class="footer">
       נבנה על ידי אליאב יחיאל
     </div>
-  </div> <button type="button" id="scrollTopBtn" class="scroll-top-btn">↑</button>
+
+  </div> <div class="mobile-fixed-elements mobile-navigation-wrapper">
+    <div class="mobile-navigation">
+        <button type="button" id="nav-prev" class="mobile-nav-btn nav-prev" disabled>← קודם</button>
+        <button type="button" id="nav-next" class="mobile-nav-btn nav-next">הבא →</button>
+    </div>
+  </div>
+
+
+  <button type="button" id="scrollTopBtn" class="scroll-top-btn">↑</button>
 
   <script>
     // הגדרות מערכת הניווט הרב-שלבית
@@ -660,38 +644,57 @@
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
     const currentStepLabel = document.getElementById('current-step-label');
-    const allSteps = Array.from(formFlowContainer.children).filter(el => el.dataset.step);
+    
+    // מוצא את ארבעת הבלוקים העיקריים שמרכיבים את הדו"ח (כולל ה-layout-main)
+    const allSteps = [
+        document.querySelector('[data-step="1"]'), // הכרטיס העליון
+        document.querySelector('[data-step="2"]'), // הכנסות
+        document.querySelector('[data-step="3"]'), // חובות
+        document.querySelector('[data-step="4"]')  // סיכום
+    ];
+
     const totalSteps = allSteps.length;
     let currentStep = 1;
 
+    function isMobileView() {
+        return window.innerWidth <= 800;
+    }
+
     function updateFlow() {
-      // 1. הזזה פיזית של המסך
-      const offset = (currentStep - 1) * -100;
-      formFlowContainer.style.transform = `translateX(${offset}%)`;
+        if (!isMobileView()) {
+            formFlowContainer.style.transform = `translateX(0)`;
+            return;
+        }
 
-      // 2. עדכון פס ההתקדמות והטקסט
-      const progressPercent = (currentStep / totalSteps) * 100;
-      progressFill.style.width = `${progressPercent}%`;
-      progressText.textContent = `${currentStep}/${totalSteps}`;
-      
-      // 3. עדכון כפתורי הניווט והכותרת
-      navPrevBtn.disabled = currentStep === 1;
-      navNextBtn.disabled = currentStep === totalSteps;
+        // 1. הזזה פיזית של המסך
+        // מאחר וארבעת הבלוקים הם ילדים ישירים, ה-translateX יעביר אותם 
+        // 0% (שלב 1), -25% (שלב 2), -50% (שלב 3), -75% (שלב 4)
+        const offset = (currentStep - 1) * -25;
+        formFlowContainer.style.transform = `translateX(${offset}%)`;
 
-      const currentStepElement = allSteps.find(el => parseInt(el.dataset.step) === currentStep);
-      currentStepLabel.textContent = currentStepElement ? `${currentStep}. ${currentStepElement.dataset.label}` : '';
+        // 2. עדכון פס ההתקדמות והטקסט
+        const progressPercent = (currentStep / totalSteps) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+        progressText.textContent = `${currentStep}/${totalSteps}`;
+        
+        // 3. עדכון כפתורי הניווט והכותרת
+        navPrevBtn.disabled = currentStep === 1;
+        navNextBtn.disabled = currentStep === totalSteps;
 
-      // גלילה חזרה לראש העמוד בתוך ה-page container
-      document.querySelector('.page').scrollTop = 0; 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        const currentStepElement = allSteps.find(el => parseInt(el.dataset.step) === currentStep);
+        currentStepLabel.textContent = currentStepElement ? `${currentStep}. ${currentStepElement.dataset.label}` : '';
+
+        // גלילה לראש המסך (בגלל שהניווט מקובע)
+        document.body.scrollTop = 0; 
+        document.documentElement.scrollTop = 0; 
     }
 
     function navigate(direction) {
-      const newStep = currentStep + direction;
-      if (newStep >= 1 && newStep <= totalSteps) {
-        currentStep = newStep;
-        updateFlow();
-      }
+        const newStep = currentStep + direction;
+        if (newStep >= 1 && newStep <= totalSteps) {
+            currentStep = newStep;
+            updateFlow();
+        }
     }
 
     // ניווט באמצעות כפתורים
@@ -703,12 +706,12 @@
     let touchEndX = 0;
     
     formFlowContainer.addEventListener('touchstart', e => {
-      if (window.innerWidth >= 800) return; // לא מפעיל בדסקטופ
+      if (!isMobileView()) return;
       touchStartX = e.changedTouches[0].screenX;
     });
 
     formFlowContainer.addEventListener('touchend', e => {
-      if (window.innerWidth >= 800) return;
+      if (!isMobileView()) return;
       touchEndX = e.changedTouches[0].screenX;
       handleGesture();
     });
@@ -1207,7 +1210,10 @@
     });
     
     // מעדכן את הפריסה במקרה של שינוי גודל (מעבר בין מובייל לדסקטופ)
-    window.addEventListener('resize', updateFlow);
+    window.addEventListener('resize', () => {
+        currentStep = 1; // מאפס את המסך ל-1 במעבר דסקטופ/מובייל
+        updateFlow();
+    });
   </script>
 </body>
 </html>
