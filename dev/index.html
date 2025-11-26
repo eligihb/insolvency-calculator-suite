@@ -11,29 +11,25 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f3f4f6;
       direction: rtl;
       text-align: right;
+      background: #f3f4f6;
       color: #111827;
       padding: 16px 8px 24px;
     }
 
-    .wrapper {
-      max-width: 940px;
+    .shell {
+      max-width: 1100px;
       margin: 0 auto;
-      background: #ffffff;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-      padding: 18px 20px 20px;
     }
 
     .header-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      gap: 8px;
       flex-wrap: wrap;
+      margin-bottom: 6px;
     }
 
     .title {
@@ -54,93 +50,100 @@
     .subtitle {
       font-size: 12px;
       color: #4b5563;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
+    /* כאן הקסם – גריד שממלא את הרוחב, בלי ריק בצד */
     .projects-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
     }
 
     .project-card {
-      width: 280px;
-      min-height: 170px;
-      border-radius: 12px;
+      border-radius: 14px;
       border: 1px solid #e5e7eb;
-      padding: 14px 14px;
-      background: #f9fafb;
+      background: #ffffff;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-height: 150px;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.04);
     }
 
     .proj-title {
       font-size: 15px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .proj-tag {
       font-size: 11px;
       color: #3b82f6;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .btn-row {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      margin-top: 4px;
     }
 
     .btn-main,
     .btn-secondary {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
       padding: 4px 10px;
       border-radius: 999px;
       font-size: 12px;
       text-decoration: none;
       white-space: nowrap;
+      border: 1px solid transparent;
     }
 
     .btn-main {
       background: #22c55e;
+      border-color: #16a34a;
       color: #022c22;
-      border: 1px solid #16a34a;
     }
 
     .btn-secondary {
       background: #eff6ff;
+      border-color: #3b82f6;
       color: #1d4ed8;
-      border: 1px solid #3b82f6;
+    }
+
+    .btn-disabled {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      color: #9ca3af;
+      cursor: default;
     }
 
     .footer-note {
       font-size: 10px;
       color: #6b7280;
-      margin-top: 18px;
+      margin-top: 16px;
       text-align: left;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrapper">
-
-    <!-- Header -->
+  <div class="shell">
+    <!-- כותרת -->
     <div class="header-line">
       <div class="title">מסך פיתוח – Insolvency Smart Tools</div>
       <div class="env-pill">DEV • לשימוש פנימי בלבד</div>
     </div>
-
     <div class="subtitle">
-      כאן מוצגות *רק* גרסאות ניסוי נבחרות (עד 3 גרסאות לכל פרויקט).
+      כאן מוצגות גרסאות ניסוי נבחרות (עד 3 גרסאות לכל פרויקט). הגרסאות היציבות נמצאות בדף הראשי.
     </div>
 
-    <!-- Project Cards -->
+    <!-- גריד פרויקטים -->
     <div class="projects-grid">
 
       <!-- צו שיקום -->
@@ -149,19 +152,18 @@
           <div class="proj-title">צו שיקום</div>
           <div class="proj-tag">Rehab • DEV</div>
         </div>
-      <div class="btn-row">
-    <a class="btn-main"
-       href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v1.html"
-       target="_blank">גרסה 1</a>
-
-    <a class="btn-secondary"
-       href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v2.html"
-       target="_blank">גרסה 2</a>
-
-    <a class="btn-secondary"
-       href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v3.html"
-       target="_blank">גרסה 3</a>
-  </div>
+        <div class="btn-row">
+          <a class="btn-main"
+             href="/insolvency-smart-tools/dev/versions/rehab/rehab-v1.html"
+             target="_blank">גרסה 1</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/rehab/rehab-v2.html"
+             target="_blank">גרסה 2</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/rehab/rehab-v3.html"
+             target="_blank">גרסה 3</a>
+        </div>
+      </div>
 
       <!-- צו תשלומים -->
       <div class="project-card">
@@ -170,9 +172,15 @@
           <div class="proj-tag">Payment Order • DEV</div>
         </div>
         <div class="btn-row">
-          <a class="btn-main" href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v1.html" target="_blank">גרסה 1</a>
-          <a class="btn-secondary" href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v2.html" target="_blank">גרסה 2</a>
-          <a class="btn-secondary" href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v3.html" target="_blank">גרסה 3</a>
+          <a class="btn-main"
+             href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v1.html"
+             target="_blank">גרסה 1</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v2.html"
+             target="_blank">גרסה 2</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/payment-order/payment-order-v3.html"
+             target="_blank">גרסה 3</a>
         </div>
       </div>
 
@@ -183,7 +191,7 @@
           <div class="proj-tag">Fees • DEV</div>
         </div>
         <div class="btn-row">
-          <a class="btn-secondary">בבנייה</a>
+          <span class="btn-secondary btn-disabled">בבנייה</span>
         </div>
       </div>
 
@@ -194,28 +202,35 @@
           <div class="proj-tag">Summary Report • DEV</div>
         </div>
         <div class="btn-row">
-          <a class="btn-secondary">בבנייה</a>
+          <a class="btn-main"
+             href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v1.html"
+             target="_blank">גרסה 1</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v2.html"
+             target="_blank">גרסה 2</a>
+          <a class="btn-secondary"
+             href="/insolvency-smart-tools/dev/versions/summary-report/summary-report-v3.html"
+             target="_blank">גרסה 3</a>
         </div>
       </div>
 
-      <!-- חילוץ נתונים PDF -->
+      <!-- חילוץ נתונים מ-PDF -->
       <div class="project-card">
         <div>
           <div class="proj-title">חילוץ נתונים מ-PDF</div>
           <div class="proj-tag">PDF Extract • DEV</div>
         </div>
         <div class="btn-row">
-          <a class="btn-secondary">בבנייה</a>
+          <span class="btn-secondary btn-disabled">בבנייה</span>
         </div>
       </div>
 
     </div>
 
-    <!-- Footer Tip -->
     <div class="footer-note">
-      טיפ: כדי להוסיף גרסת ניסוי חדשה — צור קובץ חדש ב־<code>dev/versions/&lt;project&gt;</code> והוסף כאן כפתור.
+      טיפ: כדי להוסיף גרסת ניסוי חדשה – צור קובץ חדש בתיקיית
+      <code>dev/versions/&lt;project&gt;</code> והוסף כאן כפתור.
     </div>
-
   </div>
 </body>
 </html>
