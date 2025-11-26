@@ -2,46 +2,68 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>דו"ח מסכם – חדלות פירעון</title>
+  <title>דו"ח 1001 מסכם לדיון צו שיקום</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     * { box-sizing: border-box; }
 
     body {
-      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       direction: rtl;
       text-align: right;
-      background: #e5e7eb;
+      margin: 0;
+      background: #e5f6ff; /* חזרה לרקע המקורי */
       font-size: 12px;
       -webkit-font-smoothing: antialiased;
     }
 
-    .page {
-      max-width: 900px;
-      margin: 12px auto;
-      background: #ffffff;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      padding: 14px 18px 16px;
+    /* --- שחזור העיצוב המקורי של הכותרת --- */
+    .top-bar {
+      background: #0f766e;
+      color: #fff;
+      padding: 10px 18px;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .header-main {
-      text-align: center;
+    .page {
+      max-width: 1100px;
+      margin: 8px auto;
+      padding: 8px;
+    }
+
+    /* --- שחזור הכרטיסיות המקוריות --- */
+    .card {
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid #dbeafe;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+      padding: 8px 10px;
       margin-bottom: 8px;
     }
 
-    .header-main h1 {
-      font-size: 18px;
-      margin: 0 0 4px;
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    .header-main .sub {
-      font-size: 11px;
-      color: #4b5563;
+    .sub-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f766e; /* הצבע המקורי */
+      margin: 6px 0 2px;
+      text-align: right;
     }
 
+    /* --- שדות הקלט המקוריים --- */
     .row {
       display: flex;
       flex-wrap: wrap;
@@ -50,374 +72,569 @@
       margin-bottom: 4px;
     }
 
-    .label {
+    label {
       font-size: 11px;
-      color: #111827;
-      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      color: #0f172a;
     }
 
     input[type="text"],
     input[type="number"],
     input[type="date"],
+    select,
     textarea {
       font-size: 11px;
-      padding: 2px 4px;
-      border-radius: 4px;
-      border: 1px solid #d1d5db;
-      min-width: 0;
-    }
-
-    textarea {
-      width: 100%;
-      resize: vertical;
-      min-height: 40px;
-    }
-
-    .short   { width: 80px; }
-    .medium  { width: 140px; }
-    .long    { width: 220px; }
-
-    .section {
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      padding: 8px 10px;
-      margin-bottom: 8px;
-    }
-
-    .section-title {
-      font-size: 12px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      border: 1px solid #cbd5f5;
+      background: #ffffff;
       font-weight: 600;
-      margin-bottom: 6px;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 3px;
+      color: #1d4ed8; /* כחול מקורי */
+      line-height: 1.4;
+    }
+    
+    input:disabled {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border-color: #e2e8f0;
     }
 
-    .small {
-      font-size: 11px;
-      color: #6b7280;
+    textarea { resize: vertical; min-height: 28px; }
+
+    /* --- גדלים --- */
+    .short { width: 80px; }
+    .tiny { width: 50px; text-align: center; }
+    .mini { width: 35px; text-align: center; }
+    .medium { width: 120px; }
+    .flex-1 { flex: 1; }
+
+    /* --- עיצובים ספציפיים שביקשת --- */
+    .currency-input { font-weight: 700; }
+    
+    /* צבעים מודגשים לסכומים */
+    .text-green { color: #15803d !important; font-weight: 800; }
+    .text-red { color: #b91c1c !important; font-weight: 800; }
+    
+    /* נעילה אדומה */
+    .locked-section input, 
+    .locked-section select {
+      border: 1px solid #fecaca !important;
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+      pointer-events: none;
     }
 
-    .cols-2 {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 8px;
-    }
-
-    .cols-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-    }
-
-    .pill-group {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .pill {
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      padding: 1px 8px;
-      font-size: 11px;
-      display: inline-flex;
+    /* תוויות בגלישת טקסט (עבור השורות הצפופות) */
+    .label-stack {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 3px;
-      white-space: nowrap;
-    }
-
-    .pill input {
-      margin: 0;
-    }
-
-    .summary-box {
-      border-radius: 6px;
-      border: 1px dashed #9ca3af;
-      padding: 6px 8px;
-      font-size: 11px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-bottom: 2px;
-    }
-
-    .summary-label {
-      color: #374151;
-    }
-
-    .summary-value {
-      min-width: 90px;
-    }
-
-    .sign-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 10px;
-      font-size: 11px;
-    }
-
-    .sign-block {
-      flex: 1 1 0;
-    }
-
-    .sign-line {
-      border-top: 1px solid #9ca3af;
-      margin-top: 18px;
-      padding-top: 2px;
-      text-align: center;
-      font-size: 11px;
-      color: #4b5563;
-    }
-
-    .buttons {
-      text-align: left;
-      margin-top: 8px;
+      justify-content: center;
+      line-height: 1;
       font-size: 10px;
-      color: #6b7280;
+      text-align: center;
+      margin-inline-end: 2px;
+      min-width: 35px;
     }
 
+    /* --- גריד ראשי --- */
+    @media (min-width: 800px) {
+      .layout-main {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr; /* שמאל ימין */
+        gap: 8px;
+        align-items: start;
+      }
+    }
+
+    /* --- בלוק המלצות מאוחד --- */
+    .recom-block {
+      background: #f0fdf4; /* רקע ירקרק עדין לנאמן */
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 6px;
+      margin-bottom: 6px;
+    }
+    .recom-block.comm {
+      background: #eff6ff; /* רקע כחלחל לממונה */
+      border-color: #bfdbfe;
+    }
+
+    .recom-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .recom-grid label { display: block; font-size: 10px; margin-bottom: 2px; }
+    .recom-grid input { width: 95%; text-align: center; }
+
+    /* --- הדפסה (A4 בול) --- */
     @media print {
-      @page { size: A4 portrait; margin: 10mm; }
-      body {
-        background: #ffffff;
-      }
-      .page {
+      @page { size: A4 portrait; margin: 5mm; }
+      body { background: white; -webkit-print-color-adjust: exact; }
+      .top-bar { background: white; color: black; border-bottom: 2px solid black; position: static; padding: 0; margin-bottom: 10px; }
+      .page { max-width: 100%; margin: 0; padding: 0; transform: scale(0.95); transform-origin: top center; }
+      .card { border: none; border-bottom: 1px solid #000; box-shadow: none; padding: 2px 0; margin-bottom: 5px; border-radius: 0; background: transparent; }
+      .section-title { color: black; border-bottom: 1px solid black; }
+      .sub-title { color: black; text-decoration: underline; margin-top: 5px; }
+      
+      /* איפוס שדות להדפסה */
+      input, select, textarea {
         border: none;
-        box-shadow: none;
-        margin: 0;
-        max-width: 100%;
+        border-bottom: 1px dotted #ccc;
+        background: transparent !important;
+        border-radius: 0;
         padding: 0;
+        color: black !important;
+        box-shadow: none !important;
       }
-      .buttons { display: none; }
+      
+      /* תרגום צבעים להדפסה */
+      .text-green, .text-red { color: black !important; font-weight: 900; text-decoration: underline; }
+      .locked-section input { border-bottom: none !important; color: #ccc !important; }
+      
+      /* הסתרת כפתורים */
+      button { display: none !important; }
+      
+      /* גריד להדפסה */
+      .layout-main { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     }
   </style>
 </head>
-
 <body>
-  <div class="page">
-    <div class="header-main">
-      <h1>דו"ח מסכם – חדלות פירעון</h1>
-      <div class="sub">
-        טופס עבודה מסכם לפני דיון / החלטה, למילוי על ידי הממונה / נאמן.
-      </div>
-    </div>
 
-    <!-- 1. פרטי תיק -->
-    <div class="section">
-      <div class="section-title">1. פרטי תיק</div>
-
-      <div class="row">
-        <span class="label">בית משפט:</span>
-        <input type="text" class="medium">
-        <span class="label">מס' תיק בימ"ש:</span>
-        <input type="text" class="medium">
-      </div>
-
-      <div class="row">
-        <span class="label">תיק ממונה / נאמן:</span>
-        <input type="text" class="medium">
-        <span class="label">שם החייב/ת:</span>
-        <input type="text" class="medium">
-      </div>
-
-      <div class="row">
-        <span class="label">שם הנאמן:</span>
-        <input type="text" class="medium">
-        <span class="label">שם הממונה:</span>
-        <input type="text" class="medium">
-      </div>
-
-      <div class="row">
-        <span class="label">שופט/ת:</span>
-        <input type="text" class="medium">
-        <span class="label">תאריך הדיון:</span>
-        <input type="date" class="short">
-        <span class="label">שעה:</span>
-        <input type="text" class="short">
-      </div>
-
-      <div class="row">
-        <span class="label">סוג ההליך:</span>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="caseType"> יחיד</label>
-          <label class="pill"><input type="radio" name="caseType"> תאגיד</label>
-          <label class="pill"><input type="radio" name="caseType"> הליך משולב / מיוחד</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. תמונת מצב כלכלית -->
-    <div class="section">
-      <div class="section-title">2. תמונת מצב כלכלית (ראשי פרקים)</div>
-
-      <div class="cols-2">
-        <div>
-          <div class="row">
-            <span class="label">סה"כ חובות לפי תביעות חוב:</span>
-            <input type="text" class="medium">
-          </div>
-          <div class="row">
-            <span class="label">מתוכם – חובות בדין קדימה:</span>
-            <input type="text" class="medium">
-          </div>
-          <div class="row">
-            <span class="label">חובות שאינם ברי הפטר (מזונות / עונשין / אחרים):</span>
-          </div>
-          <div class="row">
-            <input type="text" class="long" placeholder="פירוט קצר + סכום משוער">
-          </div>
-        </div>
-
-        <div>
-          <div class="row">
-            <span class="label">נכסים ידועים:</span>
-          </div>
-          <div class="row">
-            <textarea placeholder="דירת מגורים / רכב / חסכונות / זכויות אחרות (תיאור ותמחור משוער)"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <span class="label">מצב הכנסות–הוצאות:</span>
-        <input type="text" class="long" placeholder="לדוגמה: עודף הכנסה / גרעון חודשי / מאוזן">
-      </div>
-
-      <div class="summary-box">
-        <div class="summary-row">
-          <span class="summary-label">הכנסה חודשית נטו של החייב/ת:</span>
-          <span class="summary-value"><input type="text" class="medium"></span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">הכנסה חודשית של בן/בת הזוג:</span>
-          <span class="summary-value"><input type="text" class="medium"></span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">מס' ילדים קטינים / תלויים:</span>
-          <span class="summary-value"><input type="number" class="short" min="0"></span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">הוצאות חיוניות משוערות (דיור / מזון / בריאות וכו'):</span>
-          <span class="summary-value"><input type="text" class="medium"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. התנהלות החייב/ת בהליך -->
-    <div class="section">
-      <div class="section-title">3. התנהלות החייב/ת בהליך</div>
-
-      <div class="row">
-        <span class="label">דו"חות חודשיים:</span>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="reports"> הוגשו כסדרם</label>
-          <label class="pill"><input type="radio" name="reports"> הוגשו חלקית</label>
-          <label class="pill"><input type="radio" name="reports"> לא הוגשו</label>
-        </div>
-      </div>
-
-      <div class="row">
-        <span class="label">תשלומים חודשיים:</span>
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="payments"> שולמו כסדרם</label>
-          <label class="pill"><input type="radio" name="payments"> קיימים פיגורים</label>
-          <label class="pill"><input type="radio" name="payments"> לא שולמו</label>
-        </div>
-      </div>
-
-      <div class="row">
-        <span class="label">היקף הפיגורים (אם יש):</span>
-        <input type="text" class="medium" placeholder="סכום / מספר חודשים">
-      </div>
-
-      <div class="row">
-        <span class="label">שיתוף פעולה עם הממונה / הנאמן:</span>
-      </div>
-      <div class="row">
-        <textarea placeholder="מסירת מסמכים, הגעה לפגישות, גילוי מלא או חסר, נקודות לשבח / לקושי."></textarea>
-      </div>
-    </div>
-
-    <!-- 4. שיקולים מרכזיים -->
-    <div class="section">
-      <div class="section-title">4. שיקולים מרכזיים</div>
-      <div class="row">
-        <textarea placeholder="נסיבות אישיות, בריאותיות ומשפחתיות; נסיבות יצירת החובות; התנהלות לפני פתיחת ההליך; שיקולי תום-לב עיקריים."></textarea>
-      </div>
-    </div>
-
-    <!-- 5. המלצה לסיום ההליך / צו שיקום -->
-    <div class="section">
-      <div class="section-title">5. המלצה לסיום ההליך / צו שיקום</div>
-
-      <div class="row">
-        <span class="label">המלצה עיקרית:</span>
-      </div>
-      <div class="row">
-        <div class="pill-group">
-          <label class="pill"><input type="radio" name="recommend"> מתן צו שיקום כלכלי</label>
-          <label class="pill"><input type="radio" name="recommend"> הארכת תקופת הביניים</label>
-          <label class="pill"><input type="radio" name="recommend"> ביטול ההליך</label>
-          <label class="pill"><input type="radio" name="recommend"> אפשרות אחרת (לפרט)</label>
-        </div>
-      </div>
-
-      <div class="cols-3" style="margin-top: 6px;">
-        <div>
-          <div class="small">הצעת תשלום חודשי:</div>
-          <input type="text" class="medium" placeholder="סכום מוצע">
-        </div>
-        <div>
-          <div class="small">משך מוצע (בחודשים):</div>
-          <input type="number" class="short" min="0">
-        </div>
-        <div>
-          <div class="small">סכום כולל משוער לנושים:</div>
-          <input type="text" class="medium">
-        </div>
-      </div>
-
-      <div class="row" style="margin-top: 6px;">
-        <span class="label">תנאים מיוחדים / הערות להחלטת ביהמ"ש:</span>
-      </div>
-      <div class="row">
-        <textarea placeholder="למשל: הכשרה כלכלית, דרישת הגדלת הכנסה, מימוש נכסים, תנאי פיקוח נוספים."></textarea>
-      </div>
-    </div>
-
-    <!-- חתימות -->
-    <div class="sign-row">
-      <div class="sign-block">
-        <div>תאריך:</div>
-        <input type="date" class="short">
-        <div class="sign-line">הממונה / נציג הממונה</div>
-      </div>
-      <div class="sign-block">
-        <div>תאריך:</div>
-        <input type="date" class="short">
-        <div class="sign-line">הנאמן</div>
-      </div>
-    </div>
-
-    <div class="buttons">
-      מומלץ להדפיס דרך דפדפן (Ctrl+P) ולשמור כ-PDF להגשה.
-    </div>
+  <div class="top-bar">
+    דו"ח מסכם לדיון צו שיקום
   </div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>דו"ח מסכם – גרסת פיתוח 1</title>
-</head>
-<body>
-  <h3>דו"ח מסכם – גרסת פיתוח 1</h3>
-  <p>summary-report-v1.html</p>
+
+  <div class="page">
+    <form id="mainForm">
+
+      <div class="card">
+        <div class="section-title">
+          <span>פרטי תיק וצו תשלומים</span>
+          <button type="button" onclick="window.print()" style="float:left; font-size:11px;">🖨 הדפסה</button>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:space-between;">
+          <div style="flex:1;">
+            <div class="row">
+              <label>תיק ממונה:</label><input type="text" class="short">
+              <label>תיק ביהמ"ש:</label><input type="text" class="short">
+            </div>
+            <div class="row">
+              <label>שם החייב:</label><input type="text" class="medium">
+              <label>שם הנאמן:</label><input type="text" class="medium">
+            </div>
+            <div class="row">
+              <label>תאריך צו:</label><input type="date" id="orderDate" class="medium">
+            </div>
+          </div>
+
+          <div style="flex:1.4; border-right:2px solid #e2e8f0; padding-right:8px;">
+            <div class="row">
+              <label>תשלום חודשי:</label>
+              <input type="text" id="monthlyPayment" class="short currency-input" placeholder="₪">
+              <label>נכון ליום:</label>
+              <input type="date" id="calcDate" class="medium">
+            </div>
+            <div class="row">
+              <label>תשלום מדורג:</label>
+              <input type="text" id="gradedPayment" class="short currency-input" placeholder="₪">
+              <label>למשך:</label>
+              <input type="number" id="gradedMonths" class="mini" value="3">
+              <label>חודשים</label>
+            </div>
+            <div class="row" style="background:#ecfeff; padding:4px; border-radius:6px; border:1px solid #a5f3fc;">
+              <label class="text-green">סה"כ:</label>
+              <input type="text" id="totalToPay" class="short currency-input text-green" readonly>
+              <label>חודשים מהצו:</label>
+              <input type="text" id="monthsSinceOrder" class="mini" readonly>
+            </div>
+          </div>
+        </div>
+
+        <hr style="border-top:1px dashed #cbd5e1; margin:6px 0;">
+        <div style="background:#fffbeb; padding:4px; border-radius:6px; border:1px solid #fde68a;">
+          <div class="sub-title" style="margin-top:0; color:#b45309;">החלטות ממונה (עדכון צו)</div>
+          
+          <div class="row">
+            <label>תאריך החלטה:</label><input type="date" id="commDecDate">
+            <label>סכום קבוע:</label><input type="text" id="commNewFixed" class="short currency-input">
+            
+            <label style="margin-right:8px;"><input type="checkbox" id="chkCustomDate" onchange="toggleField('commEffectiveDate', this.checked)"> תחולה מותאמת</label>
+            <input type="date" id="commEffectiveDate" class="medium" disabled>
+          </div>
+
+          <div class="row">
+            <label style="font-weight:bold;">תשלום מדורג:</label>
+            <input type="text" id="commGradedAmt" class="short currency-input">
+            <label>מיום:</label><input type="date" id="commGradedDate">
+            <label>למשך:</label><input type="number" id="commGradedDur" class="mini"><label>חוד'</label>
+          </div>
+          
+          <div class="row">
+            <label>הערות הממונה:</label>
+            <input type="text" class="flex-1" placeholder="הערות להחלטה...">
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-main">
+
+        <div>
+          <div class="card" id="debtorBlock">
+            <div class="section-title">
+              הכנסות החייב
+              <label style="font-size:11px; color:#b91c1c;">
+                <input type="checkbox" onchange="toggleLock('debtorInputs', this.checked)"> החייב אינו עובד
+              </label>
+            </div>
+            
+            <div id="debtorInputs">
+              <div class="row" style="flex-wrap:nowrap; gap:4px;">
+                <input type="text" class="short" placeholder="מקצוע">
+                <input type="text" class="medium" placeholder="מקום עבודה">
+                <input type="text" class="short" placeholder="היקף משרה">
+                <input type="text" id="debtorNet" class="short currency-input text-green" placeholder="נטו">
+              </div>
+              
+              <div class="row">
+                <input type="text" class="short currency-input" placeholder="פוטנציאל">
+                <input type="text" class="flex-1" placeholder="הערות...">
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:6px; font-size:11px; align-items:center;">
+              <label><input type="checkbox"> נכות</label>
+              <label><input type="checkbox"> ה.הכנסה</label>
+              <label><input type="checkbox"> סיוע בשכ"ד</label>
+              <div style="flex:1;"></div> <label>סה"כ קצבאות:</label>
+              <input type="text" id="totalAllow" class="short currency-input">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              הכנסות בן/ת הזוג
+              <label style="font-size:11px; color:#b91c1c;">
+                <input type="checkbox" onchange="toggleLock('spouseInputs', this.checked)"> אינו/ה עובד/ת
+              </label>
+            </div>
+            <div id="spouseInputs" class="row" style="flex-wrap:nowrap;">
+              <input type="text" class="medium" placeholder="מקצוע">
+              <input type="text" id="spouseNet" class="short currency-input text-green" placeholder="נטו">
+              <input type="text" class="flex-1" placeholder="הערות...">
+            </div>
+            
+            <div class="row" style="justify-content:flex-end; margin-top:8px; padding-top:4px; border-top:1px solid #e2e8f0;">
+              <label>סה"כ הכנסות:</label>
+              <input type="text" id="grandTotalIncome" class="short currency-input text-green" readonly>
+              <div style="width:20px;"></div>
+              <label>סה"כ הוצאות:</label>
+              <input type="text" id="grandTotalExpenses" class="short currency-input text-red">
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="sub-title" style="margin-top:0;">פרטים אישיים ומזונות</div>
+            <div class="row">
+              <label>מצב משפחתי:</label>
+              <select class="short"><option>נשוי</option><option>רווק</option><option>גרוש</option></select>
+              <label>ילדים:</label><input type="number" class="mini">
+              
+              <label>מזונות:</label>
+              <input type="checkbox" id="chkAlimony" onchange="toggleField('valAlimony', this.checked)">
+              <input type="text" id="valAlimony" class="short currency-input" disabled>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="section-title">התנהלות וחובות</div>
+            
+            <div class="sub-title">התנהלות</div>
+            <div class="row">
+              <label><input type="radio" name="rep" checked> כסדרם</label>
+              <label><input type="radio" name="rep"> חלקי</label>
+              <label><input type="radio" name="rep"> לא הוגשו</label>
+            </div>
+            <div class="row"><input type="text" class="flex-1" placeholder="הערות..."></div>
+
+            <div class="row" style="background:#f1f5f9; padding:4px; border-radius:6px; flex-wrap:nowrap; margin-top:4px;">
+              <div class="label-stack">מסמכים<br>חסרים</div>
+              <select class="tiny" style="width:40px;"><option>לא</option><option>כן</option></select>
+              
+              <div style="width:10px; border-right:1px solid #ccc; height:20px; margin:0 5px;"></div>
+              
+              <div class="label-stack">כמות<br>פיגורים</div>
+              <input type="number" class="tiny">
+              
+              <div class="label-stack">סך<br>פיגורים</div>
+              <input type="text" class="short currency-input text-red">
+            </div>
+
+            <div class="sub-title">חובות</div>
+            <div class="row">
+              <label>מס' נושים:</label><input type="number" class="tiny">
+              <label>סכום חוב:</label><input type="text" class="short currency-input">
+            </div>
+            <div class="row" style="justify-content:center; background:#fff1f2; padding:2px; border-radius:4px;">
+              <label class="text-red">דין קדימה:</label>
+              <input type="text" class="medium currency-input">
+            </div>
+            <div class="row" style="margin-top:4px;">
+              <label><input type="checkbox" onchange="toggleField('valNonDis', this.checked)"> חובות לא ברי הפטר</label>
+              <input type="text" id="valNonDis" class="short currency-input" disabled>
+            </div>
+
+            <div class="sub-title">נכסים</div>
+            <div class="row" style="flex-wrap:nowrap; align-items:flex-end;">
+              <div class="label-stack" style="text-align:right;">דירת<br>מגורים</div>
+              <input type="checkbox" style="margin-bottom:5px;">
+              <input type="text" class="flex-1 currency-input" placeholder="הערכת שווי">
+            </div>
+            <div class="row">
+              <label><input type="checkbox"> רכב</label>
+              <label><input type="checkbox"> זכויות</label>
+              <label><input type="checkbox"> אחר</label>
+              <input type="text" class="flex-1 currency-input" placeholder="שווי מימוש">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">סיכום והמלצות</div>
+        
+        <div class="recom-block">
+          <div class="sub-title" style="margin-top:0;">תוכנית הנאמן</div>
+          <div class="recom-grid">
+            <div><label>סכום חודשי</label><input type="text" class="currency-input" id="trusM"></div>
+            <div><label>למשך (חוד')</label><input type="number" id="trusD"></div>
+            <div><label>סה"כ תוכנית</label><input type="text" class="currency-input" id="trusTot" readonly style="background:#dcfce7;"></div>
+            <div><label>תוספת נכסים</label><input type="text" class="currency-input" id="trusAdd"></div>
+            <div><label>סה"כ לקופה</label><input type="text" class="currency-input" id="trusGrand" readonly style="font-weight:900;"></div>
+          </div>
+          <div class="row">
+            <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הנאמן..."></textarea>
+          </div>
+        </div>
+
+        <div class="recom-block comm">
+          <div class="sub-title" style="margin-top:0;">תוכנית הממונה</div>
+          <div class="recom-grid">
+            <div><label>סכום חודשי</label><input type="text" class="currency-input" id="commM"></div>
+            <div><label>למשך (חוד')</label><input type="number" id="commD"></div>
+            <div><label>סה"כ תוכנית</label><input type="text" class="currency-input" id="commTot" readonly style="background:#ffffff;"></div>
+            <div><label>הערה/תוספת</label><input type="text" placeholder="הערה קצרה"></div>
+            <div><label>סה"כ לקופה</label><input type="text" class="currency-input" id="commGrand" readonly style="font-weight:900;"></div>
+          </div>
+          <div class="row">
+            <textarea rows="2" class="flex-1" placeholder="תמצית עמדת הממונה..."></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card" style="page-break-inside: avoid;">
+        <div class="sub-title">מחשבון עזר</div>
+        <iframe src="payment-order-calculator.html" style="width:100%; height:320px; border:none; border-radius:8px;"></iframe>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    // --- לוגיקה וחישובים --- //
+
+    // 1. אתחול
+    document.addEventListener("DOMContentLoaded", () => {
+       document.getElementById('calcDate').valueAsDate = new Date();
+       setupCurrency();
+       setupCalculations();
+    });
+
+    // 2. פונקציות עזר ויזואליות
+    function toggleField(id, state) {
+      const el = document.getElementById(id);
+      el.disabled = !state;
+      if(!state) el.value = '';
+    }
+
+    function toggleLock(containerId, state) {
+      const el = document.getElementById(containerId);
+      if(state) {
+        el.classList.add('locked-section');
+        el.querySelectorAll('input').forEach(i => i.value = '');
+      } else {
+        el.classList.remove('locked-section');
+      }
+      calcIncomeTotal(); // חישוב מחדש
+    }
+
+    // 3. טיפול במטבע (ש"ח ופסיקים)
+    function setupCurrency() {
+      document.querySelectorAll('.currency-input').forEach(input => {
+        input.addEventListener('blur', function() {
+          let val = this.value.replace(/[^\d.]/g, '');
+          if(val) this.value = parseFloat(val).toLocaleString('he-IL') + ' ₪';
+        });
+        input.addEventListener('focus', function() {
+          this.value = this.value.replace(/[^\d.]/g, '');
+        });
+      });
+    }
+    
+    function parseVal(val) {
+      if(!val) return 0;
+      return parseFloat(val.replace(/[^\d.]/g, '')) || 0;
+    }
+
+    // 4. כל החישובים בדף
+    function setupCalculations() {
+      // האזנה לחישוב הכנסות
+      ['debtorNet', 'spouseNet', 'totalAllow'].forEach(id => {
+        document.getElementById(id).addEventListener('blur', calcIncomeTotal);
+      });
+
+      // האזנה לחישובי המלצות (נאמן/ממונה)
+      ['trus', 'comm'].forEach(p => {
+        const m = document.getElementById(p+'M');
+        const d = document.getElementById(p+'D');
+        const a = document.getElementById(p+'Add') || {value:0}; // dummy if not exists
+        
+        const run = () => {
+          const mon = parseVal(m.value);
+          const dur = parseFloat(d.value) || 0;
+          const add = p === 'trus' ? parseVal(a.value) : 0; // תוספת רלוונטית לנאמן
+          
+          const sum = mon * dur;
+          document.getElementById(p+'Tot').value = sum.toLocaleString() + ' ₪';
+          document.getElementById(p+'Grand').value = (sum + add).toLocaleString() + ' ₪';
+        };
+        
+        if(m) m.addEventListener('blur', run);
+        if(d) d.addEventListener('input', run);
+        if(p==='trus' && a) a.addEventListener('blur', run);
+      });
+
+      // האזנה לחישוב ציר הזמן (Timeline)
+      const timelineInputs = [
+        'orderDate', 'calcDate', 'monthlyPayment', 'gradedPayment', 'gradedMonths',
+        'commDecDate', 'commNewFixed', 'chkCustomDate', 'commEffectiveDate',
+        'commGradedAmt', 'commGradedDate', 'commGradedDur'
+      ];
+      
+      timelineInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          el.addEventListener('blur', calcTimeline);
+          if(el.type !== 'text') el.addEventListener('change', calcTimeline);
+        }
+      });
+    }
+
+    function calcIncomeTotal() {
+      const d = parseVal(document.getElementById('debtorNet').value);
+      const s = parseVal(document.getElementById('spouseNet').value);
+      const a = parseVal(document.getElementById('totalAllow').value);
+      document.getElementById('grandTotalIncome').value = (d+s+a).toLocaleString() + ' ₪';
+    }
+
+    // --- ה"מוח" של המחשבון (לוגיקה מלאה) --- //
+    function calcTimeline() {
+      const orderDateStr = document.getElementById('orderDate').value;
+      const calcDateStr = document.getElementById('calcDate').value;
+      if(!orderDateStr || !calcDateStr) return;
+
+      const start = new Date(orderDateStr);
+      const end = new Date(calcDateStr);
+      
+      // תאריך תשלום ראשון = חודש אחרי הצו
+      const firstPay = new Date(start);
+      firstPay.setMonth(start.getMonth() + 1);
+      
+      // נתוני בסיס
+      const baseMon = parseVal(document.getElementById('monthlyPayment').value);
+      const baseGrad = parseVal(document.getElementById('gradedPayment').value);
+      const baseGradMonths = parseInt(document.getElementById('gradedMonths').value) || 3;
+
+      // נתוני ממונה
+      const commFixed = parseVal(document.getElementById('commNewFixed').value);
+      const commDateRaw = document.getElementById('commDecDate').value;
+      const commCustom = document.getElementById('chkCustomDate').checked;
+      const commEffRaw = document.getElementById('commEffectiveDate').value;
+      
+      // קביעת תאריך תחולה לקבוע החדש
+      let commEffDate = null;
+      if(commFixed > 0 && (commDateRaw || (commCustom && commEffRaw))) {
+        commEffDate = new Date(commCustom && commEffRaw ? commEffRaw : commDateRaw);
+      }
+
+      // נתוני ממונה - מדורג
+      const cGradAmt = parseVal(document.getElementById('commGradedAmt').value);
+      const cGradStartStr = document.getElementById('commGradedDate').value;
+      const cGradDur = parseInt(document.getElementById('commGradedDur').value) || 0;
+      
+      let cGradStart = null;
+      let cGradEnd = null;
+      if(cGradAmt > 0 && cGradStartStr && cGradDur > 0) {
+        cGradStart = new Date(cGradStartStr);
+        cGradEnd = new Date(cGradStart);
+        cGradEnd.setMonth(cGradEnd.getMonth() + cGradDur);
+      }
+
+      // הרצה על ציר הזמן
+      let total = 0;
+      let months = 0;
+      let curr = new Date(firstPay);
+      curr.setDate(1); // נרמול ל-1 בחודש
+      
+      let safety = 0;
+      while(curr <= end && safety < 300) {
+        months++;
+        let monthPay = 0;
+
+        // היררכיה:
+        // 1. האם יש מדורג ממונה פעיל?
+        let isCG = false;
+        if(cGradStart && cGradEnd && curr >= cGradStart && curr < cGradEnd) {
+          monthPay = cGradAmt;
+          isCG = true;
+        }
+
+        if(!isCG) {
+          // 2. האם יש קבוע ממונה פעיל?
+          let isCF = false;
+          if(commEffDate && curr >= commEffDate) {
+             monthPay = commFixed;
+             isCF = true;
+          }
+
+          if(!isCF) {
+             // 3. בדיקת מדורג מקורי (לפי חודשים מתחילת תשלום)
+             if(months <= baseGradMonths && baseGrad > 0) {
+                monthPay = baseGrad;
+             } else {
+                monthPay = baseMon;
+             }
+          }
+        }
+        
+        total += monthPay;
+        curr.setMonth(curr.getMonth() + 1);
+        safety++;
+      }
+
+      document.getElementById('monthsSinceOrder').value = months;
+      document.getElementById('totalToPay').value = total.toLocaleString() + ' ₪';
+    }
+
+  </script>
 </body>
 </html>
