@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Insolvency Smart Tools – מסך פיתוח (DEV)</title>
+  <title>Insolvency Smart Tools – DEV</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -11,81 +11,70 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #e0f2fe, #e5e7eb 55%, #e5e7eb 100%);
-      color: #0f172a;
+      background: #f3f4f6;
       direction: rtl;
       text-align: right;
-      min-height: 100vh;
-      padding: 24px 12px 32px;
-      display: flex;
-      justify-content: center;
+      color: #111827;
+      padding: 16px 8px 24px;
     }
 
-    .shell {
-      width: 100%;
-      max-width: 980px;
-      background: #f9fafb;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
-      padding: 20px 22px 22px;
-      border: 1px solid #dbeafe;
+    .wrapper {
+      max-width: 920px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      padding: 14px 16px 16px;
     }
 
-    .top-line {
+    .header-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
       gap: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
 
     .title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
-      color: #0f172a;
     }
 
     .env-pill {
       font-size: 11px;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid #f97316;
-      color: #9a3412;
+      border: 1px solid #fb923c;
       background: #ffedd5;
+      color: #9a3412;
       white-space: nowrap;
     }
 
     .subtitle {
-      font-size: 12px;
+      font-size: 11px;
       color: #4b5563;
-      margin-bottom: 18px;
-      line-height: 1.4;
-    }
-
-    .subtitle strong {
-      color: #111827;
+      margin-bottom: 10px;
     }
 
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 14px;
-      margin-bottom: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
     }
 
     .project-card {
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 12px 12px 14px;
+      border-radius: 10px;
       border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      padding: 8px 9px;
+      background: #f9fafb;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .proj-header-line {
+    .proj-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -93,68 +82,54 @@
     }
 
     .proj-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      color: #111827;
     }
 
     .proj-tag {
-      font-size: 11px;
-      color: #2563eb;
-      background: #eff6ff;
-      padding: 2px 8px;
+      font-size: 10px;
+      padding: 1px 7px;
       border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
       white-space: nowrap;
     }
 
     .proj-desc {
       font-size: 11px;
-      color: #4b5563;
-      line-height: 1.4;
-      min-height: 30px;
+      color: #6b7280;
     }
 
     .btn-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
       margin-top: 4px;
     }
 
-    .btn-main {
-      border-radius: 999px;
-      padding: 5px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #022c22;
-      text-decoration: none;
+    .btn-main,
+    .btn-secondary {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      border: none;
-      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+      gap: 3px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-decoration: none;
       white-space: nowrap;
     }
 
-    .btn-main span.icon {
-      font-size: 14px;
+    .btn-main {
+      background: #22c55e;
+      color: #022c22;
+      border: 1px solid #16a34a;
     }
 
     .btn-secondary {
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 11px;
-      border: 1px dashed #9ca3af;
       background: #f9fafb;
       color: #4b5563;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      border: 1px dashed #d1d5db;
       cursor: default;
-      white-space: nowrap;
     }
 
     .btn-secondary.ready {
@@ -165,138 +140,126 @@
       background: #eff6ff;
     }
 
-    .btn-secondary span.icon {
+    .btn-icon {
       font-size: 12px;
     }
 
     .footer-note {
-      font-size: 11px;
+      font-size: 10px;
       color: #6b7280;
+      margin-top: 10px;
       text-align: left;
-      margin-top: 8px;
     }
 
     a { color: inherit; }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="top-line">
-      <div class="title">Insolvency Smart Tools – מסך פיתוח (DEV)</div>
-      <div class="env-pill">לשימוש פנימי בלבד – לא ללקוחות</div>
+  <div class="wrapper">
+    <div class="header-line">
+      <div class="title">Insolvency Smart Tools – מסך פיתוח</div>
+      <div class="env-pill">DEV • לשימוש פנימי בלבד</div>
     </div>
-
     <div class="subtitle">
-      דף זה מרכז את <strong>גרסאות הפיתוח</strong> של המחשבים והטפסים.
-      כל בלוק מייצג פרויקט, עם כפתור לגרסה 1 (ובעתיד – גם v2, v3 וכו').
-      הגרסאות היציבות ללקוחות נפתחות מהדף הראשי בלבד.
+      כאן מוצגות רק <strong>גרסאות ניסוי נבחרות</strong> לכל פרויקט (עד 3 גרסאות).
+      הגרסאות היציבות ללקוחות נמצאות בדף הראשי.
     </div>
 
     <div class="projects-grid">
 
-      <!-- צו שיקום – יש גרסת DEV אמיתית -->
+      <!-- צו שיקום – שלוש גרסאות פיתוח -->
       <div class="project-card">
-        <div class="proj-header-line">
+        <div class="proj-header">
           <div class="proj-title">צו שיקום – דו"ח מסכם</div>
           <div class="proj-tag">Rehab • DEV</div>
         </div>
         <div class="proj-desc">
-          טופס דו"ח מסכם לדיון צו שיקום כלכלי. כרגע פתוחה גרסת פיתוח 1 (rehab-v1).
+          גרסאות פיתוח נבחרות של טופס דו&quot;ח מסכם לדיון צו שיקום.
         </div>
         <div class="btn-row">
+          <!-- rehab-v1.html = צו שיקום – גרסת פיתוח 1 -->
           <a class="btn-main"
              href="/insolvency-smart-tools/dev/versions/rehab/rehab-v1.html"
              target="_blank">
-            <span class="icon">➤</span> גרסה 1 – rehab-v1
+            <span class="btn-icon">➤</span> גרסה 1 – rehab-v1
           </a>
-          <!-- כשתהיה גרסה יציבה:
+
+          <!-- rehab-v2.html = צו שיקום – גרסת פיתוח 2 -->
           <a class="btn-secondary ready"
-             href="/insolvency-smart-tools/rehab-stable.html"
+             href="/insolvency-smart-tools/dev/versions/rehab/rehab-v2.html"
              target="_blank">
-            <span class="icon">★</span> גרסה יציבה ללקוחות
+            <span class="btn-icon">➤</span> גרסה 2 – rehab-v2
           </a>
-          -->
+
+          <!-- rehab-v3.html = צו שיקום – גרסת פיתוח 3 -->
+          <a class="btn-secondary ready"
+             href="/insolvency-smart-tools/dev/versions/rehab/rehab-v3.html"
+             target="_blank">
+            <span class="btn-icon">➤</span> גרסה 3 – rehab-v3
+          </a>
         </div>
       </div>
 
-      <!-- צו תשלומים – בינתיים רק שלד -->
+      <!-- צו תשלומים – מקום לגרסאות עתידיות -->
       <div class="project-card">
-        <div class="proj-header-line">
+        <div class="proj-header">
           <div class="proj-title">צו תשלומים</div>
           <div class="proj-tag">Payment Order • DEV</div>
         </div>
         <div class="proj-desc">
-          כאן יופיעו גרסאות הפיתוח של מחשבון צו תשלומים (v1, v2...). כרגע בבנייה.
+          כאן יוצגו גרסאות הפיתוח הנבחרות של מחשבון צו תשלומים.
         </div>
-     <div class="btn-row">
-
-  <!-- גרסה 1 – פעילה -->
-  <a class="btn-main"
-     href="/insolvency-smart-tools/dev/versions/rehab/rehab-v1.html"
-     target="_blank">
-    <span class="icon">➤</span> גרסה 1 – rehab-v1
-  </a>
-
-  <!-- גרסה 2 – נבחרת -->
-  <a class="btn-secondary ready"
-     href="/insolvency-smart-tools/dev/versions/rehab/rehab-v2.html"
-     target="_blank">
-    <span class="icon">➤</span> גרסה 2 – rehab-v2
-  </a>
-
-  <!-- גרסה 3 – נבחרת -->
-  <a class="btn-secondary ready"
-     href="/insolvency-smart-tools/dev/versions/rehab/rehab-v3.html"
-     target="_blank">
-    <span class="icon">➤</span> גרסה 3 – rehab-v3
-  </a>
-
-</div>
+        <div class="btn-row">
+          <div class="btn-secondary">
+            <span class="btn-icon">⏳</span> גרסה 1 – בבנייה
+          </div>
+        </div>
+      </div>
 
       <!-- שכר טרחה -->
       <div class="project-card">
-        <div class="proj-header-line">
+        <div class="proj-header">
           <div class="proj-title">שכר טרחה</div>
           <div class="proj-tag">Fees • DEV</div>
         </div>
         <div class="proj-desc">
-          כאן ירוכזו גרסאות הניסוי של מחשבון שכר טרחה. אפשר להוסיף כפתור ברגע שתיצור קובץ v1.
+          גרסאות ניסוי של מחשבון שכר טרחה יוצגו כאן בהמשך.
         </div>
         <div class="btn-row">
           <div class="btn-secondary">
-            <span class="icon">⏳</span> גרסה 1 – בבנייה
+            <span class="btn-icon">⏳</span> גרסה 1 – בבנייה
           </div>
         </div>
       </div>
 
       <!-- דו"ח מסכם כללי -->
       <div class="project-card">
-        <div class="proj-header-line">
-          <div class="proj-title">דו"ח מסכם כללי</div>
+        <div class="proj-header">
+          <div class="proj-title">דו&quot;ח מסכם כללי</div>
           <div class="proj-tag">Summary Report • DEV</div>
         </div>
         <div class="proj-desc">
-          פרויקט דו&quot;ח מסכם כללי (לא רק צו שיקום). כרגע בהגדרה ובפיתוח.
+          פרויקט דו&quot;ח מסכם כללי – יתווספו כאן גרסאות v1–v3 כאשר ייבנו.
         </div>
         <div class="btn-row">
           <div class="btn-secondary">
-            <span class="icon">⏳</span> גרסה 1 – בבנייה
+            <span class="btn-icon">⏳</span> גרסה 1 – בבנייה
           </div>
         </div>
       </div>
 
       <!-- חילוץ נתונים מ-PDF -->
       <div class="project-card">
-        <div class="proj-header-line">
-          <div class="proj-title">חילוץ נתונים ממסמך PDF</div>
+        <div class="proj-header">
+          <div class="proj-title">חילוץ נתונים מ-PDF</div>
           <div class="proj-tag">PDF Extract • DEV</div>
         </div>
         <div class="proj-desc">
-          מערכת לחילוץ נתונים אוטומטי מדוח PDF והעברה לטופס מוכן. יהיה כאן כפתור כשתהיה גרסה ראשונית.
+          מערכת לחילוץ נתונים מדוחות PDF. כפתורי גרסה יופיעו כאן לאחר פיתוח.
         </div>
         <div class="btn-row">
           <div class="btn-secondary">
-            <span class="icon">⏳</span> גרסה 1 – בבנייה
+            <span class="btn-icon">⏳</span> גרסה 1 – בבנייה
           </div>
         </div>
       </div>
@@ -304,9 +267,10 @@
     </div>
 
     <div class="footer-note">
-      הערה: כדי להפעיל כפתור לגרסה חדשה, צור קובץ מתאים בתיקיית
+      טיפ: להוספת גרסה נבחרת חדשה, צור קובץ ב־
       <code>dev/versions/&lt;project&gt;/</code>
-      ועדכן כאן את ה-href.
+      (למשל <code>rehab-v4.html</code>)
+      ועדכן כאן כפתור נוסף.
     </div>
   </div>
 </body>
