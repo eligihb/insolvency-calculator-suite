@@ -1,6 +1,418 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
+  <meta charset="UTF-8" />
+  <title>דו"ח מסכם – חדלות פירעון</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      direction: rtl;
+      text-align: right;
+      background: #e5e7eb;
+      font-size: 12px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 12px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      padding: 14px 18px 16px;
+    }
+
+    .header-main {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .header-main h1 {
+      font-size: 18px;
+      margin: 0 0 4px;
+    }
+
+    .header-main .sub {
+      font-size: 11px;
+      color: #4b5563;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .label {
+      font-size: 11px;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      font-size: 11px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      min-width: 0;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    .short   { width: 80px; }
+    .medium  { width: 140px; }
+    .long    { width: 220px; }
+
+    .section {
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 3px;
+    }
+
+    .small {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .cols-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 8px;
+    }
+
+    .cols-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .pill-group {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 1px 8px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .pill input {
+      margin: 0;
+    }
+
+    .summary-box {
+      border-radius: 6px;
+      border: 1px dashed #9ca3af;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .summary-label {
+      color: #374151;
+    }
+
+    .summary-value {
+      min-width: 90px;
+    }
+
+    .sign-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+
+    .sign-block {
+      flex: 1 1 0;
+    }
+
+    .sign-line {
+      border-top: 1px solid #9ca3af;
+      margin-top: 18px;
+      padding-top: 2px;
+      text-align: center;
+      font-size: 11px;
+      color: #4b5563;
+    }
+
+    .buttons {
+      text-align: left;
+      margin-top: 8px;
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      body {
+        background: #ffffff;
+      }
+      .page {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        max-width: 100%;
+        padding: 0;
+      }
+      .buttons { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header-main">
+      <h1>דו"ח מסכם – חדלות פירעון</h1>
+      <div class="sub">
+        טופס עבודה מסכם לפני דיון / החלטה, למילוי על ידי הממונה / נאמן.
+      </div>
+    </div>
+
+    <!-- 1. פרטי תיק -->
+    <div class="section">
+      <div class="section-title">1. פרטי תיק</div>
+
+      <div class="row">
+        <span class="label">בית משפט:</span>
+        <input type="text" class="medium">
+        <span class="label">מס' תיק בימ"ש:</span>
+        <input type="text" class="medium">
+      </div>
+
+      <div class="row">
+        <span class="label">תיק ממונה / נאמן:</span>
+        <input type="text" class="medium">
+        <span class="label">שם החייב/ת:</span>
+        <input type="text" class="medium">
+      </div>
+
+      <div class="row">
+        <span class="label">שם הנאמן:</span>
+        <input type="text" class="medium">
+        <span class="label">שם הממונה:</span>
+        <input type="text" class="medium">
+      </div>
+
+      <div class="row">
+        <span class="label">שופט/ת:</span>
+        <input type="text" class="medium">
+        <span class="label">תאריך הדיון:</span>
+        <input type="date" class="short">
+        <span class="label">שעה:</span>
+        <input type="text" class="short">
+      </div>
+
+      <div class="row">
+        <span class="label">סוג ההליך:</span>
+        <div class="pill-group">
+          <label class="pill"><input type="radio" name="caseType"> יחיד</label>
+          <label class="pill"><input type="radio" name="caseType"> תאגיד</label>
+          <label class="pill"><input type="radio" name="caseType"> הליך משולב / מיוחד</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. תמונת מצב כלכלית -->
+    <div class="section">
+      <div class="section-title">2. תמונת מצב כלכלית (ראשי פרקים)</div>
+
+      <div class="cols-2">
+        <div>
+          <div class="row">
+            <span class="label">סה"כ חובות לפי תביעות חוב:</span>
+            <input type="text" class="medium">
+          </div>
+          <div class="row">
+            <span class="label">מתוכם – חובות בדין קדימה:</span>
+            <input type="text" class="medium">
+          </div>
+          <div class="row">
+            <span class="label">חובות שאינם ברי הפטר (מזונות / עונשין / אחרים):</span>
+          </div>
+          <div class="row">
+            <input type="text" class="long" placeholder="פירוט קצר + סכום משוער">
+          </div>
+        </div>
+
+        <div>
+          <div class="row">
+            <span class="label">נכסים ידועים:</span>
+          </div>
+          <div class="row">
+            <textarea placeholder="דירת מגורים / רכב / חסכונות / זכויות אחרות (תיאור ותמחור משוער)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">מצב הכנסות–הוצאות:</span>
+        <input type="text" class="long" placeholder="לדוגמה: עודף הכנסה / גרעון חודשי / מאוזן">
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-row">
+          <span class="summary-label">הכנסה חודשית נטו של החייב/ת:</span>
+          <span class="summary-value"><input type="text" class="medium"></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">הכנסה חודשית של בן/בת הזוג:</span>
+          <span class="summary-value"><input type="text" class="medium"></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">מס' ילדים קטינים / תלויים:</span>
+          <span class="summary-value"><input type="number" class="short" min="0"></span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">הוצאות חיוניות משוערות (דיור / מזון / בריאות וכו'):</span>
+          <span class="summary-value"><input type="text" class="medium"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. התנהלות החייב/ת בהליך -->
+    <div class="section">
+      <div class="section-title">3. התנהלות החייב/ת בהליך</div>
+
+      <div class="row">
+        <span class="label">דו"חות חודשיים:</span>
+        <div class="pill-group">
+          <label class="pill"><input type="radio" name="reports"> הוגשו כסדרם</label>
+          <label class="pill"><input type="radio" name="reports"> הוגשו חלקית</label>
+          <label class="pill"><input type="radio" name="reports"> לא הוגשו</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">תשלומים חודשיים:</span>
+        <div class="pill-group">
+          <label class="pill"><input type="radio" name="payments"> שולמו כסדרם</label>
+          <label class="pill"><input type="radio" name="payments"> קיימים פיגורים</label>
+          <label class="pill"><input type="radio" name="payments"> לא שולמו</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="label">היקף הפיגורים (אם יש):</span>
+        <input type="text" class="medium" placeholder="סכום / מספר חודשים">
+      </div>
+
+      <div class="row">
+        <span class="label">שיתוף פעולה עם הממונה / הנאמן:</span>
+      </div>
+      <div class="row">
+        <textarea placeholder="מסירת מסמכים, הגעה לפגישות, גילוי מלא או חסר, נקודות לשבח / לקושי."></textarea>
+      </div>
+    </div>
+
+    <!-- 4. שיקולים מרכזיים -->
+    <div class="section">
+      <div class="section-title">4. שיקולים מרכזיים</div>
+      <div class="row">
+        <textarea placeholder="נסיבות אישיות, בריאותיות ומשפחתיות; נסיבות יצירת החובות; התנהלות לפני פתיחת ההליך; שיקולי תום-לב עיקריים."></textarea>
+      </div>
+    </div>
+
+    <!-- 5. המלצה לסיום ההליך / צו שיקום -->
+    <div class="section">
+      <div class="section-title">5. המלצה לסיום ההליך / צו שיקום</div>
+
+      <div class="row">
+        <span class="label">המלצה עיקרית:</span>
+      </div>
+      <div class="row">
+        <div class="pill-group">
+          <label class="pill"><input type="radio" name="recommend"> מתן צו שיקום כלכלי</label>
+          <label class="pill"><input type="radio" name="recommend"> הארכת תקופת הביניים</label>
+          <label class="pill"><input type="radio" name="recommend"> ביטול ההליך</label>
+          <label class="pill"><input type="radio" name="recommend"> אפשרות אחרת (לפרט)</label>
+        </div>
+      </div>
+
+      <div class="cols-3" style="margin-top: 6px;">
+        <div>
+          <div class="small">הצעת תשלום חודשי:</div>
+          <input type="text" class="medium" placeholder="סכום מוצע">
+        </div>
+        <div>
+          <div class="small">משך מוצע (בחודשים):</div>
+          <input type="number" class="short" min="0">
+        </div>
+        <div>
+          <div class="small">סכום כולל משוער לנושים:</div>
+          <input type="text" class="medium">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top: 6px;">
+        <span class="label">תנאים מיוחדים / הערות להחלטת ביהמ"ש:</span>
+      </div>
+      <div class="row">
+        <textarea placeholder="למשל: הכשרה כלכלית, דרישת הגדלת הכנסה, מימוש נכסים, תנאי פיקוח נוספים."></textarea>
+      </div>
+    </div>
+
+    <!-- חתימות -->
+    <div class="sign-row">
+      <div class="sign-block">
+        <div>תאריך:</div>
+        <input type="date" class="short">
+        <div class="sign-line">הממונה / נציג הממונה</div>
+      </div>
+      <div class="sign-block">
+        <div>תאריך:</div>
+        <input type="date" class="short">
+        <div class="sign-line">הנאמן</div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      מומלץ להדפיס דרך דפדפן (Ctrl+P) ולשמור כ-PDF להגשה.
+    </div>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
   <meta charset="UTF-8">
   <title>דו"ח מסכם – גרסת פיתוח 1</title>
 </head>
