@@ -1,327 +1,153 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Insolvency Smart Tools – DEV</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f8fafc;
-      color: #0f172a;
-      direction: rtl;
-      text-align: right;
-    }
+<meta charset="UTF-8">
+<title>דו"ח מסכם – גרסאות</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .page {
-      max-width: 1100px;
-      margin: 24px auto;
-      padding: 0 12px 32px;
-    }
+<style>
+  body {
+    font-family: 'Heebo', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background:#f5f7fa;
+    direction: rtl;
+    text-align: right;
+  }
 
-    .dev-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid #fed7aa;
-      background: #fff7ed;
-      color: #9a3412;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-    .dev-badge span:first-child { font-weight: 600; }
+  h1 {
+    text-align:center;
+    margin-bottom:25px;
+    font-size:22px;
+    color:#0f172a;
+  }
 
-    h1 {
-      font-size: 22px;
-      margin: 0 0 4px;
-    }
-    .subtitle {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 20px;
-    }
+  .container {
+    max-width:700px;
+    margin:0 auto;
+  }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
+  .card {
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+    box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  }
 
-    .card {
-      background: #ffffff;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      padding: 14px 14px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 4px 10px rgba(15,23,42,0.06);
-    }
+  .card h3 {
+    margin:0 0 10px 0;
+    font-size:16px;
+    color:#0f766e;
+  }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
+  .btn {
+    display:inline-block;
+    background:#0f766e;
+    color:white;
+    padding:8px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    transition:0.2s;
+  }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-    }
+  .btn:hover { background:#0d5f57; }
 
-    .card-tag {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #cbd5e1;
-      color: #475569;
-      background: #f8fafc;
-      white-space: nowrap;
-    }
+  select {
+    width:100%;
+    padding:8px;
+    font-size:14px;
+    border:1px solid #cbd5e1;
+    border-radius:6px;
+    margin-top:8px;
+  }
 
-    .card-desc {
-      font-size: 12px;
-      color: #64748b;
-      min-height: 32px;
-    }
+  .sub-title {
+    margin-top:15px;
+    font-size:14px;
+    font-weight:700;
+    color:#334155;
+  }
+</style>
 
-    .version-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .version-buttons {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3px 10px;
-      border-radius: 999px;
-      border: 1px solid #cbd5e1;
-      font-size: 11px;
-      text-decoration: none;
-      color: #1e293b;
-      background: #ffffff;
-      cursor: pointer;
-    }
-    .pill.primary {
-      background: #2563eb;
-      border-color: #1d4ed8;
-      color: #ffffff;
-      font-weight: 600;
-    }
-    .pill:hover {
-      box-shadow: 0 2px 6px rgba(15,23,42,0.12);
-      transform: translateY(-1px);
-    }
-
-    .version-select {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      color: #64748b;
-    }
-    .version-select select {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      cursor: pointer;
-    }
-
-    .tip {
-      font-size: 11px;
-      color: #94a3b8;
-      margin-top: 10px;
-    }
-  </style>
 </head>
 <body>
-  <div class="page">
-    <div class="dev-badge">
-      <span>DEV</span>
-      <span>לשימוש פנימי בלבד – גרסאות ניסוי</span>
-    </div>
 
-    <h1>Insolvency Smart Tools – מסך פיתוח</h1>
-    <div class="subtitle">
-      כאן תוכל לבדוק גרסאות ניסוי נבחרות של כל פרויקט. הגרסאות הראשיות מופיעות ככפתורים, ומתחת רשימה נפתחת של כל שאר הגרסאות.
-    </div>
+<h1>דו"ח מסכם – בחירת גרסה</h1>
 
-    <div class="grid">
-      <!-- Rehab -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">צו שיקום</div>
-          <div class="card-tag">Rehab • DEV</div>
-        </div>
-        <div class="card-desc">
-          גרסאות ניסוי לטופס צו שיקום כלכלי.
-        </div>
+<div class="container">
 
-        <div class="version-row">
-          <div class="version-buttons">
-            <a class="pill primary" href="versions/rehab/rehab-v1.html">גרסה 1</a>
-            <a class="pill" href="versions/rehab/rehab-v2.html">גרסה 2</a>
-            <a class="pill" href="versions/rehab/rehab-v3.html">גרסה 3</a>
-          </div>
-          <div class="version-select">
-            <span>כל הגרסאות:</span>
-            <select data-base="versions/rehab/">
-              <option value="">בחר…</option>
-              <option value="rehab-v1.html">rehab-v1</option>
-              <option value="rehab-v2.html">rehab-v2</option>
-              <option value="rehab-v3.html">rehab-v3</option>
-              <!-- להוסיף כאן שורות לגרסאות חדשות -->
-            </select>
-          </div>
-        </div>
-      </div>
+  <!-- כרטיס של הגרסאות הקבועות -->
+  <div class="card">
+    <h3>גרסאות קבועות</h3>
 
-      <!-- Payment Order -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">צו תשלומים</div>
-          <div class="card-tag">Payment Order • DEV</div>
-        </div>
-        <div class="card-desc">
-          גרסאות ניסוי למחשבון צו תשלומים.
-        </div>
+    <a class="btn" href="summary-v1.html">גרסה 1</a>
+    <br><br>
 
-        <div class="version-row">
-          <div class="version-buttons">
-            <a class="pill primary" href="versions/payment-order/payment-order-v1.html">גרסה 1</a>
-            <a class="pill" href="versions/payment-order/payment-order-v2.html">גרסה 2</a>
-            <a class="pill" href="versions/payment-order/payment-order-v3.html">גרסה 3</a>
-          </div>
-          <div class="version-select">
-            <span>כל הגרסאות:</span>
-            <select data-base="versions/payment-order/">
-              <option value="">בחר…</option>
-              <option value="payment-order-v1.html">payment-order-v1</option>
-              <option value="payment-order-v2.html">payment-order-v2</option>
-              <option value="payment-order-v3.html">payment-order-v3</option>
-              <option value="payment-order-p1.html">payment-order-p1 (מחשבון שתול)</option>
-              <!-- אפשר להוסיף עוד -->
-            </select>
-          </div>
-        </div>
-      </div>
+    <a class="btn" href="summary-v2.html">גרסה 2</a>
+    <br><br>
 
-      <!-- Fees -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">שכר טרחה</div>
-          <div class="card-tag">Fees • DEV</div>
-        </div>
-        <div class="card-desc">
-          גרסאות ניסוי של מחשבון שכר טרחה.
-        </div>
-
-        <div class="version-row">
-          <div class="version-buttons">
-            <a class="pill primary" href="versions/fees/fees-v1.html">גרסה 1</a>
-            <a class="pill" href="versions/fees/fees-v2.html">גרסה 2</a>
-            <a class="pill" href="versions/fees/fees-v3.html">גרסה 3</a>
-          </div>
-          <div class="version-select">
-            <span>כל הגרסאות:</span>
-            <select data-base="versions/fees/">
-              <option value="">בחר…</option>
-              <option value="fees-v1.html">fees-v1</option>
-              <option value="fees-v2.html">fees-v2</option>
-              <option value="fees-v3.html">fees-v3</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary Report -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">דו"ח מסכם</div>
-          <div class="card-tag">Summary Report • DEV</div>
-        </div>
-        <div class="card-desc">
-          טופס דו"ח מסכם לדיון צו שיקום (טופס 1000) בגרסאות ניסוי.
-        </div>
-
-        <div class="version-row">
-          <div class="version-buttons">
-            <a class="pill primary" href="versions/summary-report/summary-report-v1.html">גרסה 1</a>
-            <a class="pill" href="versions/summary-report/summary-report-v2.html">גרסה 2</a>
-            <a class="pill" href="versions/summary-report/summary-report-v3.html">גרסה 3</a>
-          </div>
-          <div class="version-select">
-            <span>כל הגרסאות:</span>
-            <select data-base="versions/summary-report/">
-              <option value="">בחר…</option>
-              <option value="summary-report-v1.html">summary-report-v1</option>
-              <option value="summary-report-v2.html">summary-report-v2</option>
-              <option value="summary-report-v3.html">summary-report-v3</option>
-              <!-- להוסיף כאן שורות לגרסאות נוספות -->
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- PDF Extract -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">חילוץ נתונים מ-PDF</div>
-          <div class="card-tag">PDF Extract • DEV</div>
-        </div>
-        <div class="card-desc">
-          כלי ניסוי לחילוץ נתונים מתוך דו"חות PDF.
-        </div>
-
-        <div class="version-row">
-          <div class="version-buttons">
-            <a class="pill primary" href="versions/pdf-extract/pdf-extract-v1.html">גרסה 1</a>
-          </div>
-          <div class="version-select">
-            <span>כל הגרסאות:</span>
-            <select data-base="versions/pdf-extract/">
-              <option value="">בחר…</option>
-              <option value="pdf-extract-v1.html">pdf-extract-v1</option>
-              <!-- אם תוסיף עוד גרסאות, תוסיף כאן -->
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tip">
-      טיפ: להוספת גרסה חדשה – צור קובץ חדש בתיקיית ‎<code>dev/versions/&lt;project&gt;</code>‎
-      והוסף אותה כ-<code>&lt;option&gt;</code> ברשימה הנפתחת של אותו פרויקט.
-    </div>
+    <a class="btn" href="summary-v3.html">גרסה 3</a>
   </div>
 
-  <script>
-    // מעבר אוטומטי לגרסה שנבחרה ברשימה הנפתחת
-    document.querySelectorAll('.version-select select').forEach(function (sel) {
-      sel.addEventListener('change', function () {
-        if (!this.value) return;
-        var base = this.dataset.base || '';
-        window.location.href = base + this.value;
-      });
+  <!-- רשימה נפתחת של כל הגרסאות -->
+  <div class="card">
+    <h3>כל הגרסאות מהתיקייה</h3>
+
+    <select id="allVersions">
+      <option value="">בחר גרסה…</option>
+    </select>
+  </div>
+
+</div>
+
+
+<script>
+// טעינת קבצים מהתיקייה ב-GitHub
+async function loadVersions() {
+  const user = "eligihb";
+  const repo = "insolvency-smart-tools";
+  const branch = "main";
+  const folder = "dev/versions/summary-report/";
+
+  const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${folder}?ref=${branch}`;
+
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+
+    const select = document.getElementById("allVersions");
+
+    data.forEach(file => {
+      if (file.type === "file" && file.name.endsWith(".html")) {
+
+        // דלג על הגרסאות הקבועות שכבר מוצגות ידנית
+        if (["summary-v1.html","summary-v2.html","summary-v3.html"].includes(file.name))
+          return;
+
+        const opt = document.createElement("option");
+        opt.value = file.name;
+        opt.textContent = file.name.replace(".html","");
+        select.appendChild(opt);
+      }
     });
-  </script>
+
+  } catch (err) {
+    console.error("שגיאה בטעינת הגרסאות:", err);
+  }
+}
+
+loadVersions();
+
+// מעבר לגרסה שנבחרה
+document.getElementById("allVersions").addEventListener("change", function() {
+  if (!this.value) return;
+  window.location.href = this.value;
+});
+</script>
+
 </body>
 </html>
