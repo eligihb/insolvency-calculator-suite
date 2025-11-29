@@ -1,1 +1,433 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>מחשבון חדלות פירעון – לוח גרסאות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --card-bg: #ffffff;
+      --primary: #0f766e;
+      --primary-soft: #ecfdf3;
+      --accent: #0284c7;
+      --accent-soft: #eff6ff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --danger: #b91c1c;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #fef3c7 0, #fff7ed 40%, #f8fafc 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    .env-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: #ecfeff;
+      color: #0e7490;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .env-pill span {
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: #cffafe;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(26px, 3.2vw, 32px);
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .subtitle code {
+      font-family: inherit;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 6px;
+      direction: ltr;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    @media (max-width: 980px) {
+      .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .projects-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .project-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .project-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .project-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .dev-badge {
+      font-size: 11px;
+      color: #0369a1;
+      background: #e0f2fe;
+      border-radius: var(--radius-pill);
+      padding: 2px 10px;
+      font-weight: 500;
+    }
+
+    .versions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ver-btn {
+      border-radius: var(--radius-pill);
+      padding: 6px 18px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #ffffff;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+      white-space: nowrap;
+    }
+
+    .ver-stable { background: #16a34a; }
+    .ver-d1     { background: #0ea5e9; }
+    .ver-d2     { background: #6366f1; }
+    .ver-d3     { background: #0f766e; }
+
+    .ver-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+    }
+
+    .ver-btn small {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .project-note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .dropdown-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .dropdown-row select {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 5px 32px 5px 10px;
+      font-family: inherit;
+      font-size: 12px;
+      background:
+        url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2394A3B8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        no-repeat left 10px center / 14px 14px;
+      appearance: none;
+      direction: rtl;
+    }
+
+    .dropdown-row select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .dropdown-label { white-space: nowrap; }
+
+    .tip {
+      margin-top: 22px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .tip code {
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      direction: ltr;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="env-pill">
+      <span>MAIN</span>
+      לוח גרסאות – גרסה יציבה + D1–D3 + A4–A6 לכל פרויקט
+    </div>
+
+    <h1>מחשבון חדלות פירעון – ניהול גרסאות</h1>
+    <p class="subtitle">
+      לכל אחד מששת הפרויקטים יש גרסה יציבה
+      (<code>index.html</code> בתיקיית הפרויקט),
+      עד שלוש גרסאות פיתוח (D1–D3) ועוד גרסאות נוספות (A4–A6) בתיקיית
+      <code>&lt;project&gt;/versions</code>.
+    </p>
+
+    <div class="projects-grid" id="projectsGrid"></div>
+
+    <p class="tip">
+      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ HTML בתיקייה
+      <code>&lt;project&gt;/versions</code>.
+      שלושת הקבצים הראשונים אחרי מיון לפי שם יוצגו כ-D1–D3, והשאר כ-A4–A6.
+    </p>
+  </div>
+
+  <script>
+    const BASE_SITE = "https://eligihb.github.io/insolvency-smart-tools";
+    const GITHUB_API_BASE =
+      "https://api.github.com/repos/eligihb/insolvency-smart-tools/contents";
+
+    // ששת הפרויקטים בגרסה הראשית
+    const projects = [
+      {
+        id: "fees",
+        title: "שכר טרחה",
+        subtitle: "Fees",
+        stablePath: "fees/index.html",
+        versionsPath: "fees/versions"
+      },
+      {
+        id: "payment-order",
+        title: "צו תשלומים",
+        subtitle: "Payment Order",
+        stablePath: "payment-order/index.html",
+        versionsPath: "payment-order/versions"
+      },
+      {
+        id: "rehab",
+        title: "צו שיקום",
+        subtitle: "Rehab",
+        stablePath: "rehab/index.html",
+        versionsPath: "rehab/versions"
+      },
+      {
+        id: "summary-report",
+        title: "דו\"ח מסכם כללי",
+        subtitle: "Summary Report",
+        stablePath: "summary-report/index.html",
+        versionsPath: "summary-report/versions"
+      },
+      {
+        id: "ai-summary",
+        title: "סיכום AI",
+        subtitle: "AI Summary",
+        stablePath: "ai-summary/index.html",
+        versionsPath: "ai-summary/versions"
+      },
+      {
+        id: "inspection-findings",
+        title: "ממצאי בדיקה",
+        subtitle: "Inspection Findings",
+        stablePath: "inspection-findings/index.html",
+        versionsPath: "inspection-findings/versions"
+      }
+    ];
+
+    function createProjectCard(project, versionsInfo) {
+      const card = document.createElement("div");
+      card.className = "project-card";
+
+      const header = document.createElement("div");
+      header.className = "project-header";
+
+      const title = document.createElement("h2");
+      title.className = "project-title";
+      title.textContent = project.title;
+
+      const subtitle = document.createElement("div");
+      subtitle.className = "project-subtitle";
+      subtitle.textContent = project.subtitle;
+
+      const devBadge = document.createElement("span");
+      devBadge.className = "dev-badge";
+      devBadge.textContent = "גרסה יציבה + גרסאות פיתוח";
+
+      header.appendChild(title);
+      header.appendChild(subtitle);
+      header.appendChild(devBadge);
+      card.appendChild(header);
+
+      const btnRow = document.createElement("div");
+      btnRow.className = "versions-row";
+
+      // כפתור גרסה יציבה
+      const stableUrl = `${BASE_SITE}/${project.stablePath}`;
+      const stableBtn = document.createElement("a");
+      stableBtn.className = "ver-btn ver-stable";
+      stableBtn.href = stableUrl;
+      stableBtn.target = "_blank";
+      stableBtn.rel = "noopener";
+      stableBtn.textContent = "גרסה יציבה";
+      btnRow.appendChild(stableBtn);
+
+      // כפתורי D1–D3
+      const devFiles = versionsInfo.dev;   // עד 3 קבצים
+      const labels = ["D1", "D2", "D3"];
+      const classes = ["ver-d1", "ver-d2", "ver-d3"];
+
+      devFiles.forEach((file, idx) => {
+        const a = document.createElement("a");
+        a.className = `ver-btn ${classes[idx]}`;
+        a.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = labels[idx];
+        const small = document.createElement("small");
+        small.textContent = file.name;
+        a.appendChild(small);
+        btnRow.appendChild(a);
+      });
+
+      card.appendChild(btnRow);
+
+      const note = document.createElement("div");
+      note.className = "project-note";
+      note.textContent =
+        "D1–D3: גרסאות פיתוח פעילות. A4–A6: גרסאות נוספות/ארכיון.";
+      card.appendChild(note);
+
+      const ddRow = document.createElement("div");
+      ddRow.className = "dropdown-row";
+
+      const label = document.createElement("span");
+      label.className = "dropdown-label";
+      label.textContent = "A4–A6:";
+
+      const select = document.createElement("select");
+      select.innerHTML = `<option value="">בחר גרסה נוספת...</option>`;
+      select.disabled = versionsInfo.archive.length === 0;
+
+      select.addEventListener("change", () => {
+        const url = select.value;
+        if (url) {
+          window.open(url, "_blank", "noopener");
+          select.selectedIndex = 0;
+        }
+      });
+
+      if (versionsInfo.archive.length > 0) {
+        const baseIndex = 4; // A4
+        versionsInfo.archive.forEach((file, i) => {
+          const opt = document.createElement("option");
+          const tag = "A" + (baseIndex + i); // A4, A5, A6
+          opt.value = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
+          opt.textContent = `${tag} – ${file.name}`;
+          select.appendChild(opt);
+        });
+      }
+
+      ddRow.appendChild(label);
+      ddRow.appendChild(select);
+      card.appendChild(ddRow);
+
+      return card;
+    }
+
+    async function loadVersions(project) {
+      const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.versionsPath)}`;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("API error " + resp.status);
+        const files = await resp.json();
+
+        const htmlFiles = files
+          .filter(item => item.type === "file" && item.name.endsWith(".html"))
+          .sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
+
+        const dev = htmlFiles.slice(0, 3);       // D1–D3
+        const archive = htmlFiles.slice(3, 6);   // A4–A6
+        return { dev, archive };
+      } catch (e) {
+        console.error("שגיאה בטעינת גרסאות ל-", project.id, e);
+        return { dev: [], archive: [] };
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const grid = document.getElementById("projectsGrid");
+
+      for (const project of projects) {
+        const versionsInfo = await loadVersions(project);
+        const card = createProjectCard(project, versionsInfo);
+        grid.appendChild(card);
+      }
+    });
+  </script>
+</body>
+</html>
 
