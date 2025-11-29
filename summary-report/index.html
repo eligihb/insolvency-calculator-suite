@@ -2,105 +2,342 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>מחשבון חדלות פירעון – דף ראשי (סביבת לקוח)</title>
+  <title>מחשבון חדלות פירעון – מסך פיתוח</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
-  
-    <link rel="stylesheet" href="assets/styles.css"> 
-  
-  </head>
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --card-bg: #ffffff;
+      --primary: #0f766e;
+      --primary-soft: #ecfdf3;
+      --accent: #0284c7;
+      --accent-soft: #eff6ff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --danger: #b91c1c;
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #fef3c7 0, #fff7ed 40%, #f8fafc 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    /* Top strip */
+    .env-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: #fef2f2;
+      color: var(--danger);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .env-pill span {
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: #fee2e2;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(26px, 3.2vw, 32px);
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .subtitle code {
+      font-family: inherit;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 6px;
+      direction: ltr;
+    }
+
+    /* Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    @media (max-width: 980px) {
+      .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .projects-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .project-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .project-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .project-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .dev-badge {
+      font-size: 11px;
+      color: #0369a1;
+      background: #e0f2fe;
+      border-radius: var(--radius-pill);
+      padding: 2px 10px;
+      font-weight: 500;
+    }
+
+    /* Buttons row */
+    .versions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ver-btn {
+      border-radius: var(--radius-pill);
+      padding: 6px 18px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #ffffff;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+      white-space: nowrap;
+    }
+
+    .ver-main-1 { background: #16a34a; }
+    .ver-main-2 { background: #0284c7; }
+    .ver-main-3 { background: #0f766e; }
+
+    .ver-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+    }
+
+    .ver-btn small {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .project-note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Dropdown */
+    .dropdown-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .dropdown-row select {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 5px 32px 5px 10px;
+      font-family: inherit;
+      font-size: 12px;
+      background:
+        url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%2394A3B8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        no-repeat left 10px center / 14px 14px;
+      appearance: none;
+      direction: rtl;
+    }
+
+    .dropdown-row select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .dropdown-label {
+      white-space: nowrap;
+    }
+
+    /* Tip */
+    .tip {
+      margin-top: 22px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .tip code {
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      direction: ltr;
+    }
+  </style>
+</head>
 <body>
   <div class="page">
     <div class="env-pill">
-      <span>PROD</span>
-      לשימוש שוטף – סביבת לקוח
+      <span>DEV</span>
+      לשימוש פנימי בלבד – סביבת מתכנת
     </div>
 
-    <h1>מחשבון חדלות פירעון – דף ראשי</h1>
+    <h1>מחשבון חדלות פירעון – מסך פיתוח</h1>
     <p class="subtitle">
-      גישה ישירה לגרסאות ה**יציבות** של כלים, עם קישור למסך ה**מפתחים** לכל כלי בנפרד.
+      לכל פרויקט עד 3 גרסאות נבחרות (V1–V3) ורשימת גרסאות נוספות מתיקיית
+      <code>&lt;project&gt;/versions/</code>.
     </p>
 
     <div class="projects-grid" id="projectsGrid">
           </div>
+
+    <p class="tip">
+      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ חדש בתיקייה
+      <code>&lt;project&gt;/versions/</code>
+      (למשל <code>summary-A4.html</code>) – הרשימה תתעדכן אוטומטית ברענון הדף.
+    </p>
   </div>
 
   <script>
-    // הקישור הבסיסי של GitHub Pages
+    // -------- הגדרה ידנית של הפרויקטים והגרסאות הראשיות (V1–V3) --------
     const BASE_SITE = "https://eligihb.github.io/insolvency-smart-tools";
+    
+     // שינוי 1: הנתיב הראשי ל-API פונה ישירות ל-Root, משם התיקיות
+    const GITHUB_API_BASE =
+      "https://api.github.com/repos/eligihb/insolvency-smart-tools/contents";
 
-    // -------- הגדרה ידנית של 6 הפרויקטים והקישורים היציבים --------
     const projects = [
       {
         id: "fees",
         title: "מחשבון שכר טרחה",
-        subtitle: "Fees Calculator",
+        subtitle: "Fees Calculator • DEV",
         folder: "fees",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של מחשבון שכר טרחה."
+        mainVersions: [
+          { label: "גרסה 1", file: "fees-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "fees-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "fees-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח למחשבון שכר טרחה."
       },
       {
         id: "payment-order",
         title: "מחשבון צו תשלומים",
-        subtitle: "Payment Order Calculator",
+        subtitle: "Payment Order Calculator • DEV",
         folder: "payment-order",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של מחשבון צו תשלומים."
+        mainVersions: [
+          { label: "גרסה 1", file: "payment-order-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "payment-order-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "payment-order-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח למחשבון צו תשלומים."
       },
       {
         id: "rehab",
         title: "דו\"ח צו שיקום",
-        subtitle: "Rehab Report",
+        subtitle: "Rehab Report • DEV",
         folder: "rehab",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של דו\"ח צו שיקום."
-      },
-      {
-        id: "summary-report",
-        title: "דו\"ח מסכם לדיון",
-        subtitle: "Summary Report for Discussion",
-        folder: "summary-report",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של דו\"ח מסכם לדיון."
+        mainVersions: [
+          { label: "גרסה 1", file: "rehab-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "rehab-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "rehab-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח לדו\"ח צו שיקום."
       },
       {
         id: "inspection-findings",
         title: "דו\"ח ממצאי בדיקה",
-        subtitle: "Inspection Findings Report",
+        subtitle: "Inspection Findings Report • DEV",
         folder: "inspection-findings",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של דו\"ח ממצאי בדיקה."
+        mainVersions: [
+          { label: "גרסה 1", file: "findings-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "findings-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "findings-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח לדו\"ח ממצאי בדיקה."
       },
       {
         id: "ai-summary",
         title: "דו\"ח מסכם AI",
-        subtitle: "AI Summary Report",
+        subtitle: "AI Summary Report • DEV",
         folder: "ai-summary",
-        stableLink: "stable.html",
-         managementLink: "index.html",
-        note: "הגרסה היציבה והמאושרת של דו\"ח מסכם AI."
+        mainVersions: [
+          { label: "גרסה 1", file: "ai-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "ai-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "ai-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח לדו\"ח מסכם AI."
+      },
+      {
+        id: "summary-report",
+        title: "דו\"ח מסכם לדיון",
+        subtitle: "Summary Report • DEV",
+        folder: "summary-report",
+        mainVersions: [
+          { label: "גרסה 1", file: "summary-v1.html", style: "ver-main-1" },
+          { label: "גרסה 2", file: "summary-v2.html", style: "ver-main-2" },
+          { label: "גרסה 3", file: "summary-v3.html", style: "ver-main-3" },
+        ],
+        note: "גרסאות פיתוח לדו\"ח מסכם לדיון."
       }
     ];
 
-    // -------- בניית כרטיסי הפרויקטים (מותאם ל-PROD) --------
+    // -------- בניית כרטיסי הפרויקטים --------
     function createProjectCard(project) {
       const card = document.createElement("div");
       card.className = "project-card";
-
-      // קישור לניהול (מעל הכל)
-      const managementLink = document.createElement('a');
-      managementLink.className = 'dev-link';
-      // שינוי הנתיב לתיקיית הכלי/index.html
-      managementLink.href = `./${project.folder}/${project.managementLink}`; 
-      managementLink.textContent = '>> מסך פיתוח';
-      card.appendChild(managementLink);
 
       const header = document.createElement("div");
       header.className = "project-header";
@@ -115,27 +352,29 @@
 
       const devBadge = document.createElement("span");
       devBadge.className = "dev-badge";
-      devBadge.textContent = "גרסה יציבה";
+      devBadge.textContent = "גרסאות פיתוח לפרויקט";
 
       header.appendChild(title);
       header.appendChild(subtitle);
       header.appendChild(devBadge);
       card.appendChild(header);
 
-      // כפתור יחיד לגרסה היציבה (Stable)
+      // כפתורים לגרסאות V1–V3
       const btnRow = document.createElement("div");
       btnRow.className = "versions-row";
 
-      // בניית ה-URL: התיקייה/הקובץ היציב
-      const href = `./${project.folder}/${project.stableLink}`;
-      const stableBtn = document.createElement("a");
-      stableBtn.className = `ver-btn ver-main-1`; /* ירוק = יציב */
-      stableBtn.href = href;
-      stableBtn.target = "_blank";
-      stableBtn.rel = "noopener";
-      stableBtn.textContent = `פתח כלי: ${project.title}`;
-        
-      btnRow.appendChild(stableBtn);
+      project.mainVersions.forEach((ver) => {
+        // שינוי 2: הנתיב לקישור משתמש בנתיב החדש: <project>/versions/<file>
+        const href = `${BASE_SITE}/${project.folder}/versions/${ver.file}`;
+        const a = document.createElement("a");
+        a.className = `ver-btn ${ver.style}`;
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = ver.label;
+        btnRow.appendChild(a);
+      });
+
       card.appendChild(btnRow);
 
       // טקסט קצר
@@ -143,8 +382,76 @@
       note.className = "project-note";
       note.textContent = project.note;
       card.appendChild(note);
-      
+
+      // שורה של הרשימה הנפתחת
+      const ddRow = document.createElement("div");
+      ddRow.className = "dropdown-row";
+
+      const label = document.createElement("span");
+      label.className = "dropdown-label";
+      label.textContent = "גרסאות נוספות:";
+
+      const select = document.createElement("select");
+      select.innerHTML = `<option value="">בחר גרסה מתיקיית versions...</option>
+                            <option value="./${project.folder}/index.html">פתח מסך ניהול גרסאות</option>`;
+      select.disabled = true; // עד שטוענים מה-API
+
+      select.addEventListener("change", () => {
+        const url = select.value;
+        if (url) {
+          window.open(url, "_blank", "noopener");
+          select.selectedIndex = 0; // להחזיר למצב ברירת מחדל
+        }
+      });
+
+      ddRow.appendChild(label);
+      ddRow.appendChild(select);
+      card.appendChild(ddRow);
+
+      // טעינת הגרסאות הנוספות מה-GitHub API
+      loadVersionsForProject(project, select);
+
       return card;
+    }
+
+    // -------- טעינת קובצי HTML מתיקיית <project>/versions/ --------
+    async function loadVersionsForProject(project, selectEl) {
+         // שינוי 3: בניית ה-URL ל-API, שימוש בנתיב החדש: <project>/versions
+      const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.folder)}/versions`;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("API error " + resp.status);
+        const files = await resp.json();
+
+        const htmlFiles = files
+          .filter((item) => item.type === "file" && item.name.endsWith(".html"))
+          .sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
+
+        if (htmlFiles.length === 0) {
+          selectEl.innerHTML = "<option>אין עדיין גרסאות בתיקייה</option>";
+          return;
+        }
+
+        // קיימים V1–V3 גם פה – אנחנו מציגים הכל, כולל אותם
+        const options = ['<option value="">בחר גרסה מתיקיית versions...</option>'];
+        htmlFiles.forEach((file) => {
+          // שינוי 4: בניית ה-URL המלא לקובץ משתמש בנתיב החדש: <project>/versions/<file>
+          const fullUrl =
+            `${BASE_SITE}/${project.folder}/versions/${file.name}`;
+          options.push(
+            `<option value="${fullUrl}">${file.name}</option>`
+          );
+        });
+         // הוספת קישור למסך הניהול כבחירה קבועה
+         options.push(`<option value="./${project.folder}/index.html">פתח מסך ניהול גרסאות</option>`);
+        selectEl.innerHTML = options.join("");
+        selectEl.disabled = false;
+      } catch (e) {
+        console.error("שגיאה בטעינת גרסאות ל-", project.id, e);
+        selectEl.innerHTML =
+          "<option>שגיאה בטעינת הגרסאות (בדוק חיבור / שם תיקייה)</option>";
+        selectEl.disabled = true;
+      }
     }
 
     // -------- הפעלה --------
