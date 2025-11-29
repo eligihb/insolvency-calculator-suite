@@ -2,11 +2,12 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>מחשבון חדלות פירעון – מסך פיתוח</title>
+  <title>מחשבון חדלות פירעון – לוח גרסאות</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #fff7ed;
@@ -40,15 +41,14 @@
       padding: 24px 16px 64px;
     }
 
-    /* Top strip */
     .env-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 4px 12px;
       border-radius: var(--radius-pill);
-      background: #fef2f2;
-      color: var(--danger);
+      background: #ecfeff;
+      color: #0e7490;
       font-size: 13px;
       margin-bottom: 12px;
     }
@@ -56,7 +56,7 @@
       font-weight: 700;
       padding: 2px 8px;
       border-radius: var(--radius-pill);
-      background: #fee2e2;
+      background: #cffafe;
     }
 
     h1 {
@@ -81,7 +81,6 @@
       direction: ltr;
     }
 
-    /* Grid */
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -134,7 +133,6 @@
       font-weight: 500;
     }
 
-    /* Buttons row */
     .versions-row {
       display: flex;
       flex-wrap: wrap;
@@ -160,9 +158,10 @@
       white-space: nowrap;
     }
 
-    .ver-main-1 { background: #16a34a; }
-    .ver-main-2 { background: #0284c7; }
-    .ver-main-3 { background: #0f766e; }
+    .ver-stable { background: #16a34a; }
+    .ver-d1     { background: #0ea5e9; }
+    .ver-d2     { background: #6366f1; }
+    .ver-d3     { background: #0f766e; }
 
     .ver-btn:hover {
       transform: translateY(-1px);
@@ -179,7 +178,6 @@
       color: var(--text-muted);
     }
 
-    /* Dropdown */
     .dropdown-row {
       display: flex;
       align-items: center;
@@ -209,11 +207,8 @@
       box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
     }
 
-    .dropdown-label {
-      white-space: nowrap;
-    }
+    .dropdown-label { white-space: nowrap; }
 
-    /* Tip */
     .tip {
       margin-top: 22px;
       font-size: 11px;
@@ -231,98 +226,79 @@
 <body>
   <div class="page">
     <div class="env-pill">
-      <span>DEV</span>
-      לשימוש פנימי בלבד – סביבת מתכנת
+      <span>MAIN</span>
+      לוח גרסאות – גרסה יציבה + D1–D3 + A4–A6 לכל פרויקט
     </div>
 
-    <h1>מחשבון חדלות פירעון – מסך פיתוח</h1>
+    <h1>מחשבון חדלות פירעון – ניהול גרסאות</h1>
     <p class="subtitle">
-      לכל פרויקט עד 3 גרסאות נבחרות (V1–V3) ורשימת גרסאות נוספות מתיקיית
-      <code>dev/versions/&lt;project&gt;</code>.
+      לכל אחד מששת הפרויקטים יש גרסה יציבה
+      (<code>index.html</code> בתיקיית הפרויקט),
+      עד שלוש גרסאות פיתוח (D1–D3) ועוד גרסאות נוספות (A4–A6) בתיקיית
+      <code>&lt;project&gt;/versions</code>.
     </p>
 
-    <div class="projects-grid" id="projectsGrid">
-      <!-- הכרטיסים נבנים ע"י JavaScript -->
-    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
 
     <p class="tip">
-      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ חדש בתיקייה
-      <code>dev/versions/&lt;project&gt;</code>
-      (למשל <code>summary-A4.html</code>) – הרשימה תתעדכן אוטומטית ברענון הדף.
+      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ HTML בתיקייה
+      <code>&lt;project&gt;/versions</code>.
+      שלושת הקבצים הראשונים אחרי מיון לפי שם יוצגו כ-D1–D3, והשאר כ-A4–A6.
     </p>
   </div>
 
   <script>
-    // -------- הגדרה ידנית של הפרויקטים והגרסאות הראשיות (V1–V3) --------
     const BASE_SITE = "https://eligihb.github.io/insolvency-smart-tools";
     const GITHUB_API_BASE =
-      "https://api.github.com/repos/eligihb/insolvency-smart-tools/contents/dev/versions";
+      "https://api.github.com/repos/eligihb/insolvency-smart-tools/contents";
 
+    // ששת הפרויקטים בגרסה הראשית
     const projects = [
       {
         id: "fees",
         title: "שכר טרחה",
-        subtitle: "Fees • DEV",
-        folder: "fees",
-        mainVersions: [
-          { label: "גרסה 1", file: "fees-v1.html", style: "ver-main-1" },
-          { label: "גרסה 2", file: "fees-v2.html", style: "ver-main-2" },
-          { label: "גרסה 3", file: "fees-v3.html", style: "ver-main-3" },
-        ],
-        note: "גרסה נבחרות לפרויקט: V1–V3 (ראשית + שתי גרסאות מתפתחות)."
+        subtitle: "Fees",
+        stablePath: "fees/index.html",
+        versionsPath: "fees/versions"
       },
       {
         id: "payment-order",
         title: "צו תשלומים",
-        subtitle: "Payment Order • DEV",
-        folder: "payment-order",
-        mainVersions: [
-          { label: "גרסה 1", file: "payment-order-v1.html", style: "ver-main-1" },
-          { label: "גרסה 2", file: "payment-order-v2.html", style: "ver-main-2" },
-          { label: "גרסה 3", file: "payment-order-v3.html", style: "ver-main-3" },
-        ],
-        note: "גרסאות פיתוח לצו תשלומים."
+        subtitle: "Payment Order",
+        stablePath: "payment-order/index.html",
+        versionsPath: "payment-order/versions"
       },
       {
         id: "rehab",
         title: "צו שיקום",
-        subtitle: "Rehab • DEV",
-        folder: "rehab",
-        mainVersions: [
-          { label: "גרסה 1", file: "rehab-v1.html", style: "ver-main-1" },
-          { label: "גרסה 2", file: "rehab-v2.html", style: "ver-main-2" },
-          { label: "גרסה 3", file: "rehab-v3.html", style: "ver-main-3" },
-        ],
-        note: "גרסאות פיתוח לטופס צו שיקום."
+        subtitle: "Rehab",
+        stablePath: "rehab/index.html",
+        versionsPath: "rehab/versions"
       },
       {
-        id: "pdf-extract",
-        title: "חילוץ נתונים מ-PDF",
-        subtitle: "PDF Extract • DEV",
-        folder: "pdf-extract",
-        mainVersions: [
-          { label: "גרסה 1", file: "pdf-v1.html", style: "ver-main-1" },
-          { label: "גרסה 2", file: "pdf-v2.html", style: "ver-main-2" },
-          { label: "גרסה 3", file: "pdf-v3.html", style: "ver-main-3" },
-        ],
-        note: "פרויקט חילוץ נתונים מתיקי PDF."
-      },
-      {
-        id: "summary",
+        id: "summary-report",
         title: "דו\"ח מסכם כללי",
-        subtitle: "Summary Report • DEV",
-        folder: "summary",
-        mainVersions: [
-          { label: "גרסה 1", file: "summary-v1.html", style: "ver-main-1" },
-          { label: "גרסה 2", file: "summary-v2.html", style: "ver-main-2" },
-          { label: "גרסה 3", file: "summary-v3.html", style: "ver-main-3" },
-        ],
-        note: "גרסאות ניסוי לדו\"ח מסכם לדיון."
+        subtitle: "Summary Report",
+        stablePath: "summary-report/index.html",
+        versionsPath: "summary-report/versions"
+      },
+      {
+        id: "ai-summary",
+        title: "סיכום AI",
+        subtitle: "AI Summary",
+        stablePath: "ai-summary/index.html",
+        versionsPath: "ai-summary/versions"
+      },
+      {
+        id: "inspection-findings",
+        title: "ממצאי בדיקה",
+        subtitle: "Inspection Findings",
+        stablePath: "inspection-findings/index.html",
+        versionsPath: "inspection-findings/versions"
       }
     ];
 
-    // -------- בניית כרטיסי הפרויקטים --------
-    function createProjectCard(project) {
+    function createProjectCard(project, versionsInfo) {
       const card = document.createElement("div");
       card.className = "project-card";
 
@@ -339,108 +315,117 @@
 
       const devBadge = document.createElement("span");
       devBadge.className = "dev-badge";
-      devBadge.textContent = "גרסאות פיתוח לפרויקט";
+      devBadge.textContent = "גרסה יציבה + גרסאות פיתוח";
 
       header.appendChild(title);
       header.appendChild(subtitle);
       header.appendChild(devBadge);
       card.appendChild(header);
 
-      // כפתורים לגרסאות V1–V3
       const btnRow = document.createElement("div");
       btnRow.className = "versions-row";
 
-      project.mainVersions.forEach((ver) => {
-        const href = `${BASE_SITE}/dev/versions/${project.folder}/${ver.file}`;
+      // כפתור גרסה יציבה
+      const stableUrl = `${BASE_SITE}/${project.stablePath}`;
+      const stableBtn = document.createElement("a");
+      stableBtn.className = "ver-btn ver-stable";
+      stableBtn.href = stableUrl;
+      stableBtn.target = "_blank";
+      stableBtn.rel = "noopener";
+      stableBtn.textContent = "גרסה יציבה";
+      btnRow.appendChild(stableBtn);
+
+      // כפתורי D1–D3
+      const devFiles = versionsInfo.dev;   // עד 3 קבצים
+      const labels = ["D1", "D2", "D3"];
+      const classes = ["ver-d1", "ver-d2", "ver-d3"];
+
+      devFiles.forEach((file, idx) => {
         const a = document.createElement("a");
-        a.className = `ver-btn ${ver.style}`;
-        a.href = href;
+        a.className = `ver-btn ${classes[idx]}`;
+        a.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
         a.target = "_blank";
         a.rel = "noopener";
-        a.textContent = ver.label;
+        a.textContent = labels[idx];
+        const small = document.createElement("small");
+        small.textContent = file.name;
+        a.appendChild(small);
         btnRow.appendChild(a);
       });
 
       card.appendChild(btnRow);
 
-      // טקסט קצר
       const note = document.createElement("div");
       note.className = "project-note";
-      note.textContent = project.note;
+      note.textContent =
+        "D1–D3: גרסאות פיתוח פעילות. A4–A6: גרסאות נוספות/ארכיון.";
       card.appendChild(note);
 
-      // שורה של הרשימה הנפתחת
       const ddRow = document.createElement("div");
       ddRow.className = "dropdown-row";
 
       const label = document.createElement("span");
       label.className = "dropdown-label";
-      label.textContent = "גרסאות נוספות:";
+      label.textContent = "A4–A6:";
 
       const select = document.createElement("select");
-      select.innerHTML = `<option value="">בחר גרסה מתיקיית versions...</option>`;
-      select.disabled = true; // עד שטוענים מה-API
+      select.innerHTML = `<option value="">בחר גרסה נוספת...</option>`;
+      select.disabled = versionsInfo.archive.length === 0;
 
       select.addEventListener("change", () => {
         const url = select.value;
         if (url) {
           window.open(url, "_blank", "noopener");
-          select.selectedIndex = 0; // להחזיר למצב ברירת מחדל
+          select.selectedIndex = 0;
         }
       });
+
+      if (versionsInfo.archive.length > 0) {
+        const baseIndex = 4; // A4
+        versionsInfo.archive.forEach((file, i) => {
+          const opt = document.createElement("option");
+          const tag = "A" + (baseIndex + i); // A4, A5, A6
+          opt.value = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
+          opt.textContent = `${tag} – ${file.name}`;
+          select.appendChild(opt);
+        });
+      }
 
       ddRow.appendChild(label);
       ddRow.appendChild(select);
       card.appendChild(ddRow);
 
-      // טעינת הגרסאות הנוספות מה-GitHub API
-      loadVersionsForProject(project, select);
-
       return card;
     }
 
-    // -------- טעינת קובצי HTML מתיקיית dev/versions/<project> --------
-    async function loadVersionsForProject(project, selectEl) {
-      const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.folder)}`;
+    async function loadVersions(project) {
+      const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.versionsPath)}`;
       try {
         const resp = await fetch(url);
         if (!resp.ok) throw new Error("API error " + resp.status);
         const files = await resp.json();
 
         const htmlFiles = files
-          .filter((item) => item.type === "file" && item.name.endsWith(".html"))
+          .filter(item => item.type === "file" && item.name.endsWith(".html"))
           .sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
 
-        if (htmlFiles.length === 0) {
-          selectEl.innerHTML = "<option>אין עדיין גרסאות בתיקייה</option>";
-          return;
-        }
-
-        // קיימים V1–V3 גם פה – אנחנו מציגים הכל, כולל אותם
-        const options = ['<option value="">בחר גרסה מתיקיית versions...</option>'];
-        htmlFiles.forEach((file) => {
-          const fullUrl =
-            `${BASE_SITE}/dev/versions/${project.folder}/${file.name}`;
-          options.push(
-            `<option value="${fullUrl}">${file.name}</option>`
-          );
-        });
-        selectEl.innerHTML = options.join("");
-        selectEl.disabled = false;
+        const dev = htmlFiles.slice(0, 3);       // D1–D3
+        const archive = htmlFiles.slice(3, 6);   // A4–A6
+        return { dev, archive };
       } catch (e) {
         console.error("שגיאה בטעינת גרסאות ל-", project.id, e);
-        selectEl.innerHTML =
-          "<option>שגיאה בטעינת הגרסאות (בדוק חיבור / שם תיקייה)</option>";
-        selectEl.disabled = true;
+        return { dev: [], archive: [] };
       }
     }
 
-    // -------- הפעלה --------
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const grid = document.getElementById("projectsGrid");
-      projects.forEach((project) => {
-        grid.appendChild(createProjectCard(project));
-      });
+
+      for (const project of projects) {
+        const versionsInfo = await loadVersions(project);
+        const card = createProjectCard(project, versionsInfo);
+        grid.appendChild(card);
+      }
     });
   </script>
 </body>
