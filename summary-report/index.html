@@ -1,1 +1,92 @@
-Developer Tool Index - Summary Report
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>דו"ח מסכם לדיון – מנהל גרסאות</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body { font-family: 'Heebo', sans-serif; margin: 0; padding: 20px; background:#f5f7fa; direction: rtl; text-align: right; }
+  h1 { text-align:center; margin-bottom:25px; font-size:22px; color:#0f172a; }
+  .container { max-width:700px; margin:0 auto; }
+  .card { background:white; padding:15px; margin-bottom:15px; border-radius:8px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .card h3 { margin:0 0 10px 0; font-size:16px; color:#0f766e; }
+  .btn { display:inline-block; background:#0f766e; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; transition:0.2s; }
+  .btn:hover { background:#0d5f57; }
+  select { width:100%; padding:8px; font-size:14px; border:1px solid #cbd5e1; border-radius:6px; margin-top:8px; }
+</style>
+
+</head>
+<body>
+
+<h1>דו"ח מסכם לדיון – מנהל גרסאות</h1>
+
+<div class="container">
+
+  <div class="card">
+    <h3>הגרסה היציבה והעדכנית (PRODUCTION)</h3>
+    <a class="btn" href="stable.html">צפה בגרסה היציבה</a>
+  </div>
+
+  <div class="card">
+    <h3>כל הגרסאות מהארכיון (versions/)</h3>
+    <select id="allVersions">
+      <option value="">בחר גרסה...</option>
+    </select>
+  </div>
+
+</div>
+
+
+<script>
+// הגדרות GitHub (הנתונים האלה מתאימים לפרויקט שלך)
+const CONFIG = {
+    user: "eligihb",
+    repo: "insolvency-smart-tools",
+    branch: "main",
+    // הנתיב לתיקיית הארכיון, יחסית ל Root של ה-REPO
+    folder: "summary-report/versions" 
+};
+
+async function loadVersions() {
+  const apiUrl = `https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.folder}?ref=${CONFIG.branch}`;
+
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error("Folder not found");
+    
+    const data = await res.json();
+    const select = document.getElementById("allVersions");
+
+    // מיון לפי שם (כדי ש-v10 יופיע אחרי v9)
+    data.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
+    data.forEach(file => {
+      if (file.type === "file" && file.name.endsWith(".html")) {
+        if (file.name.toLowerCase().includes("readme")) return;
+
+        const opt = document.createElement("option");
+        opt.value = file.name;
+        opt.textContent = file.name.replace(".html",""); 
+        select.appendChild(opt);
+      }
+    });
+
+  } catch (err) {
+    console.error("שגיאה בטעינת הגרסאות:", err);
+    document.querySelector('.card:last-child h3').textContent = "שגיאה בטעינת הגרסאות";
+  }
+}
+
+loadVersions();
+
+// מעבר לגרסה שנבחרה
+document.getElementById("allVersions").addEventListener("change", function() {
+  if (!this.value) return;
+  // הנתיב הוא יחסי למיקום של index.html, לכן אנחנו נכנסים לversions
+  window.location.href = "versions/" + this.value; 
+});
+</script>
+
+</body>
+</html>
