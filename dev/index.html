@@ -1,153 +1,394 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>דו"ח מסכם – גרסאות</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>מחשבון חדלות פירעון – DEV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
 
-<style>
-  body {
-    font-family: 'Heebo', sans-serif;
-    margin: 0;
-    padding: 20px;
-    background:#f5f7fa;
-    direction: rtl;
-    text-align: right;
-  }
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --panel: #ffffff;
+      --primary: #0f766e;
+      --secondary: #0284c7;
+      --accent: #16a34a;
+      --dev: #f97316;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --shadow-soft: 0 6px 20px rgba(15,23,42,0.10);
+      --radius-lg: 18px;
+      --radius-sm: 999px;
+    }
 
-  h1 {
-    text-align:center;
-    margin-bottom:25px;
-    font-size:22px;
-    color:#0f172a;
-  }
+    * { box-sizing: border-box; }
 
-  .container {
-    max-width:700px;
-    margin:0 auto;
-  }
+    body {
+      margin: 0;
+      padding: 24px 12px 40px;
+      background: radial-gradient(circle at top, #fffbeb 0, #fff7ed 40%, #fefce8 100%);
+      font-family: "Heebo", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      text-align: center;
+    }
 
-  .card {
-    background:white;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:8px;
-    border:1px solid #e2e8f0;
-    box-shadow:0 1px 3px rgba(0,0,0,0.08);
-  }
+    .dev-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #fff7ed;
+      border: 1px dashed #fdba74;
+      color: #c2410c;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
 
-  .card h3 {
-    margin:0 0 10px 0;
-    font-size:16px;
-    color:#0f766e;
-  }
+    .dev-chip span.icon {
+      display: inline-flex;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      align-items: center;
+      justify-content: center;
+      background: #fed7aa;
+      font-size: 11px;
+    }
 
-  .btn {
-    display:inline-block;
-    background:#0f766e;
-    color:white;
-    padding:8px 12px;
-    border-radius:6px;
-    text-decoration:none;
-    font-size:13px;
-    font-weight:600;
-    transition:0.2s;
-  }
+    h1 {
+      margin: 6px 0 4px;
+      font-size: clamp(26px, 3vw, 32px);
+      letter-spacing: 0.02em;
+    }
 
-  .btn:hover { background:#0d5f57; }
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
 
-  select {
-    width:100%;
-    padding:8px;
-    font-size:14px;
-    border:1px solid #cbd5e1;
-    border-radius:6px;
-    margin-top:8px;
-  }
+    .workspace {
+      max-width: 960px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.96);
+      border-radius: 24px;
+      box-shadow: var(--shadow-soft);
+      padding: 20px 18px 22px;
+      border: 1px solid #ffe4c4;
+    }
 
-  .sub-title {
-    margin-top:15px;
-    font-size:14px;
-    font-weight:700;
-    color:#334155;
-  }
-</style>
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 6px;
+    }
 
+    .project-card {
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px 14px 12px;
+      text-align: right;
+      box-shadow: 0 3px 8px rgba(15,23,42,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-label {
+      position: absolute;
+      inset-inline-start: 14px;
+      inset-block-start: 10px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .project-title {
+      margin: 0 0 2px;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .project-sub {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .version-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .version-btn {
+      flex: 1;
+      min-width: 70px;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .v-main-1 { background: var(--accent); color: #fff; }
+    .v-main-2 { background: var(--secondary); color: #fff; }
+    .v-main-3 { background: var(--primary); color: #fff; }
+
+    .version-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15,23,42,0.18);
+    }
+
+    .version-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .extra-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .extra-row label {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .extra-select {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      font-size: 11px;
+      background: #f8fafc;
+      direction: rtl;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .footer-note code {
+      background: #e5e7eb;
+      border-radius: 6px;
+      padding: 1px 4px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 640px) {
+      .workspace {
+        padding-inline: 12px;
+      }
+      .project-card {
+        padding-inline: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<h1>דו"ח מסכם – בחירת גרסה</h1>
-
-<div class="container">
-
-  <!-- כרטיס של הגרסאות הקבועות -->
-  <div class="card">
-    <h3>גרסאות קבועות</h3>
-
-    <a class="btn" href="summary-v1.html">גרסה 1</a>
-    <br><br>
-
-    <a class="btn" href="summary-v2.html">גרסה 2</a>
-    <br><br>
-
-    <a class="btn" href="summary-v3.html">גרסה 3</a>
+  <div class="dev-chip">
+    <span class="icon">DEV</span>
+    לשימוש פנימי בלבד – סביבת מתכנת
   </div>
 
-  <!-- רשימה נפתחת של כל הגרסאות -->
-  <div class="card">
-    <h3>כל הגרסאות מהתיקייה</h3>
-
-    <select id="allVersions">
-      <option value="">בחר גרסה…</option>
-    </select>
+  <h1>מחשבון חדלות פירעון – מסך פיתוח</h1>
+  <div class="subtitle">
+    לכל פרויקט עד 3 גרסאות נבחרות (V1–V3) ורשימת גרסאות נוספת מתוך תיקיית <code>versions</code>.
   </div>
 
-</div>
+  <div class="workspace">
+    <div class="projects-grid" id="projectsGrid">
+      <!-- הכרטיסים נוצרים דינמית ב־JS -->
+    </div>
 
+    <div class="footer-note">
+      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ חדש תחת
+      <code>/dev/versions/&lt;project&gt;/</code>
+      ועדכן את הרשימה ב־JS למטה (למשל
+      <code>summary-A4.html</code>).
+    </div>
+  </div>
 
-<script>
-// טעינת קבצים מהתיקייה ב-GitHub
-async function loadVersions() {
-  const user = "eligihb";
-  const repo = "insolvency-smart-tools";
-  const branch = "main";
-  const folder = "dev/versions/summary-report/";
+  <script>
+    // *** הגדרת הפרויקטים והגרסאות ***
+    // כל פרויקט: basePath הוא תיקיית ה־versions שלו,
+    // featured – שלוש הגרסאות הראשיות (V1,V2,V3),
+    // extra – שאר הגרסאות (A4,A5 וכו').
 
-  const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${folder}?ref=${branch}`;
-
-  try {
-    const res = await fetch(apiUrl);
-    const data = await res.json();
-
-    const select = document.getElementById("allVersions");
-
-    data.forEach(file => {
-      if (file.type === "file" && file.name.endsWith(".html")) {
-
-        // דלג על הגרסאות הקבועות שכבר מוצגות ידנית
-        if (["summary-v1.html","summary-v2.html","summary-v3.html"].includes(file.name))
-          return;
-
-        const opt = document.createElement("option");
-        opt.value = file.name;
-        opt.textContent = file.name.replace(".html","");
-        select.appendChild(opt);
+    const projects = [
+      {
+        key: "rehab",
+        title: "צו שיקום",
+        subtitle: "Rehab • DEV",
+        basePath: "versions/rehab/",
+        featured: [
+          { label: "גרסה 1", file: "rehab-v1.html", note: "גרסה ראשית" },
+          { label: "גרסה 2", file: "rehab-v2.html", note: "גרסת פיתוח" },
+          { label: "גרסה 3", file: "rehab-v3.html", note: "גרסת ניסוי" }
+        ],
+        extra: [
+          // דוגמה: { label: "Rehab A4", file: "rehab-A4.html" }
+        ]
+      },
+      {
+        key: "payment",
+        title: "מחשבון צו תשלומים",
+        subtitle: "Payment Order • DEV",
+        basePath: "versions/payment-order/",
+        featured: [
+          { label: "גרסה 1", file: "payment-order-v1.html", note: "גרסה ראשית" },
+          { label: "גרסה 2", file: "payment-order-v2.html", note: "גרסת פיתוח" },
+          { label: "גרסה 3", file: "payment-order-v3.html", note: "גרסת ניסוי" }
+        ],
+        extra: [
+          // דוגמה: { label: "Pay A4", file: "payment-order-A4.html" }
+        ]
+      },
+      {
+        key: "fees",
+        title: "מחשבון שכר טרחה",
+        subtitle: "Fees • DEV",
+        basePath: "versions/fees/",
+        featured: [
+          { label: "גרסה 1", file: "fees-v1.html", note: "גרסה ראשית" },
+          { label: "גרסה 2", file: "fees-v2.html", note: "גרסת פיתוח" },
+          { label: "גרסה 3", file: "fees-v3.html", note: "גרסת ניסוי" }
+        ],
+        extra: [
+          // דוגמה: { label: "Fees A4", file: "fees-A4.html" }
+        ]
+      },
+      {
+        key: "summary",
+        title: "דו\"ח מסכם כללי",
+        subtitle: "Summary Report • DEV",
+        basePath: "versions/summary/",
+        featured: [
+          { label: "גרסה 1", file: "summary-v1.html", note: "גרסה ראשית" },
+          { label: "גרסה 2", file: "summary-v2.html", note: "גרסת פיתוח" },
+          { label: "גרסה 3", file: "summary-v3.html", note: "גרסת ניסוי" }
+        ],
+        extra: [
+          // כאן תוסיף את A4,A5 וכו' כשתיצור אותם:
+          // { label: "Summary A1", file: "summary-A1.html" },
+          // { label: "Summary A2", file: "summary-A2.html" },
+        ]
+      },
+      {
+        key: "pdfExtract",
+        title: "חילוץ נתונים מ-PDF",
+        subtitle: "PDF Extract • DEV",
+        basePath: "versions/pdf-extract/",
+        featured: [
+          { label: "גרסה 1", file: "pdf-extract-v1.html", note: "גרסה ראשית" },
+          { label: "גרסה 2", file: "pdf-extract-v2.html", note: "גרסת פיתוח" },
+          { label: "גרסה 3", file: "pdf-extract-v3.html", note: "גרסת ניסוי" }
+        ],
+        extra: [
+          // { label: "PDF A4", file: "pdf-extract-A4.html" }
+        ]
       }
-    });
+    ];
 
-  } catch (err) {
-    console.error("שגיאה בטעינת הגרסאות:", err);
-  }
-}
+    function createProjectCard(project) {
+      const card = document.createElement("div");
+      card.className = "project-card";
 
-loadVersions();
+      const label = document.createElement("div");
+      label.className = "project-label";
+      label.textContent = "גרסאות פיתוח לפרויקט";
 
-// מעבר לגרסה שנבחרה
-document.getElementById("allVersions").addEventListener("change", function() {
-  if (!this.value) return;
-  window.location.href = this.value;
-});
-</script>
+      const title = document.createElement("h2");
+      title.className = "project-title";
+      title.textContent = project.title;
 
+      const sub = document.createElement("p");
+      sub.className = "project-sub";
+      sub.textContent = project.subtitle;
+
+      const versionRow = document.createElement("div");
+      versionRow.className = "version-row";
+
+      project.featured.forEach((v, index) => {
+        const a = document.createElement("a");
+        a.className = "version-btn v-main-" + (index + 1);
+        a.textContent = v.label;
+        a.href = project.basePath + v.file;
+        a.target = "_blank";
+        a.rel = "noopener";
+        versionRow.appendChild(a);
+      });
+
+      const note = document.createElement("div");
+      note.className = "version-note";
+      note.textContent = "V1–V3: גרסאות נבחרות (ראשית + שתי גרסאות מתפתחות).";
+
+      const extraRow = document.createElement("div");
+      extraRow.className = "extra-row";
+
+      const extraLabel = document.createElement("label");
+      extraLabel.textContent = "גרסאות נוספות:";
+
+      const select = document.createElement("select");
+      select.className = "extra-select";
+      select.innerHTML = `<option value="">בחר גרסה מתיקיית versions...</option>`;
+
+      const allVersions = [
+        ...project.featured.map(v => ({ label: v.label + " (" + v.file + ")", file: v.file })),
+        ...project.extra
+      ];
+
+      allVersions.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = project.basePath + v.file;
+        opt.textContent = v.label;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener("change", (e) => {
+        const url = e.target.value;
+        if (url) {
+          window.open(url, "_blank", "noopener");
+          e.target.value = "";
+        }
+      });
+
+      extraRow.appendChild(extraLabel);
+      extraRow.appendChild(select);
+
+      card.appendChild(label);
+      card.appendChild(title);
+      card.appendChild(sub);
+      card.appendChild(versionRow);
+      card.appendChild(note);
+      card.appendChild(extraRow);
+
+      return card;
+    }
+
+    const grid = document.getElementById("projectsGrid");
+    projects.forEach(p => grid.appendChild(createProjectCard(p)));
+  </script>
 </body>
 </html>
