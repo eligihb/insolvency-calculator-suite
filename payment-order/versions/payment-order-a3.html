@@ -63,7 +63,7 @@ header{
   border-radius:10px
 }
 
-/* ====== כאן הטיפול ברוחב ====== */
+/* ===== לוח: שמאל צר (תוצאות), ימין רחב (הזנה) ===== */
 .board{
   margin-top:8px;
   background:#fbfeff;
@@ -72,7 +72,7 @@ header{
   box-shadow:0 6px 20px rgba(0,0,0,.06);
   padding:8px;
   display:grid;
-  grid-template-columns:0.6fr 1.4fr; /* שמאל צר, ימין רחב */
+  grid-template-columns:minmax(260px,0.6fr) minmax(420px,1.4fr);
   gap:8px;
 }
 
@@ -81,16 +81,16 @@ header{
   border:1px solid var(--border);
   border-radius:12px;
   padding:6px;
-  grid-column:1; /* תוצאות בעמודה השמאלית והצרה */
+  grid-column:1;
 }
 .inputs-col{
   background:#fff;
   border:1px solid var(--border);
   border-radius:12px;
   padding:4px 6px;
-  grid-column:2; /* טופס בעמודה הימנית והרחבה */
+  grid-column:2;
 }
-/* ============================== */
+/* ================================================ */
 
 .section-title{
   margin:2px 0 6px;
@@ -189,7 +189,7 @@ header{
   box-shadow:0 0 0 1px #000 inset;
 }
 
-/* סטטוס משפחתי – טקסט גולש, כפתורים אחידים */
+/* סטטוס משפחתי – כפתורים אחידים וטקסט גולש */
 #familyTypeGroup{
   width:100%;
   justify-content:space-between;
