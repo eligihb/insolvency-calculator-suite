@@ -21,8 +21,8 @@
 :root{
   --primary:#005f73; --secondary:#0a9396; --bg:#f4f7f9; --panel:#fff;
   --text:#1f2937; --label:#4b5563; --border:#dbe3ea; --accent:#ee9b00;
-  --danger:#ae2012; --blue:#0a58ff; --muted:#6b7280;
-  --maxw:780px; /* רוחב המחשבון */
+  --danger:#ae20112; --blue:#0a58ff; --muted:#6b7280;
+  --maxw:780px;
 }
 
 *{box-sizing:border-box}
@@ -71,7 +71,7 @@ header{
   box-shadow:0 6px 20px rgba(0,0,0,.06);
   padding:8px;
   display:grid;
-  grid-template-columns:0.7fr 1.3fr; /* צמצום רוחב ההזנה משמאל */
+  grid-template-columns:0.35fr 1.65fr; /* הזנה משמאל חצי מהרוחב הקודם */
   gap:8px;
 }
 
@@ -190,7 +190,7 @@ header{
   box-shadow:0 0 0 1px #000 inset;
 }
 
-/* כפתורי סטטוס משפחתי – גלישת טקסט + כפתורים אחידים בשורה */
+/* כפתורי סטטוס משפחתי */
 #familyTypeGroup{
   width:100%;
   justify-content:space-between;
@@ -341,11 +341,11 @@ header{
           </div>
         </div>
 
-        <!-- כפתורים לפתיחת שדות: הכנסות נוספות+קצבאות / מזונות+הוצאות נוספות -->
+        <!-- כפתורים לפתיחת שדות: הכנסות נוספות+קצבאות / הוצאות נוספות+מזונות -->
         <div class="row" style="justify-items:center">
           <div class="toggles-line" id="incomeToggleRow" style="margin-top:4px">
             <button class="chip" id="btnIncomeExtra">הכנסות נוספות + קצבאות</button>
-            <button class="chip" id="btnExpenseExtra">מזונות + הוצאות נוספות</button>
+            <button class="chip" id="btnExpenseExtra">הוצאות נוספות + מזונות</button>
           </div>
         </div>
 
@@ -477,8 +477,8 @@ const els = {
 
 /* בסיס מחיה לפי סטטוס (בלי ילדים) */
 const livingBase = {
-  "יחיד/ נשוי חי בנפרד":4556,
-  "רווק/ גרוש/ אלמן":4556,
+  "יחיד":4556,
+  "רווק":4556,
   "זוג":6024,
 };
 
@@ -501,7 +501,7 @@ function updateLabelSets(){
   const p=(gender==='חייב')?'בת זוג':'בן זוג';
   els.lblRD.textContent=`אחוז הכנסה (${d})`;
   els.lblRP.textContent=`אחוז הכנסה (${p})`;
-  els.lblPD.textContent=`תשלום מוצע (${ד})`;
+  els.lblPD.textContent=`תשלום מוצע (${d})`;
   els.lblPP.textContent=`תשלום מוצע (${p})`;
   els.lblSalaryD.textContent=`הכנסה (${d})`;
   els.lblSalaryP.textContent=`הכנסה (${p})`;
@@ -531,7 +531,7 @@ els.joint.onclick=()=>{
   calc();
 };
 
-/* פתיחה/סגירה של בלוקים: הכנסות+קצבאות / מזונות+הוצאות נוספות */
+/* פתיחה/סגירה של בלוקים: הכנסות+קצבאות / הוצאות+מזונות */
 els.btnIncomeExtra.onclick=()=>{
   const isActive = els.btnIncomeExtra.classList.toggle('active');
   els.boxOther.style.display = isActive ? 'grid' : 'none';
@@ -589,8 +589,8 @@ function getBaseLiving(familyType, childrenCount){
   const base0 = livingBase[familyType] || 4556;
   const c = Math.max(0, childrenCount || 0);
 
-  const upTo4 = Math.min(c, 4);      // ילדים 1–4
-  const above4 = Math.max(c - 4, 0); // מהילד ה-5 ומעלה
+  const upTo4 = Math.min(c, 4);
+  const above4 = Math.max(c - 4, 0);
 
   return base0 + (upTo4 * 1500) + (above4 * 1300);
 }
@@ -651,25 +651,20 @@ calc();
 
 /* כפתור איפוס */
 E('btnReset').onclick = ()=>{
-  // איפוס מספר ילדים
   childrenCount = 0;
   updateChildrenLabel();
 
-  // איפוס שדות הכנסה/הוצאות
   document.querySelectorAll('input[type="number"]').forEach(i=>i.value='');
 
-  // כיבוי בלוקים נפתחים
   ['btnIncomeExtra','btnExpenseExtra'].forEach(k=>{
     if(els[k].classList.contains('active')) els[k].click();
   });
 
-  // סטטוס משפחתי: חזרה לברירת מחדל (זוג)
   familyType = "זוג";
   document.querySelectorAll('.family-type').forEach(b=>{
     b.classList.toggle('active', b.dataset.type === "זוג");
   });
 
-  // מי בהליך: חייב (ללא בן זוג)
   setGender('חייב');
   joint = false;
   els.joint.classList.remove('active');
@@ -679,4 +674,3 @@ E('btnReset').onclick = ()=>{
 </script>
 </body>
 </html>
-
