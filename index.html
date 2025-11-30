@@ -302,104 +302,122 @@
       }
     ];
 
-    function createProjectCard(project, versionsInfo) {
-      const card = document.createElement("div");
-      card.className = "project-card";
+   // מזהה האם הקובץ הוא גרסה עיקרית A1/A2/A3
+function getAMainIndex(name) {
+  const m = name.toLowerCase().match(/-a([1-3])\.html$/);
+  if (!m) return null;
+  return parseInt(m[1], 10);
+}
 
-      const header = document.createElement("div");
-      header.className = "project-header";
+async function loadVersions(project) {
+  const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.versionsPath)}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error("API error " + resp.status);
+    const files = await resp.json();
 
-      const title = document.createElement("h2");
-      title.className = "project-title";
-      title.textContent = project.title;
+    const htmlFiles = files.filter(
+      item => item.type === "file" && item.name.endsWith(".html")
+    );
 
-      const subtitle = document.createElement("div");
-      subtitle.className = "project-subtitle";
-      subtitle.textContent = project.subtitle;
+    // מפרידים בין A1–A3 לבין כל השאר
+    const mainFiles = htmlFiles
+      .map(f => ({ file: f, aIndex: getAMainIndex(f.name) }))
+      .filter(x => x.aIndex !== null)
+      .sort((a, b) => a.aIndex - b.aIndex)
+      .slice(0, 3)
+      .map(x => x.file);
 
-      const devBadge = document.createElement("span");
-      devBadge.className = "dev-badge";
-      devBadge.textContent = "גרסה יציבה + גרסאות עיקריות";
+    const extraFiles = htmlFiles
+      .filter(f => !mainFiles.some(m => m.name === f.name))
+      .sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase(), "en", { numeric: true })
+      );
 
-      header.appendChild(title);
-      header.appendChild(subtitle);
-      header.appendChild(devBadge);
-      card.appendChild(header);
+    return {
+      main: mainFiles,   // A1–A3
+      extra: extraFiles  // כל שאר הגרסאות (כולל D1–D100)
+    };
 
-      const btnRow = document.createElement("div");
-      btnRow.className = "versions-row";
+  } catch (e) {
+    console.error("שגיאה בטעינת גרסאות ל-", project.id, e);
+    return { main: [], extra: [] };
+  }
+}
 
-      // כפתור גרסה יציבה
-      const stableUrl = `${BASE_SITE}/${project.stablePath}`;
-      const stableBtn = document.createElement("a");
-      stableBtn.className = "ver-btn ver-stable";
-      stableBtn.href = stableUrl;
-      stableBtn.target = "_blank";
-      stableBtn.rel = "noopener";
-      stableBtn.textContent = "גרסה יציבה";
-      btnRow.appendChild(stableBtn);
+function createProjectCard(project, versionsInfo) {
+  const card = document.createElement("div");
+  card.className = "project-card";
 
-      // כפתורי A1–A3
-      const mainFiles = versionsInfo.main;  // עד 3 קבצים
-      const labels = ["A1", "A2", "A3"];
-      const classes = ["ver-a1", "ver-a2", "ver-a3"];
+  const header = document.createElement("div");
+  header.className = "project-header";
 
-      mainFiles.forEach((file, idx) => {
-        const a = document.createElement("a");
-        a.className = `ver-btn ${classes[idx]}`;
-        a.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
-        a.target = "_blank";
-        a.rel = "noopener";
-        a.textContent = labels[idx];
-        const small = document.createElement("small");
-        small.textContent = " " + file.name;
-        a.appendChild(small);
-        btnRow.appendChild(a);
-      });
+  const title = document.createElement("h2");
+  title.className = "project-title";
+  title.textContent = project.title;
 
-      card.appendChild(btnRow);
+  const subtitle = document.createElement("div");
+  subtitle.className = "project-subtitle";
+  subtitle.textContent = project.subtitle;
 
-      const note = document.createElement("div");
-      note.className = "project-note";
-      note.textContent =
-        "A1–A3: גרסאות עיקריות לשימוש תכוף. שאר הגרסאות מופיעות בתפריט הנפתח.";
-      card.appendChild(note);
+  card.appendChild(header);
+  header.appendChild(title);
+  header.appendChild(subtitle);
 
-      // דרופדאון – שאר הגרסאות
-      const ddRow = document.createElement("div");
-      ddRow.className = "dropdown-row";
+  const btnRow = document.createElement("div");
+  btnRow.className = "versions-row";
 
-      const label = document.createElement("span");
-      label.className = "dropdown-label";
-      label.textContent = "גרסאות נוספות:";
+  // כפתור גרסה יציבה
+  const stableBtn = document.createElement("a");
+  stableBtn.className = "ver-btn ver-stable";
+  stableBtn.href = `${BASE_SITE}/${project.stablePath}`;
+  stableBtn.target = "_blank";
+  stableBtn.textContent = "גרסה יציבה";
+  btnRow.appendChild(stableBtn);
 
-      const select = document.createElement("select");
-      select.innerHTML = `<option value="">בחר גרסה נוספת...</option>`;
-      select.disabled = versionsInfo.extra.length === 0;
+  // כפתורי A1–A3 בלבד
+  const labels = ["גרסה 1", "גרסה 2", "גרסה 3"];
+  const classes = ["ver-a1", "ver-a2", "ver-a3"];
 
-      select.addEventListener("change", () => {
-        const url = select.value;
-        if (url) {
-          window.open(url, "_blank", "noopener");
-          select.selectedIndex = 0;
-        }
-      });
+  versionsInfo.main.forEach((file, i) => {
+    const btn = document.createElement("a");
+    btn.className = `ver-btn ${classes[i]}`;
+    btn.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
+    btn.target = "_blank";
+    btn.textContent = labels[i]; // לא שם קובץ!
+    btnRow.appendChild(btn);
+  });
 
-      if (versionsInfo.extra.length > 0) {
-        versionsInfo.extra.forEach((file) => {
-          const opt = document.createElement("option");
-          opt.value = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
-          opt.textContent = file.name;
-          select.appendChild(opt);
-        });
-      }
+  card.appendChild(btnRow);
 
-      ddRow.appendChild(label);
-      ddRow.appendChild(select);
-      card.appendChild(ddRow);
+  // תפריט שאר הגרסאות
+  const ddRow = document.createElement("div");
+  ddRow.className = "dropdown-row";
 
-      return card;
+  const select = document.createElement("select");
+  select.innerHTML = `<option value="">גרסאות נוספות...</option>`;
+  select.disabled = versionsInfo.extra.length === 0;
+
+  versionsInfo.extra.forEach(file => {
+    const opt = document.createElement("option");
+    opt.value = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
+    opt.textContent = file.name;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener("change", () => {
+    const url = select.value;
+    if (url) {
+      window.open(url, "_blank");
+      select.selectedIndex = 0;
     }
+  });
+
+  ddRow.appendChild(select);
+  card.appendChild(ddRow);
+
+  return card;
+}
 
     // מחלץ את מספר ה-A (a1 / a2 / a3) מתוך שם הקובץ
     function getAMainIndex(name) {
