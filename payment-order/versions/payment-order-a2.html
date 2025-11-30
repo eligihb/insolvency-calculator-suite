@@ -21,8 +21,8 @@
 :root{
   --primary:#005f73; --secondary:#0a9396; --bg:#f4f7f9; --panel:#fff;
   --text:#1f2937; --label:#4b5563; --border:#dbe3ea; --accent:#ee9b00;
-  --danger:#ae20112; --blue:#0a58ff; --muted:#6b7280;
-  --maxw:780px;
+  --danger:#ae2012; --blue:#0a58ff; --muted:#6b7280;
+  --maxw:760px; /* צמצום רוחב כללי */
 }
 
 *{box-sizing:border-box}
@@ -63,6 +63,7 @@ header{
   border-radius:10px
 }
 
+/* לוח: שמאל = תוצאות (צרה), ימין = הזנה (מצומצמת) */
 .board{
   margin-top:8px;
   background:#fbfeff;
@@ -71,7 +72,7 @@ header{
   box-shadow:0 6px 20px rgba(0,0,0,.06);
   padding:8px;
   display:grid;
-  grid-template-columns:0.35fr 1.65fr; /* הזנה משמאל חצי מהרוחב הקודם */
+  grid-template-columns:minmax(260px,0.55fr) minmax(360px,1.05fr);
   gap:8px;
 }
 
@@ -80,14 +81,14 @@ header{
   border:1px solid var(--border);
   border-radius:12px;
   padding:6px;
-  grid-column:2;
+  grid-column:1;
 }
 .inputs-col{
   background:#fff;
   border:1px solid var(--border);
   border-radius:12px;
   padding:4px 6px;
-  grid-column:1;
+  grid-column:2;
 }
 
 .section-title{
@@ -98,7 +99,6 @@ header{
   text-align:center
 }
 
-/* כותרת תוצאות עם איפוס בצד שמאל */
 .section-title.section-title-results{
   display:flex;
   align-items:center;
@@ -147,7 +147,7 @@ header{
   flex-wrap:nowrap;
 }
 
-/* כפתורי צ׳יפ – בסיס */
+/* כפתורי צ׳יפ */
 .chip{
   padding:4px 9px;
   min-height:28px;
@@ -164,8 +164,6 @@ header{
   gap:4px;
   white-space:nowrap;
 }
-
-/* מצב נבחר – בולט מאוד, גם בשחור־לבן */
 .chip.active{
   background:#0d9488;
   color:#fff;
@@ -174,13 +172,11 @@ header{
   font-weight:700;
   box-shadow:0 0 0 1px #000 inset;
 }
-
 .chip.alert{
   background:#fff;
   border-color:#cfd8e3;
   color:#b42318;
 }
-
 .chip.alert.active{
   background:#b42318;
   color:#fff;
@@ -190,7 +186,7 @@ header{
   box-shadow:0 0 0 1px #000 inset;
 }
 
-/* כפתורי סטטוס משפחתי */
+/* סטטוס משפחתי – כפתורים אחידים וטקסט גולש */
 #familyTypeGroup{
   width:100%;
   justify-content:space-between;
@@ -203,7 +199,7 @@ header{
   white-space:normal;
 }
 
-/* שורת מי בהליך – כפתורים באותה שורה, טקסט גולש בתוך הכפתור */
+/* מי בהליך */
 .who-line{
   flex-wrap:nowrap !important;
 }
@@ -218,7 +214,7 @@ header{
   text-align:center;
 }
 
-/* כפתור הוספת ילד – ממורכז */
+/* כפתור הוסף ילד ממורכז */
 .kids-line{
   justify-content:center;
 }
@@ -245,7 +241,6 @@ header{
 
 .sticky-mobile{display:none}
 
-/* כפתור איפוס */
 .reset-btn{
   background:#ffe0e0;
   color:#a30000;
@@ -267,8 +262,8 @@ header{
   .year-badge{display:none}
 
   .board{grid-template-columns:1fr;gap:8px}
-  .inputs-col{order:1}
-  .results-col{order:2}
+  .inputs-col{order:1;grid-column:auto}
+  .results-col{order:2;grid-column:auto}
 
   .status-row{
     max-width:100%;
@@ -292,7 +287,43 @@ header{
     </header>
 
     <div class="board">
-      <!-- הזנה (משמאל) -->
+      <!-- תוצאות (שמאל) -->
+      <div class="results-col">
+        <div class="section-title section-title-results">
+          <span>תוצאות החישוב</span>
+          <button class="reset-btn" id="btnReset">איפוס</button>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card"><div class="k">סך הכנסות</div><div class="v" id="totalIncomeResult">₪ 0</div></div>
+          <div class="result-card"><div class="k">קצבת  ילדים</div><div class="v" id="socialSecurityAllowance">₪ 0</div></div>
+
+          <div class="result-card"><div class="k">דמי מחייה בכבוד</div><div class="v" id="baseLivingCostResult">₪ 0</div></div>
+          <div class="result-card"><div class="k">סך הוצאות</div><div class="v" id="totalExpensesResult">₪ 0</div></div>
+
+          <div class="result-card result-wide result-big">
+            <div class="k">הכנסה פנויה לתא המשפחתי</div>
+            <div class="v" id="disposableIncomeResult">אין הכנסה פנויה</div>
+          </div>
+
+          <div class="result-card"><div class="k" id="debtorIncomeRatioLabel">אחוז הכנסה (חייב/ת)</div><div class="v" id="debtorIncomeRatio">0.0%</div></div>
+          <div class="result-card"><div class="k" id="partnerIncomeRatioLabel">אחוז הכנסה (בן/בת זוג)</div><div class="v" id="partnerIncomeRatio">0.0%</div></div>
+
+          <div class="result-card" id="debtorPaymentCard"><div class="k" id="debtorPaymentLabel">תשלום מוצע (חייב/ת)</div><div class="v" id="debtorPaymentResult">₪ 0</div></div>
+          <div class="result-card" id="partnerPaymentCard" style="display:none"><div class="k" id="partnerPaymentLabel">תשלום מוצע (בן/בת זוג)</div><div class="v" id="partnerPaymentResult">₪ 0</div></div>
+
+          <div class="result-card result-wide result-danger center-card" id="familyPaymentCard" style="display:none">
+            <div class="k">תשלום חודשי לתא משפחתי</div>
+            <div class="v" id="finalPaymentResult">₪ 0</div>
+          </div>
+
+          <div class="result-card result-wide" id="zeroCaseRow" style="display:none">
+            <div class="v zero-case">תיק אפס</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- הזנה (ימין) -->
       <div class="inputs-col">
         <!-- סטטוס משפחתי + ילדים + מי בהליך -->
         <div class="row status-row">
@@ -341,7 +372,7 @@ header{
           </div>
         </div>
 
-        <!-- כפתורים לפתיחת שדות: הכנסות נוספות+קצבאות / הוצאות נוספות+מזונות -->
+        <!-- כפתורים מאוחדים -->
         <div class="row" style="justify-items:center">
           <div class="toggles-line" id="incomeToggleRow" style="margin-top:4px">
             <button class="chip" id="btnIncomeExtra">הכנסות נוספות + קצבאות</button>
@@ -381,7 +412,7 @@ header{
           </div>
         </div>
 
-        <!-- הוצאות נוספות: חריגות + צהרונים -->
+        <!-- הוצאות נוספות -->
         <div id="extraFields" class="row row-2" style="margin-top:6px;display:none">
           <div class="input-group">
             <label>הוצאות חריגות <span class="info-btn" data-info="רפואי, נסיעה וכד׳">?</span></label>
@@ -390,43 +421,6 @@ header{
           <div class="input-group">
             <label>הוצאות טיפול וצהרונים <span class="info-btn" data-info="צהרונים/טיפול">?</span></label>
             <input id="childcareExpenses" type="number" placeholder="הזן הוצאות">
-          </div>
-        </div>
-
-      </div>
-
-      <!-- תוצאות (מימין) -->
-      <div class="results-col">
-        <div class="section-title section-title-results">
-          <span>תוצאות החישוב</span>
-          <button class="reset-btn" id="btnReset">איפוס</button>
-        </div>
-
-        <div class="result-grid">
-          <div class="result-card"><div class="k">סך הכנסות</div><div class="v" id="totalIncomeResult">₪ 0</div></div>
-          <div class="result-card"><div class="k">קצבת  ילדים</div><div class="v" id="socialSecurityAllowance">₪ 0</div></div>
-
-          <div class="result-card"><div class="k">דמי מחייה בכבוד</div><div class="v" id="baseLivingCostResult">₪ 0</div></div>
-          <div class="result-card"><div class="k">סך הוצאות</div><div class="v" id="totalExpensesResult">₪ 0</div></div>
-
-          <div class="result-card result-wide result-big">
-            <div class="k">הכנסה פנויה לתא המשפחתי</div>
-            <div class="v" id="disposableIncomeResult">אין הכנסה פנויה</div>
-          </div>
-
-          <div class="result-card"><div class="k" id="debtorIncomeRatioLabel">אחוז הכנסה (חייב/ת)</div><div class="v" id="debtorIncomeRatio">0.0%</div></div>
-          <div class="result-card"><div class="k" id="partnerIncomeRatioLabel">אחוז הכנסה (בן/בת זוג)</div><div class="v" id="partnerIncomeRatio">0.0%</div></div>
-
-          <div class="result-card" id="debtorPaymentCard"><div class="k" id="debtorPaymentLabel">תשלום מוצע (חייב/ת)</div><div class="v" id="debtorPaymentResult">₪ 0</div></div>
-          <div class="result-card" id="partnerPaymentCard" style="display:none"><div class="k" id="partnerPaymentLabel">תשלום מוצע (בן/בת זוג)</div><div class="v" id="partnerPaymentResult">₪ 0</div></div>
-
-          <div class="result-card result-wide result-danger center-card" id="familyPaymentCard" style="display:none">
-            <div class="k">תשלום חודשי לתא משפחתי</div>
-            <div class="v" id="finalPaymentResult">₪ 0</div>
-          </div>
-
-          <div class="result-card result-wide" id="zeroCaseRow" style="display:none">
-            <div class="v zero-case">תיק אפס</div>
           </div>
         </div>
       </div>
@@ -475,14 +469,12 @@ const els = {
   addChild:E('addChildBtn'), childrenLabel:E('childrenCountLabel'),
 };
 
-/* בסיס מחיה לפי סטטוס (בלי ילדים) */
 const livingBase = {
-  "יחיד":4556,
-  "רווק":4556,
+  "יחיד/ נשוי חי בנפרד":4556,
+  "רווק/ גרוש/ אלמן":4556,
   "זוג":6024,
 };
 
-/* קצבת ילדים – לפי מספר ילדים */
 const kidsMap = {
   0:0,1:169,2:383,3:597,4:811,
   5:980,6:1149,7:1318,8:1487,9:1656,10:1825
@@ -531,7 +523,7 @@ els.joint.onclick=()=>{
   calc();
 };
 
-/* פתיחה/סגירה של בלוקים: הכנסות+קצבאות / הוצאות+מזונות */
+/* כפתורים מאוחדים */
 els.btnIncomeExtra.onclick=()=>{
   const isActive = els.btnIncomeExtra.classList.toggle('active');
   els.boxOther.style.display = isActive ? 'grid' : 'none';
@@ -543,7 +535,6 @@ els.btnExpenseExtra.onclick=()=>{
   els.boxExtra.style.display = isActive ? 'grid' : 'none';
 };
 
-/* בחירת סטטוס משפחתי */
 const familyTypeButtons = document.querySelectorAll('.family-type');
 familyTypeButtons.forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -553,7 +544,6 @@ familyTypeButtons.forEach(btn=>{
   });
 });
 
-/* ילדים – רק כפתור "הוסף ילד" שמגדיל את המספר */
 els.addChild.onclick = ()=>{
   if(childrenCount < 10){
     childrenCount++;
@@ -562,7 +552,6 @@ els.addChild.onclick = ()=>{
   }
 };
 
-/* פופאבר ? */
 let pop=null;
 document.addEventListener('click',e=>{
   const b=e.target.closest('.info-btn');
@@ -581,10 +570,6 @@ document.addEventListener('click',e=>{
   if(pop){ pop.remove(); pop=null; }
 });
 
-/* בסיס מחיה מדורג לפי ילדים:
-   ילדים 1–4: +1500 לכל ילד
-   מהילד ה-5 ואילך: +1300 לכל ילד נוסף
-*/
 function getBaseLiving(familyType, childrenCount){
   const base0 = livingBase[familyType] || 4556;
   const c = Math.max(0, childrenCount || 0);
@@ -595,7 +580,6 @@ function getBaseLiving(familyType, childrenCount){
   return base0 + (upTo4 * 1500) + (above4 * 1300);
 }
 
-/* חישוב – לא שונה */
 function calc(){
   const base = getBaseLiving(familyType, childrenCount);
   const kids = kidsMap[childrenCount] || 0;
@@ -637,19 +621,16 @@ function calc(){
   els.zeroRow.style.display = zeroCase ? 'block':'none';
 }
 
-/* מאזינים להזנת מספרים */
 [
   'salaryDebtor','salaryPartner','otherIncomeDebtor','otherIncomePartner',
   'debtorAllowance','partnerAllowance','unusualExpenses','childcareExpenses','alimonyExpenses'
 ].forEach(id=>E(id).addEventListener('input',calc));
 
-/* init */
 setGender('חייב');
 els.debtorPayCard.classList.add('solo-pay');
 updateChildrenLabel();
 calc();
 
-/* כפתור איפוס */
 E('btnReset').onclick = ()=>{
   childrenCount = 0;
   updateChildrenLabel();
