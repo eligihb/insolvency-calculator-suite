@@ -220,7 +220,21 @@
       padding: 2px 5px;
       border-radius: 4px;
       direction: ltr;
-    }
+       }
+ /* שורה נפרדת לגרסה היציבה */
+.stable-row {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* שורת 3 הכפתורים */
+.main-versions-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
   </style>
 </head>
 <body>
@@ -349,6 +363,7 @@ function createProjectCard(project, versionsInfo) {
   const card = document.createElement("div");
   card.className = "project-card";
 
+  // כותרת הפרויקט
   const header = document.createElement("div");
   header.className = "project-header";
 
@@ -360,22 +375,28 @@ function createProjectCard(project, versionsInfo) {
   subtitle.className = "project-subtitle";
   subtitle.textContent = project.subtitle;
 
-  card.appendChild(header);
   header.appendChild(title);
   header.appendChild(subtitle);
+  card.appendChild(header);
 
-  const btnRow = document.createElement("div");
-  btnRow.className = "versions-row";
+  // ⬆️⬆️⬆️ שורת כפתור סטייבל (לבד)
+  const stableRow = document.createElement("div");
+  stableRow.className = "stable-row"; // מחלקה חדשה שנגדיר ב-CSS
 
-  // כפתור גרסה יציבה
   const stableBtn = document.createElement("a");
   stableBtn.className = "ver-btn ver-stable";
   stableBtn.href = `${BASE_SITE}/${project.stablePath}`;
   stableBtn.target = "_blank";
+  stableBtn.rel = "noopener";
   stableBtn.textContent = "גרסה יציבה";
-  btnRow.appendChild(stableBtn);
 
-  // כפתורי A1–A3 בלבד
+  stableRow.appendChild(stableBtn);
+  card.appendChild(stableRow);
+
+  // ⬇️⬇️⬇️ שורת גרסאות A1-A3
+  const mainRow = document.createElement("div");
+  mainRow.className = "main-versions-row"; // מחלקה חדשה
+
   const labels = ["גרסה 1", "גרסה 2", "גרסה 3"];
   const classes = ["ver-a1", "ver-a2", "ver-a3"];
 
@@ -384,13 +405,14 @@ function createProjectCard(project, versionsInfo) {
     btn.className = `ver-btn ${classes[i]}`;
     btn.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
     btn.target = "_blank";
-    btn.textContent = labels[i]; // לא שם קובץ!
-    btnRow.appendChild(btn);
+    btn.rel = "noopener";
+    btn.textContent = labels[i];
+    mainRow.appendChild(btn);
   });
 
-  card.appendChild(btnRow);
+  card.appendChild(mainRow);
 
-  // תפריט שאר הגרסאות
+  // דרופדאון לשאר הגרסאות
   const ddRow = document.createElement("div");
   ddRow.className = "dropdown-row";
 
