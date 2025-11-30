@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>מחשבון חדלות פירעון – לוח גרסאות</title>
+  <title>מחשבון חדלות פירעון – ניהול גרסאות</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -159,9 +159,9 @@
     }
 
     .ver-stable { background: #16a34a; }
-    .ver-d1     { background: #0ea5e9; }
-    .ver-d2     { background: #6366f1; }
-    .ver-d3     { background: #0f766e; }
+    .ver-a1     { background: #0ea5e9; }
+    .ver-a2     { background: #6366f1; }
+    .ver-a3     { background: #0f766e; }
 
     .ver-btn:hover {
       transform: translateY(-1px);
@@ -227,23 +227,27 @@
   <div class="page">
     <div class="env-pill">
       <span>MAIN</span>
-      לוח גרסאות – גרסה יציבה + D1–D3 + A4–A6 לכל פרויקט
+      לוח גרסאות – גרסה יציבה + A1–A3 + שאר הגרסאות בתפריט נפתח
     </div>
 
     <h1>מחשבון חדלות פירעון – ניהול גרסאות</h1>
     <p class="subtitle">
       לכל אחד מששת הפרויקטים יש גרסה יציבה
       (<code>index.html</code> בתיקיית הפרויקט),
-      עד שלוש גרסאות פיתוח (D1–D3) ועוד גרסאות נוספות (A4–A6) בתיקיית
-      <code>&lt;project&gt;/versions</code>.
+      עד שלוש גרסאות עיקריות (קבצים שמסתיימים ב-<code>-a1.html</code>,
+      <code>-a2.html</code>, <code>-a3.html</code>),
+      וכל שאר גרסאות ה-HTML בתיקיית
+      <code>&lt;project&gt;/versions</code>
+      מופיעות בתפריט הנפתח.
     </p>
 
     <div class="projects-grid" id="projectsGrid"></div>
 
     <p class="tip">
-      טיפ: להוספת גרסה חדשה לפרויקט, צור קובץ HTML בתיקייה
-      <code>&lt;project&gt;/versions</code>.
-      שלושת הקבצים הראשונים אחרי מיון לפי שם יוצגו כ-D1–D3, והשאר כ-A4–A6.
+      טיפ: להוספת גרסה עיקרית, צור קובץ בשם שמסתיים ב
+      <code>-a1.html</code>, <code>-a2.html</code> או <code>-a3.html</code>
+      בתיקיית <code>&lt;project&gt;/versions</code>.
+      שאר הקבצים (כולל <code>-a4.html</code> ומעלה) יופיעו ברשימה הנפתחת.
     </p>
   </div>
 
@@ -252,7 +256,7 @@
     const GITHUB_API_BASE =
       "https://api.github.com/repos/eligihb/insolvency-smart-tools/contents";
 
-    // ששת הפרויקטים בגרסה הראשית
+    // ששת הפרויקטים
     const projects = [
       {
         id: "fees",
@@ -315,7 +319,7 @@
 
       const devBadge = document.createElement("span");
       devBadge.className = "dev-badge";
-      devBadge.textContent = "גרסה יציבה + גרסאות פיתוח";
+      devBadge.textContent = "גרסה יציבה + גרסאות עיקריות";
 
       header.appendChild(title);
       header.appendChild(subtitle);
@@ -335,12 +339,12 @@
       stableBtn.textContent = "גרסה יציבה";
       btnRow.appendChild(stableBtn);
 
-      // כפתורי D1–D3
-      const devFiles = versionsInfo.dev;   // עד 3 קבצים
-      const labels = ["D1", "D2", "D3"];
-      const classes = ["ver-d1", "ver-d2", "ver-d3"];
+      // כפתורי A1–A3
+      const mainFiles = versionsInfo.main;  // עד 3 קבצים
+      const labels = ["A1", "A2", "A3"];
+      const classes = ["ver-a1", "ver-a2", "ver-a3"];
 
-      devFiles.forEach((file, idx) => {
+      mainFiles.forEach((file, idx) => {
         const a = document.createElement("a");
         a.className = `ver-btn ${classes[idx]}`;
         a.href = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
@@ -348,7 +352,7 @@
         a.rel = "noopener";
         a.textContent = labels[idx];
         const small = document.createElement("small");
-        small.textContent = file.name;
+        small.textContent = " " + file.name;
         a.appendChild(small);
         btnRow.appendChild(a);
       });
@@ -358,19 +362,20 @@
       const note = document.createElement("div");
       note.className = "project-note";
       note.textContent =
-        "D1–D3: גרסאות פיתוח פעילות. A4–A6: גרסאות נוספות/ארכיון.";
+        "A1–A3: גרסאות עיקריות לשימוש תכוף. שאר הגרסאות מופיעות בתפריט הנפתח.";
       card.appendChild(note);
 
+      // דרופדאון – שאר הגרסאות
       const ddRow = document.createElement("div");
       ddRow.className = "dropdown-row";
 
       const label = document.createElement("span");
       label.className = "dropdown-label";
-      label.textContent = "A4–A6:";
+      label.textContent = "גרסאות נוספות:";
 
       const select = document.createElement("select");
       select.innerHTML = `<option value="">בחר גרסה נוספת...</option>`;
-      select.disabled = versionsInfo.archive.length === 0;
+      select.disabled = versionsInfo.extra.length === 0;
 
       select.addEventListener("change", () => {
         const url = select.value;
@@ -380,13 +385,11 @@
         }
       });
 
-      if (versionsInfo.archive.length > 0) {
-        const baseIndex = 4; // A4
-        versionsInfo.archive.forEach((file, i) => {
+      if (versionsInfo.extra.length > 0) {
+        versionsInfo.extra.forEach((file) => {
           const opt = document.createElement("option");
-          const tag = "A" + (baseIndex + i); // A4, A5, A6
           opt.value = `${BASE_SITE}/${project.versionsPath}/${file.name}`;
-          opt.textContent = `${tag} – ${file.name}`;
+          opt.textContent = file.name;
           select.appendChild(opt);
         });
       }
@@ -398,6 +401,14 @@
       return card;
     }
 
+    // מחלץ את מספר ה-A (a1 / a2 / a3) מתוך שם הקובץ
+    function getAMainIndex(name) {
+      const m = name.toLowerCase().match(/-a(\d+)\.html$/);
+      if (!m) return null;
+      const num = parseInt(m[1], 10);
+      return isNaN(num) ? null : num;
+    }
+
     async function loadVersions(project) {
       const url = `${GITHUB_API_BASE}/${encodeURIComponent(project.versionsPath)}`;
       try {
@@ -405,16 +416,33 @@
         if (!resp.ok) throw new Error("API error " + resp.status);
         const files = await resp.json();
 
+        // קבצי HTML בלבד
         const htmlFiles = files
-          .filter(item => item.type === "file" && item.name.endsWith(".html"))
-          .sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
+          .filter(item => item.type === "file" && item.name.endsWith(".html"));
 
-        const dev = htmlFiles.slice(0, 3);       // D1–D3
-        const archive = htmlFiles.slice(3, 6);   // A4–A6
-        return { dev, archive };
+        // מפרידים בין A1–A3 לבין השאר
+        const withIndex = htmlFiles.map(f => ({
+          file: f,
+          aIndex: getAMainIndex(f.name)
+        }));
+
+        const main = withIndex
+          .filter(x => x.aIndex !== null && x.aIndex >= 1 && x.aIndex <= 3)
+          .sort((a, b) => a.aIndex - b.aIndex)
+          .slice(0, 3)
+          .map(x => x.file);
+
+        // שאר הקבצים שלא נבחרו כעיקריים
+        const extra = htmlFiles
+          .filter(f => !main.some(mf => mf.name === f.name))
+          .sort((a, b) =>
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase(), "en", { numeric: true })
+          );
+
+        return { main, extra };
       } catch (e) {
         console.error("שגיאה בטעינת גרסאות ל-", project.id, e);
-        return { dev: [], archive: [] };
+        return { main: [], extra: [] };
       }
     }
 
@@ -430,4 +458,3 @@
   </script>
 </body>
 </html>
-
